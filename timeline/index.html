@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bible Lives in History</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: reverent, clear, a study-Bible companion
+   IDEA: a lapis-and-gold Sumerian cylinder-seal band laid beside the Bible story
+   PICTURE: home = chronological column of character cards on a gold time-line; each page = span chart with the life lit in gold
+   COLOUR and TYPE: lapis blue, sand, gold accent; Marcellus titles, Source Sans 3 body
+   LAYOUT: hero band, then cards or filterable timeline with hanging dates, then notes */
+:root{color-scheme:light dark;
+--bg:light-dark(#f7f3ea,#0e1530);--ink:light-dark(#1a1f33,#ece6d6);--mute:light-dark(#5a5f70,#a9adc2);
+--lapis:light-dark(#1f3b8a,#7f9cf0);--lapisbg:light-dark(#1f3b8a,#16244f);--gold:light-dark(#b07d17,#e2b34f);
+--panel:light-dark(#ffffff,#141d3d);--line:light-dark(#ddd4c2,#2a3563)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 "Source Sans 3",system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:Marcellus,Georgia,serif;font-weight:400;line-height:1.08;text-wrap:balance;margin:0}
+a{color:inherit}
+.band{padding:clamp(28px,4vw,64px) max(5vw,16px)}
+.wrap{max-width:1240px;margin:0 auto}
+.hero{background:var(--lapisbg);color:#f3ecdc}
+.hero h1{font-size:clamp(32px,5vw,52px)}
+.hero p{max-width:66ch;color:#d3d8ea;margin:12px 0 0}
+.back{display:inline-flex;align-items:center;min-height:44px;margin:-10px 0 8px;color:#f0cc78;font-weight:600;text-decoration:none}
+.back:hover,.back:focus-visible{text-decoration:underline}
+.chart{margin-top:28px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:18px clamp(12px,2vw,24px) 14px}
+.row{display:grid;grid-template-columns:200px minmax(0,1fr);gap:12px;align-items:center;padding:5px 0}
+.row .lab{font-size:14px;color:#e5e0d2;line-height:1.25}
+.row .lab small{display:block;color:#aab3d4;font-size:13px}
+.tr{position:relative;height:22px;background:rgba(255,255,255,.07);border-radius:4px}
+.bar{position:absolute;top:0;bottom:0;border-radius:4px;background:#8fa6e8}
+.bar.ab{background:linear-gradient(90deg,#e8c15f,#c8962e)}
+.bar.cr{border-top-right-radius:0;border-bottom-right-radius:0;-webkit-mask:linear-gradient(90deg,#000 75%,transparent);mask:linear-gradient(90deg,#000 75%,transparent)}
+.bar.cl{border-top-left-radius:0;border-bottom-left-radius:0;-webkit-mask:linear-gradient(270deg,#000 75%,transparent);mask:linear-gradient(270deg,#000 75%,transparent)}
+.bar.cl.cr{-webkit-mask:linear-gradient(90deg,transparent,#000 20%,#000 80%,transparent);mask:linear-gradient(90deg,transparent,#000 20%,#000 80%,transparent)}
+.tracks{position:relative}
+.life{position:absolute;top:0;bottom:0;left:calc(212px + (100% - 212px)*var(--l));width:calc((100% - 212px)*var(--w));background:rgba(226,179,79,.10);border-left:1px dashed #e2b34f;border-right:1px dashed #e2b34f;pointer-events:none}
+.axis{display:grid;grid-template-columns:200px minmax(0,1fr);gap:12px;margin-top:6px}
+.ticks{position:relative;height:18px;font-size:13px;color:#aab3d4}
+.ticks span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+.ticks span:first-child{transform:none}.ticks span:last-child{transform:translateX(-100%)}
+.key{font-size:13px;color:#aab3d4;margin:10px 0 0}
+.controls{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 22px}
+.controls button{font:600 16px "Source Sans 3",sans-serif;min-height:44px;padding:0 18px;border-radius:999px;border:1.5px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.controls button[aria-pressed=true]{background:var(--lapis);border-color:var(--lapis);color:light-dark(#fff,#0e1530)}
+button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+h2{font-size:clamp(26px,3.4vw,36px);margin-bottom:6px}
+.sub{color:var(--mute);margin:0 0 20px;max-width:70ch}
+ol.tl{list-style:none;margin:0;padding:0;position:relative}
+ol.tl::before{content:"";position:absolute;left:118px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.ev{display:grid;grid-template-columns:104px minmax(0,1fr);gap:28px;padding:10px 0;position:relative}
+.ev::before{content:"";position:absolute;left:112px;top:20px;width:14px;height:14px;border-radius:50%;background:var(--bg);border:3px solid var(--lapis)}
+.ev.b::before{border-color:var(--gold);background:var(--gold)}
+.yr{text-align:right;font-family:Marcellus,serif;font-size:21px;line-height:1.1;padding-top:10px;white-space:nowrap}
+.yr small{display:block;font:600 13px "Source Sans 3",sans-serif;color:var(--mute);margin-top:4px;white-space:normal}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px}
+.ev.b .card{border-color:light-dark(#e3cf9f,#5a4a22)}
+.tag{display:inline-block;font-size:13px;font-weight:700;padding:2px 10px;border-radius:999px;margin-bottom:6px}
+.b .tag{background:light-dark(#f6e8c4,#3d3216);color:light-dark(#7a560c,#f0cc78)}
+.w .tag{background:light-dark(#e3e9f8,#1f2c5c);color:light-dark(#1f3b8a,#b7c7f5)}
+.card h3{font-size:21px;margin:0 0 4px}
+.card p{margin:0}
+.ref{color:var(--mute);font-size:14px;margin-top:6px!important}
+.notes{background:var(--panel);border-top:1px solid var(--line)}
+.notes .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:24px}
+.notes h3{font-size:22px;margin-bottom:6px}
+.notes p{margin:0 0 10px}
+.pn{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;margin-top:28px}
+.pn a{display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border-radius:999px;background:var(--lapis);color:light-dark(#fff,#0e1530);font-weight:600;text-decoration:none}
+/* home */
+.people{list-style:none;margin:0;padding:0;position:relative;display:grid;gap:14px}
+.people::before{content:"";position:absolute;left:19px;top:20px;bottom:20px;width:3px;border-radius:2px;background:linear-gradient(var(--gold),var(--lapis))}
+.person a{display:grid;grid-template-columns:40px 150px minmax(0,1fr) auto;gap:18px;align-items:center;text-decoration:none;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 20px 16px 0;margin-left:0;transition:border-color .15s,transform .15s}
+.person a:hover{border-color:var(--gold);transform:translateX(3px)}
+.person .dot{justify-self:center;width:16px;height:16px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 4px var(--bg)}
+.person .when{font-family:Marcellus,serif;font-size:19px;line-height:1.15}
+.person .when small{display:block;font:600 13px "Source Sans 3",sans-serif;color:var(--mute);margin-top:3px}
+.person h3{font-size:clamp(24px,3vw,30px)}
+.person p{margin:4px 0 0;color:var(--mute);font-size:16px}
+.person .go{font-weight:700;color:var(--lapis);white-space:nowrap}
+.era{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:22px;font-size:14px;color:#d3d8ea}
+.era b{color:#f0cc78;font-weight:600}
+@media(max-width:600px){
+ .row,.axis{grid-template-columns:minmax(0,1fr);gap:4px}
+ .axis>div:first-child{display:none}
+ .life{left:calc(100%*var(--l));width:calc(100%*var(--w))}
+ .ticks span.mid{display:none}
+ ol.tl::before{left:8px}
+ .ev{grid-template-columns:minmax(0,1fr);gap:6px;padding-left:30px}
+ .ev::before{left:2px;top:6px}
+ .yr{text-align:left;padding-top:0;font-size:19px}
+ .yr small{display:inline;margin-left:8px}
+ .person a{grid-template-columns:40px minmax(0,1fr);padding:14px 16px 14px 0;row-gap:4px}
+ .person .dot{grid-row:1/4}
+ .person .go{display:none}
+}
+@media (prefers-reduced-motion:no-preference){.ev,.person{animation:in .4s ease both}@keyframes in{from{opacity:0;transform:translateY(6px)}}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+{
+const C=[
+{id:"abraham",n:"Abraham",role:"Father of the faithful",life:[-2166,-1991],S:-2200,E:-1950,ticks:[-2200,-2150,-2100,-2050,-2000,-1950],
+ teaser:"Left Ur as it became the richest city on earth.",
+ intro:"What was happening across the ancient world while Abraham lived, from his birth in Ur of the Chaldeans to his burial at Hebron. Dates follow the traditional chronology drawn from the Hebrew text of Genesis, 1 Kings 6:1 and Exodus 12:40.",
+ spans:[["Abraham","175 years",-2166,-1991,1],["Akkadian Empire","Sargon's line, fading",-2334,-2154],["Gutian rule in Sumer","Mountain invaders",-2154,-2112],["Third Dynasty of Ur","Ur-Nammu to Ibbi-Sin",-2112,-2004],["Isin & Larsa","Rival Amorite-era cities",-2004,-1763],["Egypt divided","First Intermediate Period",-2181,-2055],["Egypt's Middle Kingdom","Reunited under Thebes",-2055,-1650],["Xia dynasty, China","Traditional dates",-2070,-1600],["Indus Valley cities","Harappa, Mohenjo-daro",-2600,-1900]],
+ ev:[
+ [-2200,"w","A great drought","A centuries-defining dry spell (the 4.2 kiloyear event) strains farming from Egypt to Mesopotamia to the Indus Valley.",0,1],
+ [-2166,"b","Abram is born in Ur","Born to Terah in Ur of the Chaldeans, brother of Nahor and Haran.","Genesis 11:26–28"],
+ [-2154,"w","The Akkadian Empire collapses","The world's first empire, founded by Sargon, falls apart. Gutian raiders from the Zagros Mountains overrun Sumer.",0,1],
+ [-2144,"w","Gudea rules Lagash","This Sumerian prince rebuilds temples and leaves dozens of famous black diorite statues of himself in prayer.",0,1],
+ [-2112,"w","Ur-Nammu makes Ur a capital","He founds the Third Dynasty of Ur, begins the Great Ziggurat for the moon god Nanna, and issues the Code of Ur-Nammu, the oldest law code that survives today."],
+ [-2094,"w","Shulgi's long reign begins","Over 48 years he standardizes weights and the calendar, builds roads with rest stations, and runs a vast government recorded on hundreds of thousands of clay tablets."],
+ [-2091,"b","The call: leaving Haran for Canaan","After Terah moved the family from Ur to Haran, God calls Abram to go to the land I will show you. He leaves at 75 with Sarai and Lot.","Genesis 11:31–12:5",1],
+ [-2090,"b","Famine sends Abram to Egypt","He finds Egypt split in two, with rival kings at Herakleopolis in the north and Thebes in the south.","Genesis 12:10–20",1],
+ [-2085,"b","Rescuing Lot; Melchizedek's blessing","Abram defeats four eastern kings who carried off Lot, then is blessed by Melchizedek, king of Salem.","Genesis 14",1],
+ [-2080,"b","Ishmael is born","Hagar bears Abram a son when he is 86.","Genesis 16:16"],
+ [-2070,"w","China's Xia dynasty begins","By tradition, Yu the Great, famed for taming floods, founds China's first dynasty. Its exact dates are still debated.",0,1],
+ [-2067,"b","New names, and Sodom falls","God renames Abram Abraham and Sarai Sarah, gives the covenant of circumcision, and Sodom and Gomorrah are destroyed.","Genesis 17–19"],
+ [-2066,"b","Isaac is born","The promised son arrives when Abraham is 100 and Sarah is 90.","Genesis 21:1–5"],
+ [-2055,"w","Egypt is reunited","Mentuhotep II of Thebes defeats his rivals and begins the Middle Kingdom, often called Egypt's classical age.",0,1],
+ [-2050,"b","The binding of Isaac","God tests Abraham on Mount Moriah and provides a ram in Isaac's place. Genesis gives no year, so this date is approximate.","Genesis 22",1],
+ [-2034,"w","Ur builds a wall against the Amorites","King Shu-Sin builds a long defensive wall to hold back Amorite migrants pouring into Mesopotamia.",0,1],
+ [-2029,"b","Sarah dies","Sarah dies at 127. Abraham buys the cave of Machpelah at Hebron to bury her, his first owned land in Canaan.","Genesis 23"],
+ [-2026,"b","Isaac marries Rebekah","Abraham's servant brings Rebekah from his relatives in Mesopotamia. Isaac is 40.","Genesis 24; 25:20"],
+ [-2006,"b","Jacob and Esau are born","Abraham's twin grandsons arrive when Isaac is 60. Abraham lives to see them reach about 15.","Genesis 25:24–26"],
+ [-2004,"w","Ur is destroyed","Elamite armies sack Ur and carry off its last king, Ibbi-Sin. Poets write the mournful Lament for Ur. The city Abraham left is in ruins."],
+ [-2000,"w","Elsewhere around 2000 BC","Stonehenge's bluestones are being rearranged in Britain; Minoan Crete is heading toward its first palaces; the Indus cities trade as far as Mesopotamia.",0,1],
+ [-1991,"b","Abraham dies","Abraham dies at 175, full of years. Isaac and Ishmael bury him beside Sarah at Machpelah.","Genesis 25:7–10"],
+ [-1991,"w","Egypt's 12th Dynasty begins","Around the same time, Amenemhat I takes the throne and founds one of Egypt's strongest dynasties.",0,1]],
+ notes:[["About the dates","Biblical dates here use the traditional reckoning, which places Abraham's birth around 2166 BC. Many scholars instead place the patriarchs a little later, roughly 2000–1800 BC, in the Amorite age of Old Babylon. Mesopotamian and Egyptian dates may be off by a few decades either way."],["Why Ur matters","When Abraham was young, Ur was one of the richest cities on earth, with a towering ziggurat to the moon god Nanna. Haran, where his family settled next, was also a moon-god center, which gives weight to Joshua 24:2: Terah served other gods. God called Abraham out of all of it."],["Just after Abraham","Egypt's 12th Dynasty grew strong. Around 1890 BC a tomb painting at Beni Hasan showed a caravan of Semitic travelers arriving in Egypt, a scene often compared to the patriarchs. See Joseph's page for more."]]},
+
+{id:"joseph",n:"Joseph",role:"From slave to ruler of Egypt",life:[-1915,-1805],S:-1950,E:-1780,ticks:[-1950,-1900,-1850,-1800,-1780],
+ teaser:"Served Egypt at the height of its Middle Kingdom.",
+ intro:"Joseph's life by the traditional chronology, set against Egypt's powerful 12th Dynasty, the Assyrian trading boom and the first palaces of Minoan Crete.",
+ spans:[["Joseph","110 years",-1915,-1805,1],["Egypt's 12th Dynasty","Amenemhat & Senusret kings",-1991,-1802],["Isin & Larsa","Rival cities in Sumer",-2004,-1763],["Assyrian traders at Kanesh","Tin and textile trade",-1950,-1750],["Minoan palaces","Knossos and Phaistos",-1900,-1450],["Xia dynasty, China","Traditional dates",-2070,-1600]],
+ ev:[
+ [-1915,"b","Joseph is born","Rachel finally bears a son to Jacob in Haran. Jacob is about 91.","Genesis 30:22–24"],
+ [-1900,"w","Minoan Crete builds palaces","The first great palaces rise at Knossos and Phaistos, with storerooms, courtyards and a script of their own.",0,1],
+ [-1900,"w","The Indus cities begin to fade","Harappa and Mohenjo-daro slowly decline as rivers shift and trade falls off.",0,1],
+ [-1898,"b","Sold into slavery","At 17, Joseph's jealous brothers sell him to traders headed for Egypt.","Genesis 37"],
+ [-1892,"w","The Beni Hasan caravan","An Egyptian official's tomb is painted with 37 Semitic travelers in many-colored robes arriving to trade, a vivid picture of Joseph's world.",0,1],
+ [-1885,"b","Before Pharaoh at 30","After prison, Joseph interprets Pharaoh's dreams and is made second in the land.","Genesis 41:46"],
+ [-1878,"b","Famine, and the brothers come","Seven years of plenty end. Joseph's brothers come to buy grain and bow before him.","Genesis 41:53–42:6",1],
+ [-1878,"w","Senusret III takes the throne","He strengthens central rule, curbs the power of local nobles and campaigns into Nubia. Some compare this to Joseph's land policy in Genesis 47.",0,1],
+ [-1876,"b","Jacob's family settles in Goshen","Jacob, now 130, moves to Egypt with 70 family members.","Genesis 46–47"],
+ [-1860,"w","Amenemhat III reigns","He develops the fertile Faiyum basin. Its feeder canal is still called Bahr Yussef, the waterway of Joseph, by later Arab tradition.",0,1],
+ [-1859,"b","Jacob dies","Jacob dies at 147, blesses his sons, and is embalmed and buried in Canaan.","Genesis 49–50"],
+ [-1850,"w","Assyrian merchants at Kanesh","Thousands of clay letters record donkey caravans carrying tin and cloth from Assyria to Anatolia.",0,1],
+ [-1808,"w","Shamshi-Adad builds Assyria","An Amorite king forges a large kingdom across northern Mesopotamia.",0,1],
+ [-1806,"w","Sobekneferu rules Egypt","The first woman whose rule as pharaoh is certain closes out the 12th Dynasty.",0,1],
+ [-1805,"b","Joseph dies","He dies at 110 and makes his brothers promise to carry his bones to Canaan.","Genesis 50:22–26"]],
+ notes:[["About the dates","These follow the traditional chronology. Scholars who date the patriarchs later place Joseph in Egypt's Second Intermediate Period, when Semitic Hyksos rulers held the north."],["A famine to remember","Egyptian texts from many periods mention seven-year famines and royal grain stores, which fits the kind of world Genesis describes."],["Just after Joseph","Hammurabi of Babylon came to power about 1792 BC and issued his famous law code."]]},
+
+{id:"moses",n:"Moses",role:"Lawgiver and deliverer",life:[-1526,-1406],S:-1560,E:-1380,ticks:[-1560,-1520,-1480,-1440,-1400,-1380],
+ teaser:"Grew up in Egypt's golden New Kingdom.",
+ intro:"Moses by the early-date chronology (exodus c. 1446 BC, from 1 Kings 6:1), set against Egypt's mighty 18th Dynasty and the wider Late Bronze Age world.",
+ spans:[["Moses","120 years",-1526,-1406,1],["Egypt's 18th Dynasty","New Kingdom",-1550,-1292],["Hatshepsut","Female pharaoh",-1479,-1458],["Thutmose III","Egypt's great conqueror",-1479,-1425],["Mitanni kingdom","North Syria",-1550,-1260],["Kassite Babylon","Babylonia",-1595,-1155],["Shang dynasty, China","Bronze Age China",-1600,-1046],["Mycenaean Greece","Warrior kingdoms",-1600,-1100]],
+ ev:[
+ [-1526,"b","Moses is born","Hidden in a basket among the reeds and raised by Pharaoh's daughter.","Exodus 2:1–10"],
+ [-1506,"w","Thutmose I marches to the Euphrates","Egypt becomes an empire, pushing deep into Syria and Nubia.",0,1],
+ [-1486,"b","Flight to Midian","At 40, Moses kills an Egyptian taskmaster and flees to Midian, where he marries Zipporah.","Exodus 2:11–22; Acts 7:23",1],
+ [-1479,"w","Hatshepsut rules Egypt","A queen becomes pharaoh, sends a famous trading expedition to Punt and builds her terraced temple at Deir el-Bahari. Some have suggested she was Pharaoh's daughter who raised Moses.",0,1],
+ [-1457,"w","The battle of Megiddo","Thutmose III defeats a Canaanite coalition, the first battle recorded in detail in history.",0,1],
+ [-1450,"w","Mycenaeans take Knossos","Greek-speaking Mycenaeans take over Minoan Crete and write in Linear B, the earliest Greek.",0,1],
+ [-1446,"b","The burning bush and the Exodus","At 80, Moses is called at the bush. Ten plagues follow, then the Passover and the crossing of the Red Sea.","Exodus 3–14"],
+ [-1445,"b","The Law at Sinai","God gives the Ten Commandments, and Israel builds the tabernacle.","Exodus 20; 40"],
+ [-1444,"b","Forty years in the wilderness","After the spies' bad report, Israel turns back to wander for a generation.","Numbers 13–14",1],
+ [-1427,"w","Amenhotep II becomes pharaoh","Many who hold the early date see him as the pharaoh of the Exodus, depending on how Egypt's dates are figured.",0,1],
+ [-1420,"w","Mitanni and the chariot age","Mitanni's horse-trainers spread chariot warfare. Shang China casts great bronze vessels.",0,1],
+ [-1407,"b","Final words on the plains of Moab","Moses retells the Law to the new generation in Deuteronomy.","Deuteronomy 1:3",1],
+ [-1406,"b","Moses dies on Mount Nebo","At 120 he views the Promised Land and dies. Joshua leads Israel across the Jordan.","Deuteronomy 34"]],
+ notes:[["About the dates","This page uses the early date for the Exodus (c. 1446 BC). Many scholars prefer a later date in the 1200s BC under Ramesses II."],["Raised in a palace","Acts 7:22 says Moses was educated in all the wisdom of the Egyptians. Egypt's New Kingdom was then the richest and best-educated power on earth."],["Just after Moses","Amenhotep III and then Akhenaten ruled Egypt. The Amarna Letters from Canaanite kings complain of raiders called the Habiru."]]},
+
+{id:"joshua",n:"Joshua",role:"Strong and courageous",life:[-1500,-1390],S:-1520,E:-1370,ticks:[-1520,-1490,-1460,-1430,-1400,-1370],
+ teaser:"Led Israel into Canaan as Egypt ruled an empire.",
+ intro:"Joshua, Moses's assistant, led Israel across the Jordan and into the Promised Land. These dates follow the early-date chronology (Exodus c. 1446 BC). His birth year is estimated from his death at 110.",
+ spans:[["Joshua","110 years",-1500,-1390,1],["Wilderness years","40 years",-1446,-1406],["Egypt's 18th Dynasty","New Kingdom",-1550,-1292],["Thutmose III","Egypt's great conqueror",-1479,-1425],["Mitanni kingdom","North Syria",-1550,-1260],["Shang dynasty, China","Bronze Age China",-1600,-1046],["Mycenaean Greece","Warrior kingdoms",-1600,-1100]],
+ ev:[
+ [-1500,"b","Joshua is born in Egypt","Son of Nun, of the tribe of Ephraim, born into slavery.","Numbers 13:8, 16",1],
+ [-1479,"w","Hatshepsut and Thutmose III","A queen rules as pharaoh beside her young stepson, who will become Egypt's greatest conqueror."],
+ [-1457,"w","The battle of Megiddo","Thutmose III defeats the kings of Canaan, the first battle in history recorded in detail."],
+ [-1450,"w","Mycenaeans take Knossos","Greek-speaking warriors take over Minoan Crete.",0,1],
+ [-1446,"b","Fighting Amalek","Just out of Egypt, Joshua leads the battle while Moses holds up his hands on the hill.","Exodus 17:8–16"],
+ [-1445,"b","Up the mountain with Moses","Joshua goes partway up Sinai as Moses's assistant and stays at the tent of meeting.","Exodus 24:13; 33:11"],
+ [-1444,"b","One of the twelve spies","Only Joshua and Caleb say Israel can take the land. Moses renames him Joshua, The Lord saves.","Numbers 13–14",1],
+ [-1427,"w","Amenhotep II rules Egypt","An athletic warrior pharaoh who campaigns into Canaan and Syria.",0,1],
+ [-1406,"b","Be strong and courageous","After Moses dies, God commissions Joshua, and Israel crosses the Jordan on dry ground.","Joshua 1; 3–4"],
+ [-1406,"b","The walls of Jericho fall","Israel marches around the city seven days; Rahab and her family are spared.","Joshua 2; 6"],
+ [-1405,"b","The sun stands still","At Gibeon, Joshua prays and the day is lengthened for victory.","Joshua 10",1],
+ [-1401,"w","The sphinx's dream","Thutmose IV clears sand from the Great Sphinx and sets up a stone telling how it promised him the throne in a dream.",0,1],
+ [-1399,"b","Dividing the land","Caleb, 85 and still strong, asks for the hill country of Hebron.","Joshua 14",1],
+ [-1390,"w","Amenhotep III takes the throne","Egypt reaches the height of its wealth and peace.",0,1],
+ [-1390,"b","As for me and my house","Joshua gathers Israel at Shechem: choose this day whom you will serve. He dies at 110.","Joshua 24",1]],
+ notes:[["About the dates","Using the later Exodus date, Joshua's conquest falls in the 1200s BC, around the time Hazor was burned."],["Jericho's walls","Archaeologists have argued for a century over when Jericho's walls fell, with John Garstang and Bryant Wood placing a destruction near 1400 BC and Kathleen Kenyon earlier."],["Joshua and Jesus","Joshua and Jesus are the same name: Yeshua in Hebrew, The Lord saves."]]},
+
+{id:"deborah",n:"Deborah",role:"Prophetess and judge",life:null,S:-1300,E:-1180,ticks:[-1300,-1270,-1240,-1210,-1180],
+ hw:"c. 1240 BC",hr:"Judge c. 1240 BC",
+ lab:y=>"about "+(ast(y)-ast(-1406))+" years after Jericho",labNote:"Under each year is roughly how long after Israel crossed the Jordan.",
+ teaser:"Judged Israel in the age of Ramesses the Great.",
+ intro:"Deborah, a prophetess, judged Israel under a palm tree and led Barak to victory over Sisera's iron chariots. The judges' dates are uncertain; these are estimates in the age of Ramesses the Great.",
+ spans:[["Deborah's era","Oppression and 40 years' rest",-1260,-1200,1],["Ramesses II","Egypt's great pharaoh",-1279,-1213],["Hittite Empire","Anatolia",-1600,-1178],["Mycenaean palaces","Greece",-1600,-1180],["Shang dynasty, China","King Wu Ding's era",-1600,-1046]],
+ ev:[
+ [-1279,"w","Ramesses II becomes pharaoh","He will reign 66 years and build more than any other pharaoh, including Abu Simbel."],
+ [-1274,"w","The battle of Kadesh","Egypt and the Hittites fight one of history's largest chariot battles in Syria."],
+ [-1260,"b","Twenty years under Jabin","Jabin, king of Canaan at Hazor, oppresses Israel with 900 iron chariots under his general Sisera.","Judges 4:1–3",1],
+ [-1259,"w","The first peace treaty","Egypt and the Hittites sign the oldest surviving peace treaty. A copy hangs at the United Nations."],
+ [-1250,"w","China's first writing","King Wu Ding of Shang uses oracle bones, the earliest Chinese writing. His wife Fu Hao is a general.",0,1],
+ [-1240,"b","Judging under the palm tree","Deborah, a prophetess, settles Israel's disputes between Ramah and Bethel.","Judges 4:4–5",1],
+ [-1240,"b","Victory at the Kishon","Deborah calls Barak to Mount Tabor. The Kishon River floods and Sisera's chariots are swept away.","Judges 4:6–16; 5:21",1],
+ [-1240,"b","Jael and the tent peg","Sisera flees on foot and is killed by Jael in her tent, as Deborah foretold a woman would win the honor.","Judges 4:9, 17–22",1],
+ [-1240,"b","The Song of Deborah","Deborah and Barak sing one of the oldest poems in the Bible.","Judges 5",1],
+ [-1230,"w","Hazor burns","The great Canaanite city of Hazor is destroyed by fire; excavators found its palace burned and its idols smashed.",0,1],
+ [-1213,"w","Ramesses II dies","After 66 years, he is buried in the Valley of the Kings, outliving many of his children."],
+ [-1208,"w","Israel named in stone","Pharaoh Merneptah's victory stone says Israel is laid waste, the first mention of Israel outside the Bible."],
+ [-1200,"b","Forty years of rest","The land has peace after Deborah's victory.","Judges 5:31",1],
+ [-1185,"w","The Bronze Age collapse","Cities across the eastern Mediterranean are destroyed within a generation.",0,1]],
+ notes:[["About the dates","Judges' years add to more than the time available, so some judges likely overlapped. Deborah is usually placed somewhere between 1250 and 1150 BC."],["Merneptah Stele","Carved about 1208 BC and now in Cairo, it shows Israel was already a people in Canaan by then."],["A mother in Israel","Deborah calls herself a mother in Israel (Judges 5:7), and she is the only judge also called a prophetess."]]},
+
+{id:"gideon",n:"Gideon",role:"Mighty man of valor",life:null,S:-1200,E:-1135,ticks:[-1200,-1185,-1170,-1155,-1140],
+ hw:"c. 1184 BC",hr:"Judge c. 1184–1144 BC",
+ lab:y=>"about "+(ast(y)-ast(-1406))+" years after Jericho",labNote:"Under each year is roughly how long after Israel crossed the Jordan.",
+ teaser:"Won with 300 men as Troy and the Hittites fell.",
+ intro:"Gideon delivered Israel from camel-riding Midianite raiders with just 300 men. These estimated dates place him right as the Bronze Age world collapsed.",
+ spans:[["Gideon's 40 years","Peace in the land",-1184,-1144,1],["Midianite raids","7 years",-1191,-1184],["Ramesses III","Pharaoh",-1186,-1155],["Hittite Empire","Final years",-1600,-1178],["Mycenaean palaces","Greece",-1600,-1180],["Shang dynasty, China","Late Shang",-1600,-1046]],
+ ev:[
+ [-1191,"b","Raiders on camels","For seven years Midianites and Amalekites swarm in like locusts on countless camels, one of the earliest records of camel raids.","Judges 6:1–6",1],
+ [-1186,"w","Ramesses III becomes pharaoh","The last great king of the New Kingdom."],
+ [-1185,"w","Ugarit is destroyed","The trading city falls so fast that clay letters asking for help are still in the baking kiln.",0,1],
+ [-1184,"b","Mighty man of valor","An angel finds Gideon hiding in a winepress. He tears down his father's altar to Baal.","Judges 6:11–32",1],
+ [-1184,"b","The fleece","Gideon asks God for a sign with a wet, then dry, fleece.","Judges 6:36–40",1],
+ [-1184,"b","300 men with trumpets and torches","God cuts the army from 32,000 to 300. At night they smash jars, raise torches and shout, The sword of the Lord and of Gideon.","Judges 7",1],
+ [-1184,"w","Troy falls (traditional date)","Greek tradition places the fall of Troy here.",0,1],
+ [-1183,"b","Refusing the crown","Israel asks him to rule; he answers, The Lord will rule over you. But his golden ephod becomes a snare.","Judges 8:22–27",1],
+ [-1180,"w","The Hittite Empire falls","The Hittite capital Hattusa is abandoned and burned.",0,1],
+ [-1177,"w","Egypt stops the Sea Peoples","Ramesses III defeats invaders from the sea and carves the battle on his temple at Medinet Habu.",0,1],
+ [-1157,"w","The first recorded strike","Egypt's tomb builders stop work when their grain rations are late.",0,1],
+ [-1155,"w","Ramesses III is assassinated","A plot in the royal household kills the pharaoh; the trial records survive.",0,1],
+ [-1144,"b","Gideon dies","He dies in a good old age. His son Abimelech kills 70 brothers to make himself king.","Judges 8:32; 9",1]],
+ notes:[["About the dates","Judges' numbers overlap, so Gideon's dates are estimates. Most place him around 1200–1150 BC."],["Camels in Canaan","Gideon's enemies came on camels without number. Camels were just becoming common in Arabia then, giving desert raiders a terrifying new reach."],["In the hall of faith","Hebrews 11:32 lists Gideon first among the judges who through faith conquered kingdoms."]]},
+
+{id:"ruth",n:"Ruth",role:"The loyal Moabite",life:null,S:-1200,E:-1035,ticks:[-1200,-1160,-1120,-1080,-1040],
+ hw:"c. 1140 BC",hr:"Days of the judges",
+ lab:y=>{const d=ast(-1040)-ast(y);return d>0?"about "+d+" years before David":"David born"},labNote:"Under each year is roughly how long before the birth of David, Ruth's great-grandson.",
+ teaser:"Lived as the Bronze Age world fell apart.",
+ intro:"Ruth's story happened in the days when the judges ruled, as the great Bronze Age kingdoms collapsed and the Philistines arrived on the coast. Her exact dates are unknown; these are estimates working back from David.",
+ spans:[["Days of the judges","Before Israel's kings",-1375,-1050,1],["Egypt's 20th Dynasty","Last New Kingdom kings",-1186,-1069],["Philistine cities","Gaza, Ashkelon, Ashdod...",-1175,-604],["Tiglath-pileser I","Assyrian king",-1114,-1076],["Shang dynasty, China","Late Shang",-1600,-1046],["Zhou dynasty, China","Mandate of Heaven",-1046,-256]],
+ ev:[
+ [-1185,"w","The Bronze Age collapse","Within a few decades the Hittite empire falls and great cities like Ugarit are burned. Trade across the Mediterranean breaks down.",0,1],
+ [-1184,"w","Troy falls (traditional date)","Greek tradition places the fall of Troy here; Mycenaean palaces are destroyed soon after.",0,1],
+ [-1177,"w","Egypt stops the Sea Peoples","Ramesses III defeats raiders from the sea. Some, the Philistines, settle on Canaan's coast.",0,1],
+ [-1157,"w","The first recorded strike","Egypt's royal tomb builders stop work because their grain rations are late.",0,1],
+ [-1140,"b","Famine sends Naomi's family to Moab","Elimelech, Naomi and their two sons leave Bethlehem.","Ruth 1:1–2",1],
+ [-1135,"b","Ruth marries into the family","Naomi's husband dies, and her sons marry Moabite women, Ruth and Orpah.","Ruth 1:3–4",1],
+ [-1125,"b","Where you go, I will go","Naomi's sons die. Ruth refuses to leave her and goes with her to Bethlehem at the barley harvest.","Ruth 1:16–22",1],
+ [-1125,"b","Gleaning in Boaz's field","Ruth gathers leftover grain, and Boaz shows her kindness.","Ruth 2",1],
+ [-1124,"b","The kinsman-redeemer","At the threshing floor, Ruth asks Boaz to redeem; he marries her at the city gate.","Ruth 3–4",1],
+ [-1123,"b","Obed is born","Naomi holds her grandson. The women say, A son has been born to Naomi.","Ruth 4:13–17",1],
+ [-1114,"w","Assyria reaches the sea","Tiglath-pileser I marches to the Mediterranean, but Assyria fades after his death."],
+ [-1100,"w","Phoenicia rises; iron spreads","Tyre, Sidon and Byblos grow rich on trade, and iron tools spread through the region.",0,1],
+ [-1046,"w","Zhou overthrows Shang","China's Zhou dynasty begins."],
+ [-1040,"b","David is born","Ruth's great-grandson, through Obed and Jesse.","Ruth 4:21–22",1]],
+ notes:[["About the dates","Ruth names no king or year. Working back from David, her story falls in the late 1100s BC, but genealogies sometimes skip generations, so it could be earlier."],["A Moabite in Jesus's line","Ruth is one of four women named in Matthew's genealogy of Jesus (Matthew 1:5)."],["Why Moab mattered","Moabites were barred from Israel's assembly (Deuteronomy 23:3), which makes God's welcome of Ruth all the more striking."]]},
+
+{id:"samson",n:"Samson",role:"Strong man and judge",life:[-1110,-1070],S:-1120,E:-1040,ticks:[-1120,-1100,-1080,-1060,-1040],
+ teaser:"Fought the Philistines as Egypt lost its grip.",
+ intro:"Samson judged Israel for 20 years during 40 years of Philistine rule. His dates are approximate, set against a world where Egypt and Assyria were both in decline.",
+ spans:[["Samson","c. 1110–1070",-1110,-1070,1],["Philistine rule","40 years",-1110,-1070],["Egypt's 20th Dynasty","Last New Kingdom kings",-1186,-1069],["Tiglath-pileser I","Assyrian king",-1114,-1076],["Shang dynasty, China","Late Shang",-1600,-1046]],
+ ev:[
+ [-1114,"w","Tiglath-pileser I rules Assyria","He campaigns to the Mediterranean and records hunting lions and wild bulls."],
+ [-1110,"b","Samson's birth foretold","An angel tells Manoah's wife she will bear a son, a Nazirite from birth.","Judges 13",1],
+ [-1105,"b","Samuel is born","At Shiloh, Hannah's prayer is answered. Samuel will be the last judge.","1 Samuel 1",1],
+ [-1100,"w","The Philistines control iron","Philistines keep a near-monopoly on ironworking, so Israel has to go to them to sharpen tools.","1 Samuel 13:19–22",1],
+ [-1100,"w","A temple with two central pillars","A Philistine temple dug up at Tell Qasile has its roof held up by two central pillars, like the one Samson pulled down.",0,1],
+ [-1090,"b","The lion and the riddle","Samson kills a lion barehanded and poses a riddle at his wedding in Timnah.","Judges 14",1],
+ [-1090,"b","Judge of Israel","Samson begins 20 years as judge in the days of the Philistines.","Judges 15:20",1],
+ [-1088,"b","Foxes and a donkey's jawbone","He burns Philistine fields and kills a thousand men at Lehi.","Judges 15",1],
+ [-1076,"w","Assyria fades","After Tiglath-pileser I dies, Aramean tribes push Assyria back for over a century."],
+ [-1075,"w","Wenamun's bad trip","An Egyptian envoy sent to buy cedar is robbed and mocked in Byblos, a sign of how far Egypt's power has fallen.",0,1],
+ [-1072,"b","Samson and Delilah","Philistine lords pay Delilah to learn the secret of his strength.","Judges 16:4–21",1],
+ [-1070,"b","Samson's last stand","Blind and mocked in the temple of Dagon at Gaza, he pushes the pillars apart and dies with the Philistines.","Judges 16:23–31",1],
+ [-1069,"w","Egypt splits in two","The New Kingdom ends with rival rulers at Tanis and Thebes."],
+ [-1046,"w","Zhou overthrows Shang","China's Zhou dynasty begins."]],
+ notes:[["About the dates","The book of Judges overlaps judges in different regions, so Samson's years are estimates. Most place him around 1100–1050 BC."],["Philistines in the ground","Excavations at Ashkelon, Ashdod, Ekron and Gath show the Philistines' Aegean-style pottery, food and temples."],["In the hall of faith","Hebrews 11:32 names Samson among those who through faith conquered kingdoms."]]},
+
+{id:"david",n:"David",role:"Shepherd and king",life:[-1040,-970],S:-1080,E:-950,ticks:[-1080,-1050,-1020,-990,-960,-950],
+ teaser:"Ruled while Egypt and Assyria were weak.",
+ intro:"David's life set against a world where the old empires had faded, leaving room for a new kingdom in Israel.",
+ spans:[["David","70 years",-1040,-970,1],["Saul's reign","First king of Israel",-1050,-1010],["Egypt's 21st Dynasty","Divided, ruled from Tanis",-1069,-945],["Assyria in decline","Pressed by Arameans",-1050,-934],["Zhou dynasty, China","Mandate of Heaven",-1046,-256],["Olmec San Lorenzo","Early Mexico",-1200,-900]],
+ ev:[
+ [-1069,"w","Egypt splits","Egypt's New Kingdom ends. Kings rule the north from Tanis while priests of Amun rule Thebes. Egypt's power abroad fades."],
+ [-1050,"b","Saul becomes king","Samuel anoints Saul as Israel's first king.","1 Samuel 10",1],
+ [-1050,"w","The alphabet spreads","Phoenician scribes use a simple 22-letter alphabet, ancestor of Greek, Latin and our own letters.",0,1],
+ [-1046,"w","Zhou overthrows Shang","In China, King Wu of Zhou defeats the Shang at Muye and claims the Mandate of Heaven."],
+ [-1040,"b","David is born","The youngest son of Jesse in Bethlehem.","1 Samuel 16; 2 Samuel 5:4"],
+ [-1025,"b","Anointed and Goliath","Samuel anoints the shepherd boy; soon after he kills Goliath of Gath.","1 Samuel 16–17",1],
+ [-1012,"w","Assyria weakens","Under Ashur-rabi II, Assyria loses land to Aramean tribes, leaving no great power to block David's kingdom.",0,1],
+ [-1010,"b","King in Hebron","Saul dies on Mount Gilboa. David, 30, is crowned king of Judah at Hebron.","2 Samuel 2; 5:4"],
+ [-1003,"b","Jerusalem becomes the capital","David takes Jerusalem from the Jebusites and brings the ark there.","2 Samuel 5–6"],
+ [-1000,"w","Iron and the Greek Dark Age","Iron tools and weapons spread. Greeks settle the coast of Ionia. The Olmec carve colossal stone heads in Mexico.",0,1],
+ [-995,"w","Hiram of Tyre sends cedar","The Phoenician king sends cedar and builders for David's palace.","2 Samuel 5:11",1],
+ [-993,"b","Bathsheba, and Nathan's rebuke","David's sin with Bathsheba, his repentance (Psalm 51) and the birth of Solomon.","2 Samuel 11–12",1],
+ [-980,"b","Absalom's rebellion","David's son seizes the throne for a time before dying in battle.","2 Samuel 15–18",1],
+ [-970,"b","David dies","After 40 years as king, David dies at 70 and Solomon takes the throne.","1 Kings 2:10–12"]],
+ notes:[["About the dates","Most chronologies place David's reign at about 1010–970 BC, within a decade or so."],["Outside proof","The Tel Dan Stela, found in 1993 and carved about 150 years after David, mentions the House of David."],["Why the timing worked","Egypt was divided, Assyria was weak, and the Philistines were the main rival. That gap let a small kingdom grow strong."]]},
+
+{id:"solomon",n:"Solomon",role:"King who built the Temple",life:[-990,-931],S:-1000,E:-900,ticks:[-1000,-980,-960,-940,-920,-900],
+ teaser:"Traded with Tyre, Sheba and Egypt.",
+ intro:"Solomon's reign was Israel's golden age, with trade reaching Phoenicia, Arabia and Egypt. Here is what was happening around him.",
+ spans:[["Solomon","Life, c. 990–931",-990,-931,1],["Solomon's reign","40 years",-970,-931],["Hiram I of Tyre","Phoenician partner",-980,-947],["Egypt's 21st Dynasty","Ruled from Tanis",-1069,-945],["Egypt's 22nd Dynasty","Libyan kings",-945,-720],["Western Zhou, China","Zhou kings",-1046,-771],["Assyria revives","Neo-Assyrian Empire",-934,-609]],
+ ev:[
+ [-990,"b","Solomon is born","Son of David and Bathsheba; the Lord loved him.","2 Samuel 12:24",1],
+ [-970,"b","King, and a prayer for wisdom","At Gibeon, Solomon asks God for wisdom to govern rather than riches.","1 Kings 3"],
+ [-970,"w","Egypt sends a princess","A pharaoh of the weak 21st Dynasty gives his daughter to Solomon, and the city of Gezer as dowry.","1 Kings 3:1; 9:16",1],
+ [-966,"b","Temple building begins","In his fourth year, 480 years after the Exodus.","1 Kings 6:1"],
+ [-960,"w","Phoenician ships go far","Hiram's sailors and Solomon's fleet sail from Ezion-geber to Ophir for gold.","1 Kings 9:26–28",1],
+ [-959,"b","The Temple is dedicated","After seven years of work, God's glory fills the house.","1 Kings 8"],
+ [-950,"b","The Queen of Sheba visits","She comes from southern Arabia with spices and gold to test Solomon's wisdom.","1 Kings 10",1],
+ [-950,"w","Camels open the incense road","Camel caravans carry frankincense and myrrh from Arabia north to the Mediterranean.",0,1],
+ [-950,"w","A hero's grave in Greece","At Lefkandi a great building covers a warrior's burial, a rare bright spot in Greece's Dark Age.",0,1],
+ [-945,"w","Shishak founds a new dynasty","Shoshenq I of Libyan descent takes Egypt's throne. Jeroboam flees to him.","1 Kings 11:40"],
+ [-934,"w","Assyria's comeback begins","Ashur-dan II starts the rise of the Neo-Assyrian Empire that will later destroy Israel."],
+ [-931,"b","Solomon dies; the kingdom splits","Rehoboam keeps Judah while Jeroboam leads the ten northern tribes.","1 Kings 11:42–12:20"],
+ [-925,"w","Shishak plunders Jerusalem","Five years later, Shishak takes the Temple treasures and records his campaign at Karnak.","1 Kings 14:25–26",1]],
+ notes:[["About the dates","Solomon's reign is usually dated 970–931 BC. His exact birth year is not given; c. 990 BC is an estimate."],["Shishak in stone","Shoshenq I listed the towns he conquered on a wall at Karnak in Egypt, which can still be seen today."],["Wisdom literature","Proverbs, Ecclesiastes and the Song of Songs are tied to Solomon. Egypt had its own wisdom books, like the Instruction of Amenemope."]]},
+
+{id:"jeroboam",n:"Jeroboam I",role:"First king of the northern kingdom",life:null,S:-960,E:-900,ticks:[-960,-945,-930,-915,-900],
+ hw:"931 BC",hr:"King 931–910 BC",
+ lab:y=>y<-931?"before his reign":"Jeroboam year "+(y- -931+1),labNote:"Under each year is the year of Jeroboam's reign; his birth year is unknown.",
+ teaser:"Split the kingdom as Egypt's Shishak rose.",
+ intro:"Jeroboam, a servant of Solomon, became the first king of the ten northern tribes of Israel when the kingdom split. His golden calves became the sin of Jeroboam that later kings followed.",
+ spans:[["Jeroboam's reign","22 years",-931,-910,1],["Solomon","King of all Israel",-970,-931],["Rehoboam","King of Judah",-931,-913],["Egypt's 22nd Dynasty","Libyan kings",-945,-720],["Assyria revives","Neo-Assyrian Empire",-934,-609],["Western Zhou, China","Zhou kings",-1046,-771]],
+ ev:[
+ [-960,"b","Over Solomon's work crews","Solomon sees the young man is hard-working and puts him over the forced labor of the house of Joseph.","1 Kings 11:26–28",1],
+ [-945,"w","Shishak takes Egypt's throne","Shoshenq I founds Egypt's 22nd Dynasty."],
+ [-940,"b","The torn cloak","The prophet Ahijah tears a new cloak into 12 pieces and gives Jeroboam ten: you will rule ten tribes.","1 Kings 11:29–39",1],
+ [-935,"b","Flight to Egypt","Solomon tries to kill him, so Jeroboam flees to Shishak until Solomon dies.","1 Kings 11:40",1],
+ [-934,"w","Assyria's comeback begins","Ashur-dan II starts the rise of the empire that will end the northern kingdom."],
+ [-931,"b","The kingdom splits","Rehoboam answers harshly: my little finger is thicker than my father's waist. Ten tribes make Jeroboam king.","1 Kings 12:1–20"],
+ [-931,"b","Golden calves at Bethel and Dan","To keep people from going to Jerusalem, he sets up two calves: Here are your gods, O Israel.","1 Kings 12:25–33"],
+ [-930,"b","The altar splits","A man of God from Judah condemns the altar at Bethel. Jeroboam's outstretched hand withers.","1 Kings 13",1],
+ [-925,"w","Shishak invades","Shishak plunders Jerusalem and northern towns too. A piece of his victory stone was found at Megiddo.","1 Kings 14:25",1],
+ [-925,"w","The Gezer Calendar","A schoolboy's farming-season rhyme, one of the oldest Hebrew inscriptions.",0,1],
+ [-920,"b","His son falls sick","Jeroboam's wife goes in disguise to old, blind Ahijah, who foretells the end of his house.","1 Kings 14:1–18",1],
+ [-913,"b","War with Judah","Abijah of Judah defeats Jeroboam in a great battle.","2 Chronicles 13"],
+ [-910,"b","Jeroboam dies","His son Nadab reigns two years before Baasha kills the whole family, as Ahijah foretold.","1 Kings 14:20; 15:25–30"]],
+ notes:[["About the dates","Israel's divided kingdom is dated from Assyrian records; 931 BC for the split is the most widely used date."],["The sin of Jeroboam","Kings repeats over 20 times that later northern kings walked in the sin of Jeroboam son of Nebat."],["Dan's altar","Excavators at Tel Dan found a large platform and altar area thought to be Jeroboam's sanctuary."]]},
+
+{id:"elijah",n:"Elijah",role:"Prophet of fire",life:null,S:-900,E:-830,ticks:[-900,-880,-860,-840,-830],
+ hw:"c. 865 BC",hr:"Ministry c. 865–848 BC",
+ lab:y=>y<-874?"before Ahab":y<=-853?"Ahab year "+(y- -874+1):"after Ahab",labNote:"Under each year is the year of King Ahab's reign, since Elijah's birth year is unknown.",
+ teaser:"Faced Ahab as Assyria began to rise.",
+ intro:"Elijah stood against King Ahab and Queen Jezebel in Israel just as Assyria began its rise. These dates follow the standard chronology of Israel's kings.",
+ spans:[["Ahab's reign","King of Israel",-874,-853,1],["House of Omri","Omri to Joram",-885,-841],["Ashurnasirpal II","Assyrian king",-883,-859],["Shalmaneser III","Assyrian king",-859,-824],["Egypt's 22nd Dynasty","Libyan kings",-945,-720],["Western Zhou, China","Zhou kings",-1046,-771]],
+ ev:[
+ [-883,"w","Ashurnasirpal II rules Assyria","He builds a new capital at Nimrud and boasts of brutal conquests, starting Assyria's rise."],
+ [-880,"b","Omri builds Samaria","Israel's King Omri buys a hill and builds a new capital.","1 Kings 16:23–24",1],
+ [-874,"b","Ahab marries Jezebel","The daughter of the king of Sidon brings Baal worship to Israel.","1 Kings 16:29–33"],
+ [-865,"b","Drought, ravens and a widow","Elijah announces no rain. He is fed by ravens, then by a widow at Zarephath whose flour never runs out.","1 Kings 17",1],
+ [-862,"b","Fire on Mount Carmel","Elijah faces 450 prophets of Baal; fire falls from heaven, then rain returns.","1 Kings 18; James 5:17",1],
+ [-862,"b","The still small voice","Fleeing Jezebel, Elijah hears God at Horeb and calls Elisha.","1 Kings 19",1],
+ [-859,"w","Shalmaneser III takes the throne","He campaigns west almost every year."],
+ [-855,"b","Naboth's vineyard","Elijah condemns Ahab and Jezebel for killing Naboth to take his land.","1 Kings 21",1],
+ [-853,"w","The battle of Qarqar","Ahab sends 2,000 chariots to fight Assyria. Shalmaneser's monument names him, the first mention of an Israelite king outside the Bible."],
+ [-853,"b","Ahab dies","Disguised in battle at Ramoth-gilead, Ahab is struck by a random arrow, as foretold.","1 Kings 22"],
+ [-852,"b","Fire on Ahaziah's soldiers","Elijah tells Ahab's son he will die for seeking Baal-zebub.","2 Kings 1"],
+ [-848,"b","Taken up in a whirlwind","A chariot of fire parts Elijah and Elisha, and Elijah goes up to heaven.","2 Kings 2",1],
+ [-841,"w","Jehu bows to Assyria","The Black Obelisk shows Israel's King Jehu kneeling before Shalmaneser, the only ancient picture of an Israelite king."],
+ [-841,"w","China's first exact date","In China, a regency begins in 841 BC, the earliest year Chinese history dates exactly."],
+ [-840,"w","The Mesha Stele","Moab's king boasts of breaking free from Omri's son.","2 Kings 3",1]],
+ notes:[["About the dates","Israel's kings are dated using Assyrian records, so Ahab's reign is firm. The order of Elijah's events is from Kings; their exact years are estimates."],["Elijah and the New Testament","Malachi promised Elijah would come before the day of the Lord. Jesus said John the Baptist was that Elijah, and Elijah appeared at the Transfiguration."],["Who was Baal?","Baal was the Canaanite storm god said to send rain. A three-year drought was a direct challenge to him."]]},
+
+{id:"joash",n:"Joash",role:"The boy king of Judah",life:[-842,-796],S:-860,E:-790,ticks:[-860,-845,-830,-815,-800,-790],
+ teaser:"Hidden in the Temple, crowned at seven.",
+ intro:"Joash was rescued as a baby from his murderous grandmother Athaliah, hidden in the Temple and crowned at seven. He reigned 40 years in Jerusalem.",
+ spans:[["Joash","c. 842–796",-842,-796,1],["Athaliah","Queen of Judah",-841,-835],["Hazael of Damascus","King of Aram",-842,-796],["Shalmaneser III","Assyrian king",-859,-824],["Egypt's 22nd Dynasty","Libyan kings",-945,-720],["Western Zhou, China","Zhou kings",-1046,-771]],
+ ev:[
+ [-853,"w","The battle of Qarqar","Ahab of Israel and other kings fight Assyria in Syria."],
+ [-842,"b","Joash is born","Son of King Ahaziah of Judah and Zibiah of Beersheba.","2 Kings 12:1",1],
+ [-841,"b","Hidden in the Temple","Jehu kills King Ahaziah. Athaliah kills the royal family, but Jehosheba hides baby Joash in the Temple for six years.","2 Kings 11:1–3"],
+ [-841,"w","Jehu bows to Assyria","The Black Obelisk shows Israel's King Jehu kneeling before Shalmaneser III."],
+ [-841,"w","China's first exact date","A regency begins in China in 841 BC, the earliest exact year in Chinese history."],
+ [-835,"b","Crowned at seven","The priest Jehoiada brings out the boy, crowns him, and Athaliah is put to death.","2 Kings 11:4–21"],
+ [-814,"w","Carthage is founded","By tradition, a princess from Tyre founds Carthage in North Africa.",0,1],
+ [-813,"b","The chest with a hole in the lid","Joash has the Temple repaired with offerings collected in a chest by the altar.","2 Kings 12:4–16; 2 Chronicles 24",1],
+ [-810,"w","A queen rules Assyria","Sammuramat, later remembered as the legendary Semiramis, holds power in Assyria.",0,1],
+ [-805,"b","Jehoiada dies at 130","The old priest is buried among the kings. Without him, Joash turns to idols.","2 Chronicles 24:15–18",1],
+ [-800,"b","Zechariah is stoned","Jehoiada's son rebukes the people and is stoned in the Temple court on the king's order. Jesus mentions him in Matthew 23:35.","2 Chronicles 24:20–22",1],
+ [-800,"w","Greeks borrow the alphabet","Greeks adopt the Phoenician letters and add vowels.",0,1],
+ [-798,"b","Paying off Hazael","Joash sends the Temple treasures to buy off Hazael of Damascus.","2 Kings 12:17–18",1],
+ [-797,"b","Elisha dies","The prophet dies; a dead man thrown into his tomb comes back to life.","2 Kings 13:14–21",1],
+ [-796,"b","Joash is murdered","His own servants kill him for Zechariah's death.","2 Kings 12:20–21; 2 Chronicles 24:25"]],
+ notes:[["About the dates","Joash reigned 40 years, usually dated 835–796 BC. He was 7 when crowned, which puts his birth near 842 BC."],["Two kings named Joash","A different Joash (Jehoash) ruled northern Israel about the same time, which can be confusing in 2 Kings."],["A good start","2 Chronicles 24:2 says Joash did right all the days of Jehoiada the priest, a warning about faith that leans on someone else."]]},
+
+{id:"isaiah",n:"Isaiah",role:"Prophet of the coming Messiah",life:[-760,-680],S:-780,E:-670,ticks:[-780,-750,-720,-690,-670],
+ teaser:"Prophesied as Rome was founded and Assyria ruled.",
+ intro:"Isaiah prophesied in Jerusalem under four kings of Judah while Assyria swallowed up nations, including Israel. His birth and death years are estimates.",
+ spans:[["Isaiah","c. 760–680",-760,-680,1],["Uzziah","King of Judah",-792,-740],["Hezekiah","King of Judah",-715,-686],["Tiglath-pileser III","Assyrian king",-745,-727],["Sennacherib","Assyrian king",-705,-681],["Nubian pharaohs","Egypt's 25th Dynasty",-744,-656],["Kings of Rome","Romulus onward",-753,-509]],
+ ev:[
+ [-776,"w","The first Olympic Games","Greeks hold the first recorded games at Olympia."],
+ [-760,"b","Isaiah is born","Son of Amoz in Jerusalem.","Isaiah 1:1",1],
+ [-753,"w","Rome is founded (traditional)","By legend, Romulus founds Rome on April 21."],
+ [-745,"w","Tiglath-pileser III revives Assyria","He builds a full-time army and starts deporting whole peoples."],
+ [-740,"b","Here am I, send me","In the year King Uzziah died, Isaiah sees the Lord high and lifted up.","Isaiah 6"],
+ [-734,"b","The Immanuel sign","Isaiah tells King Ahaz a virgin will bear a son called Immanuel.","Isaiah 7:14",1],
+ [-732,"w","Damascus falls to Assyria","Syria's capital is captured and its people deported."],
+ [-722,"b","Samaria falls","Assyria destroys the northern kingdom of Israel and scatters its ten tribes.","2 Kings 17"],
+ [-715,"b","Hezekiah becomes king","A reforming king who trusts the Lord and listens to Isaiah.","2 Kings 18:1–7",1],
+ [-712,"w","Nubian pharaohs rule Egypt","Kings from Kush (Sudan) rule all of Egypt.",0,1],
+ [-702,"b","Hezekiah's illness","Isaiah promises 15 more years, and the shadow on the stairs goes backward.","Isaiah 38",1],
+ [-701,"b","Sennacherib besieges Jerusalem","The angel of the Lord strikes the Assyrian camp, and Sennacherib goes home.","Isaiah 36–37"],
+ [-701,"w","Assyria's side of the story","Sennacherib's prism boasts of trapping Hezekiah in Jerusalem but never claims to take it. Hezekiah's tunnel still runs under the city."],
+ [-700,"w","Homer's poems take shape","The Iliad and Odyssey are being written down in Greece.",0,1],
+ [-687,"b","Manasseh becomes king","Hezekiah's son undoes his reforms and fills Jerusalem with idols.","2 Kings 21",1],
+ [-681,"w","Sennacherib is murdered","He is killed by his own sons while worshiping, just as Isaiah recorded.","Isaiah 37:38"],
+ [-680,"b","Isaiah's death","By Jewish tradition, Isaiah was sawn in two under Manasseh.","Hebrews 11:37 (tradition)",1]],
+ notes:[["About the dates","Assyrian records fix most dates here within a year or two. Hezekiah's reign is dated in different ways because of co-reigns."],["The Dead Sea Scroll","The Great Isaiah Scroll, copied about 125 BC, is the oldest complete book of the Bible and matches our Isaiah closely."],["Pointing to Christ","Isaiah 53, the suffering servant, is quoted or echoed throughout the New Testament."]]},
+
+{id:"hezekiah",n:"Hezekiah",role:"The king who trusted God",life:[-740,-686],S:-750,E:-680,ticks:[-750,-735,-720,-705,-690,-680],
+ teaser:"Faced Sennacherib's army at Jerusalem.",
+ intro:"Hezekiah reformed Judah's worship, built his famous tunnel and stood firm when the Assyrian army surrounded Jerusalem. These dates take his reign as 715–686 BC.",
+ spans:[["Hezekiah","c. 740–686",-740,-686,1],["Hezekiah's reign","29 years",-715,-686],["Sargon II","Assyrian king",-722,-705],["Sennacherib","Assyrian king",-705,-681],["Nubian pharaohs","Egypt's 25th Dynasty",-744,-656],["Kings of Rome","Before the Republic",-753,-509]],
+ ev:[
+ [-740,"b","Hezekiah is born","Son of Ahaz, born the year Isaiah saw the Lord in the Temple.","2 Kings 18:2; Isaiah 6",1],
+ [-732,"b","His father bows to Assyria","Ahaz pays Tiglath-pileser III and copies a pagan altar from Damascus.","2 Kings 16"],
+ [-722,"b","Samaria falls","The northern kingdom is destroyed. Sargon II boasts of deporting 27,290 people.","2 Kings 17"],
+ [-715,"b","King at 25","Hezekiah opens the Temple doors, cleanses it and holds a great Passover, inviting the north.","2 Chronicles 29–30",1],
+ [-715,"b","Breaking the bronze serpent","He smashes Moses's bronze snake, which people had been worshiping.","2 Kings 18:4",1],
+ [-712,"w","Nubian pharaohs rule Egypt","Kings from Kush rule all of Egypt and court Judah as an ally.",0,1],
+ [-705,"w","Sargon dies; Hezekiah rebels","Sargon dies in battle. Hezekiah stops paying tribute to Assyria."],
+ [-705,"b","The king's jars","Storage jars stamped belonging to the king are made for his war supplies.","2 Chronicles 32:27–29",1],
+ [-703,"b","Hezekiah's tunnel","Workers cut a 1,750-foot tunnel through rock to bring spring water inside the walls. An inscription tells how the two crews met.","2 Kings 20:20; 2 Chronicles 32:30",1],
+ [-703,"b","Envoys from Babylon","He shows them all his treasures; Isaiah warns it will all go to Babylon.","Isaiah 39",1],
+ [-702,"b","Fifteen more years","Deathly ill, Hezekiah weeps and prays. God adds 15 years, and the shadow goes back.","2 Kings 20:1–11",1],
+ [-701,"b","Jerusalem surrounded","Lachish falls. The Assyrian officer mocks Hezekiah's God. Hezekiah spreads the letter before the Lord, and the angel strikes 185,000.","2 Kings 18–19"],
+ [-701,"w","Assyria's carvings of Lachish","Sennacherib decorates his palace at Nineveh with huge carvings of the siege of Lachish, now in the British Museum."],
+ [-700,"b","Hezekiah's scribes","His men copy out more of Solomon's proverbs.","Proverbs 25:1",1],
+ [-689,"w","Sennacherib destroys Babylon","He floods the rebellious city."],
+ [-686,"b","Hezekiah dies at 54","All Judah honors him. His son Manasseh becomes king.","2 Chronicles 32:33"]],
+ notes:[["About the dates","2 Kings dates Hezekiah two ways, so some place his reign from 729 BC. This page uses 715–686 BC."],["His own seal","In 2015 archaeologists announced a clay seal impression reading belonging to Hezekiah son of Ahaz, king of Judah, found in Jerusalem."],["Walk his tunnel","Hezekiah's tunnel can still be waded through today in the City of David."]]},
+
+{id:"jeremiah",n:"Jeremiah",role:"The weeping prophet",life:[-645,-570],S:-660,E:-560,ticks:[-660,-635,-610,-585,-560],
+ teaser:"Watched Jerusalem fall to Babylon.",
+ intro:"Jeremiah warned Judah for 40 years and lived through the fall of Jerusalem. His birth and death years are estimates.",
+ spans:[["Jeremiah","c. 645–570",-645,-570,1],["Josiah","King of Judah",-640,-609],["Neo-Babylonian Empire","Chaldean kings",-626,-539],["Nebuchadnezzar II","Babylon's great king",-605,-562],["Egypt's 26th Dynasty","Saite kings",-664,-525],["Kings of Rome","Before the Republic",-753,-509]],
+ ev:[
+ [-645,"b","Jeremiah is born","Son of a priest at Anathoth, near Jerusalem.","Jeremiah 1:1",1],
+ [-640,"b","Josiah becomes king at 8","A good king who will seek the Lord.","2 Kings 22:1–2"],
+ [-627,"b","Called as a youth","I am only a youth, Jeremiah says; God says, I knew you before you were born.","Jeremiah 1"],
+ [-626,"w","Babylon breaks free","Nabopolassar founds the Neo-Babylonian Empire."],
+ [-622,"b","The Book of the Law is found","Workers repairing the Temple find the Law, and Josiah leads a great reform.","2 Kings 22–23"],
+ [-612,"w","Nineveh falls","Babylon and the Medes destroy Assyria's capital."],
+ [-609,"b","Josiah killed at Megiddo","Pharaoh Necho II kills Josiah, and Jeremiah writes laments for him.","2 Kings 23:29; 2 Chronicles 35:25"],
+ [-605,"w","The battle of Carchemish","Nebuchadnezzar defeats Egypt and becomes master of the region."],
+ [-604,"b","The king burns the scroll","Jehoiakim cuts up and burns Jeremiah's scroll; Baruch writes it again.","Jeremiah 36",1],
+ [-600,"w","Sailing around Africa","Herodotus says Necho II sent Phoenician sailors who sailed all the way around Africa.",0,1],
+ [-597,"b","Letter to the exiles","After the first deportation, Jeremiah tells exiles to seek the welfare of Babylon: I know the plans I have for you.","Jeremiah 29",1],
+ [-594,"w","Solon reforms Athens","An Athenian statesman lays groundwork for democracy.",0,1],
+ [-588,"w","The Lachish letters","Clay notes from a Judean officer say they can no longer see Azekah's signals, matching Jeremiah 34:7.","Jeremiah 34:7",1],
+ [-587,"b","In the cistern; buying a field","Thrown into a muddy cistern, Jeremiah still buys land as a sign God will restore Judah.","Jeremiah 32; 38"],
+ [-586,"b","Jerusalem falls","The city and Temple burn. Lamentations mourns: His mercies are new every morning.","Jeremiah 39; Lamentations 3:22–23"],
+ [-585,"w","Thales predicts an eclipse","The Greek thinker is said to predict the eclipse of May 28, 585 BC."],
+ [-582,"b","Taken to Egypt","After Gedaliah's murder, the remnant flees to Egypt and takes Jeremiah with them.","Jeremiah 41–43",1],
+ [-570,"b","Jeremiah's death","He dies in Egypt; tradition says he was stoned by his own people.","Early tradition",1]],
+ notes:[["About the dates","Babylonian chronicles fix the key dates, including Jerusalem's surrender on March 16, 597 BC."],["The New Covenant","Jeremiah 31:31–34 promises a new covenant written on the heart, quoted in Hebrews 8."],["Baruch's seal","Clay seal impressions reading belonging to Berechiah son of Neriah the scribe have been found, likely Baruch's."]]},
+
+{id:"daniel",n:"Daniel",role:"Faithful in exile",life:[-620,-530],S:-630,E:-525,ticks:[-630,-605,-580,-555,-530,-525],
+ teaser:"Lived when Buddha and Confucius were born.",
+ intro:"Daniel served in Babylon from Nebuchadnezzar to Cyrus the Great, in one of the most remarkable centuries of world history.",
+ spans:[["Daniel","c. 620–530",-620,-530,1],["Neo-Babylonian Empire","Chaldean kings",-626,-539],["Nebuchadnezzar II","Babylon's great king",-605,-562],["Judah in exile","Jews in Babylon",-586,-538],["Persian Empire","Cyrus and successors",-550,-330],["Kings of Rome","Before the Republic",-753,-509]],
+ ev:[
+ [-620,"b","Daniel is born in Judah","Of noble or royal family; his exact birth year is unknown.","Daniel 1:3–6",1],
+ [-612,"w","Nineveh falls","Babylonians and Medes destroy Assyria's capital, as Nahum foretold."],
+ [-605,"b","Taken to Babylon","After Nebuchadnezzar's victory at Carchemish, the teenage Daniel is taken to Babylon and trained to serve the king.","Daniel 1"],
+ [-603,"b","The dream of the great statue","Daniel interprets Nebuchadnezzar's dream of four kingdoms.","Daniel 2",1],
+ [-597,"w","Jerusalem's first fall","King Jehoiachin and Ezekiel are carried to Babylon.","2 Kings 24"],
+ [-594,"w","Solon reforms Athens","An Athenian statesman cancels debt slavery and lays groundwork for democracy.",0,1],
+ [-586,"w","Jerusalem and the Temple destroyed","Babylon burns the city; most of Judah goes into exile.","2 Kings 25"],
+ [-585,"w","Thales predicts an eclipse","The Greek thinker Thales is said to have predicted the eclipse of May 28, 585 BC."],
+ [-575,"w","The Ishtar Gate rises","Nebuchadnezzar rebuilds Babylon with blue-glazed gates and great walls.",0,1],
+ [-563,"w","Buddha is born (traditional)","Siddhartha Gautama is born in the foothills of Nepal. Many scholars now date him about 80 years later.",0,1],
+ [-551,"w","Confucius is born","China's great teacher is born in the state of Lu."],
+ [-550,"w","Cyrus founds the Persian Empire","Cyrus defeats the Medes and begins the largest empire the world had yet seen."],
+ [-553,"b","Vision of the four beasts","In Belshazzar's first year, Daniel sees four beasts rise from the sea.","Daniel 7",1],
+ [-539,"b","The handwriting on the wall","Belshazzar's feast ends as Babylon falls to the Persians that night.","Daniel 5"],
+ [-538,"b","The lions' den; Cyrus's decree","Daniel is spared under Darius the Mede. Cyrus lets the Jews go home.","Daniel 6; Ezra 1",1],
+ [-536,"b","Daniel's last vision","By the Tigris, in Cyrus's third year, Daniel sees the vision of the last days.","Daniel 10–12"]],
+ notes:[["About the dates","Daniel's birth and death years are estimates; the events of the book are dated by kings' reigns."],["An amazing century","Within Daniel's lifetime the Buddha, Confucius, Pythagoras and Solon were all alive or soon born, a period some call the Axial Age."],["Cyrus in stone","The Cyrus Cylinder, now in the British Museum, records his policy of returning captive peoples to their homelands."]]},
+
+{id:"esther",n:"Esther",role:"Queen for such a time",life:null,S:-500,E:-455,ticks:[-500,-490,-480,-470,-460,-455],
+ teaser:"Became queen the year Persia lost to Greece.",
+ intro:"Esther's story is dated by the reign of Xerxes I (Ahasuerus). Under each year you will see which year of Xerxes it was. Her birth year is not known.",
+ lab:y=>y<-486?"before Xerxes":y==-486?"Xerxes becomes king":"Xerxes year "+(y- -486),
+ spans:[["Xerxes I (Ahasuerus)","486–465 BC",-486,-465,1],["Persian Empire","Achaemenid kings",-550,-330],["Greek-Persian Wars","Marathon to Plataea",-499,-479],["Roman Republic","Rome without kings",-509,-27],["Spring & Autumn, China","Then Warring States",-771,-476]],
+ ev:[
+ [-490,"w","The battle of Marathon","Athens defeats the army of Xerxes's father, Darius."],
+ [-486,"w","Xerxes becomes king","Darius dies. Xerxes crushes revolts in Egypt and Babylon."],
+ [-483,"b","The great banquet; Vashti removed","In his third year, Xerxes holds a 180-day display of his wealth, then deposes Queen Vashti.","Esther 1"],
+ [-483,"w","The Buddha dies (traditional)","By the traditional dating, the Buddha dies in northern India.",0,1],
+ [-480,"w","Xerxes invades Greece","Thermopylae, the burning of Athens, and defeat at sea at Salamis. Many see this campaign as the gap between Esther 1 and 2."],
+ [-479,"b","Esther is crowned queen","In Xerxes's seventh year, the Jewish orphan raised by Mordecai becomes queen.","Esther 2:16–17"],
+ [-479,"w","Plataea, and Confucius dies","The Greeks defeat Persia's army for good at Plataea. In China, Confucius dies."],
+ [-478,"w","Athens leads the Delian League","Greek cities band together against Persia, the start of Athens's golden age."],
+ [-474,"b","Haman's plot","Haman casts lots (pur) and gets a decree to destroy the Jews.","Esther 3:7–13"],
+ [-474,"b","If I perish, I perish","Esther goes to the king uninvited, and Haman falls.","Esther 4–7"],
+ [-473,"b","Deliverance and Purim","The Jews defend themselves on the 13th of Adar and celebrate the feast of Purim.","Esther 9"],
+ [-472,"w","The Persians on stage","Aeschylus's play The Persians, about Xerxes's defeat, is performed in Athens."],
+ [-465,"w","Xerxes is assassinated","His son Artaxerxes I takes the throne; he will later send Ezra and Nehemiah to Jerusalem."]],
+ notes:[["About the dates","Most identify Ahasuerus with Xerxes I (486–465 BC), so Esther's years are firmly anchored by his reign."],["The same Xerxes","The king of Esther is the same Xerxes who fought the 300 Spartans at Thermopylae, known from the Greek historian Herodotus."],["Persia in stone","Xerxes's palace at Persepolis still stands in ruins, and Susa, Esther's city, has been excavated in Iran."]]},
+
+{id:"nehemiah",n:"Nehemiah",role:"Builder of the walls",life:null,S:-470,E:-420,ticks:[-470,-460,-450,-440,-430,-420],
+ hw:"445 BC",hr:"Governor 445–c. 430 BC",
+ lab:y=>y<-465?"before Artaxerxes":y==-465?"Artaxerxes becomes king":"Artaxerxes year "+(y- -465),labNote:"Under each year is the year of King Artaxerxes I's reign, which dates Nehemiah's story.",
+ teaser:"Rebuilt Jerusalem during Athens's golden age.",
+ intro:"Nehemiah, cupbearer to the Persian king, rebuilt Jerusalem's walls while Athens built the Parthenon.",
+ spans:[["Artaxerxes I","Persian king",-465,-424,1],["Persian Empire","Achaemenid kings",-550,-330],["Pericles's Athens","Athens's golden age",-461,-429],["Peloponnesian War","Athens vs. Sparta",-431,-404],["Warring States, China","After Confucius",-475,-221],["Roman Republic","Rome without kings",-509,-27]],
+ ev:[
+ [-465,"w","Artaxerxes I becomes king","His father Xerxes, Esther's husband, is murdered."],
+ [-461,"w","Pericles leads Athens","Athens enters its golden age of democracy, drama and philosophy.",0,1],
+ [-458,"b","Ezra returns to Jerusalem","The scribe Ezra comes to teach God's law, sent by Artaxerxes.","Ezra 7"],
+ [-450,"w","Herodotus and Mozi","Herodotus writes the first Greek history; in China, Mozi teaches universal love.",0,1],
+ [-447,"w","The Parthenon is begun","Athens starts its great marble temple on the Acropolis."],
+ [-446,"b","News of the broken walls","Nehemiah weeps, fasts and prays for Jerusalem.","Nehemiah 1"],
+ [-445,"b","The king's permission","Cupbearer Nehemiah asks Artaxerxes to send him to rebuild Jerusalem.","Nehemiah 2"],
+ [-445,"b","The wall in 52 days","Builders work with a tool in one hand and a weapon in the other, despite Sanballat and Tobiah.","Nehemiah 4–6"],
+ [-445,"b","Ezra reads the Law","The people weep and celebrate the Feast of Booths: the joy of the Lord is your strength.","Nehemiah 8–10"],
+ [-433,"b","Back to Persia","After 12 years as governor, Nehemiah returns to the king.","Nehemiah 5:14; 13:6"],
+ [-431,"w","The Peloponnesian War begins","Athens and Sparta begin 27 years of war."],
+ [-430,"b","Second term and reforms","Nehemiah returns, throws Tobiah out of the Temple and restores the Sabbath.","Nehemiah 13",1],
+ [-429,"w","Plague in Athens","Pericles dies in a plague that kills perhaps a quarter of the city."],
+ [-424,"w","Artaxerxes dies","Darius II eventually takes the Persian throne."]],
+ notes:[["About the dates","Nehemiah dates events by Artaxerxes's reign; his 20th year is 445/444 BC."],["Sanballat outside the Bible","Papyrus letters from a Jewish colony at Elephantine in Egypt, written in 407 BC, mention Sanballat governor of Samaria."],["Same palace as Esther","Nehemiah served at Susa, the same palace where Esther had been queen a generation before."]]},
+
+{id:"malachi",n:"Malachi",role:"The last Old Testament prophet",life:null,S:-450,E:-395,ticks:[-450,-435,-420,-405,-395],
+ hw:"c. 430 BC",hr:"Prophesied c. 430 BC",
+ lab:y=>"about "+(ast(-5)-ast(y))+" years before Jesus",labNote:"Under each year is roughly how long it was before the birth of Jesus.",
+ teaser:"Spoke as Socrates taught in Athens.",
+ intro:"Malachi spoke around the time of Nehemiah, when worship in Jerusalem had grown cold. After him, the prophets fell silent for about 400 years.",
+ spans:[["Malachi's era","c. 440–420 BC",-440,-420,1],["Persian Empire","Achaemenid kings",-550,-330],["Artaxerxes I","Persian king",-465,-424],["Darius II","Persian king",-423,-404],["Peloponnesian War","Athens vs. Sparta",-431,-404],["Warring States, China","Rival kingdoms",-475,-221]],
+ ev:[
+ [-445,"b","Nehemiah rebuilds the walls","Jerusalem is secure again, but hearts drift.","Nehemiah 6:15",0],
+ [-433,"b","Nehemiah leaves; priests grow careless","Tithes stop and priests offer blemished animals.","Nehemiah 13",1],
+ [-431,"w","Athens and Sparta go to war","The Peloponnesian War begins."],
+ [-430,"b","I have loved you, says the Lord","Malachi confronts careless priests and polluted offerings.","Malachi 1–2",1],
+ [-430,"b","Will a man rob God?","Bring the full tithe into the storehouse and see if I will not open the windows of heaven.","Malachi 3:8–10",1],
+ [-430,"b","My messenger, and Elijah","God promises a messenger to prepare the way, and Elijah before the day of the Lord.","Malachi 3:1; 4:5–6",1],
+ [-429,"w","Plague in Athens","Pericles dies in a great plague."],
+ [-424,"w","Artaxerxes I dies","A Persian succession struggle follows."],
+ [-413,"w","Athens's disaster in Sicily","Athens loses its army and fleet in Sicily."],
+ [-410,"w","A Jewish temple in Egypt destroyed","Egyptian priests destroy the Jewish temple at Elephantine; the Jews write to Jerusalem for help.",0,1],
+ [-404,"w","Sparta defeats Athens","Athens surrenders. Egypt breaks free from Persia."],
+ [-400,"b","The prophets fall silent","About 400 years pass until John the Baptist comes in the spirit of Elijah.","Matthew 11:10–14",1],
+ [-399,"w","Socrates is executed","Athens condemns its great philosopher to drink hemlock."]],
+ notes:[["About the dates","Malachi gives no king's name. Because he deals with the same problems as Nehemiah 13, most date him around 430 BC."],["The silent years","Between Malachi and John the Baptist, Greek and then Roman rule changed Judea. The Old Testament was translated into Greek, the Maccabees revolted, and synagogues spread."],["The last word","In the order of our English Old Testament, Malachi's promise of Elijah is the last word before Matthew, and Mark opens with its fulfillment."]]},
+
+{id:"alexander",n:"Alexander the Great",role:"The goat with the great horn",life:[-356,-323],S:-370,E:-275,ticks:[-370,-350,-330,-310,-290,-275],
+ bl:"Alexander's story",bt:"Alexander",gd:"events in Alexander's story and its Bible connections",
+ lab:y=>{const a=ast(y)-ast(-356);return a<0?"before his birth":a===0?"birth":y==-323?"death at 32":y>-323?(ast(y)-ast(-323))+" years after his death":"Alexander "+a},
+ labNote:"Under each year is Alexander's age, or how long after his death.",
+ teaser:"Fulfilled Daniel's vision and spread Greek everywhere.",
+ intro:"In 13 years Alexander conquered the Persian Empire of Esther and Nehemiah, from Greece to Egypt to India. Daniel had foretold a swift Greek king whose kingdom would split four ways, and his conquests spread the Greek language the New Testament would be written in.",
+ spans:[["Alexander","356–323 BC",-356,-323,1],["Philip II of Macedon","His father",-359,-336],["Persian Empire","Falls to Alexander",-550,-330],["Ptolemaic Egypt","Greek kings in Egypt",-305,-30],["Seleucid Empire","Greek kings in Syria",-312,-63],["Mauryan Empire, India","Chandragupta's dynasty",-322,-185],["Warring States, China","Before unification",-475,-221],["Roman Republic","Growing in Italy",-509,-27]],
+ ev:[
+ [-359,"w","Philip II becomes king","Alexander's father turns Macedon into a military power with the long-speared phalanx."],
+ [-356,"b","Alexander is born","Born at Pella to Philip and Olympias. Plutarch says the Temple of Artemis at Ephesus, the one in Acts 19, burned the same night.","Plutarch, Life of Alexander"],
+ [-356,"w","Qin's reforms begin in China","Shang Yang's harsh laws start making Qin the state that will unite China.",0,1],
+ [-347,"w","Plato dies","Athens's great philosopher dies; his student Aristotle leaves Athens."],
+ [-343,"b","Taught by Aristotle","At 13, Alexander begins three years of study under Aristotle.","Plutarch",1],
+ [-338,"b","Chaeronea","At 18, Alexander leads the cavalry as Philip defeats Athens and Thebes and becomes master of Greece."],
+ [-336,"b","King at 20","Philip is murdered at a wedding. Alexander takes the throne."],
+ [-334,"b","Across to Asia","He crosses into Asia Minor, throws a spear into the ground to claim it, and wins at the Granicus River."],
+ [-333,"b","Issus: the goat strikes the ram","Alexander routs Darius III. Daniel had seen a goat from the west with one great horn, so fast it did not touch the ground, crushing a two-horned ram, Media and Persia.","Daniel 8:5–7, 20–21"],
+ [-332,"b","The siege of Tyre","He builds a causeway to the island city and takes it after seven months, as Ezekiel had foretold its stones and timber would be thrown into the sea.","Ezekiel 26:12",1],
+ [-332,"b","Alexander and Jerusalem","Josephus says the high priest met him in white robes and showed him Daniel's prophecy, and Alexander spared the city. Historians doubt it, but the story was widely told.","Josephus, Antiquities 11",1],
+ [-331,"b","Alexandria is founded","In Egypt he founds Alexandria, later home to a large Jewish community."],
+ [-331,"b","Gaugamela","He crushes Darius's last great army. The Persian Empire is finished."],
+ [-330,"b","Persepolis burns","The palace of Xerxes is burned, perhaps in revenge for Xerxes burning Athens."],
+ [-326,"b","Into India","He defeats King Porus at the Hydaspes, but his weary army refuses to go farther."],
+ [-323,"b","Death in Babylon","Alexander dies of fever at 32 in Nebuchadnezzar's old palace. Daniel had said the great horn would be broken at the height of its strength.","Daniel 8:8; 11:3–4"],
+ [-322,"w","Chandragupta founds an empire","In India, Chandragupta Maurya builds an empire after Alexander's retreat.",0,1],
+ [-320,"b","Ptolemy takes Jerusalem","Alexander's general Ptolemy takes Jerusalem on a Sabbath, Josephus says, and carries many Jews to Egypt.","Josephus, Antiquities 12",1],
+ [-312,"w","Seleucus takes Babylon","The Seleucid kingdom begins; its later king Antiochus IV will persecute the Jews."],
+ [-301,"b","Four horns","After the battle of Ipsus, Alexander's empire is settled among his generals, four kingdoms toward the four winds, not to his own family.","Daniel 8:8, 22; 11:4"],
+ [-300,"w","Euclid in Alexandria","The mathematician writes his Elements; the great Library is founded soon after.",0,1],
+ [-280,"b","The Bible in Greek","In Alexandria, Jewish scholars begin translating the Law into Greek, the Septuagint, which the apostles often quoted.","Letter of Aristeas",1]],
+ notes:[["Daniel's prophecy","Daniel 8 and 11:3–4 describe a mighty king from the west whose kingdom would be broken and divided toward the four winds, but not to his descendants. Alexander's young son was murdered, and his generals split the empire."],["The Jerusalem story","Josephus's account of Alexander bowing before the high priest is not in Greek historians, and most scholars think it is a legend, but it shows how Jews read Daniel."],["Why it matters for the New Testament","Alexander made Greek the common language from Egypt to India. Three centuries later, Paul could preach and write in Greek across the Roman world."]]},
+
+{id:"maccabees",n:"The Maccabean Revolt",role:"Between the Testaments",life:null,S:-200,E:-130,ticks:[-200,-185,-170,-155,-140,-130],
+ hw:"167 BC",hr:"Revolt 167–142 BC",h1:"The Maccabean Revolt, 167–142 BC",bl:"Judea",bt:"Judea",gd:"events in Judea",
+ lab:y=>"about "+(ast(-5)-ast(y))+" years before Jesus",labNote:"Under each year is roughly how long it was before the birth of Jesus.",
+ teaser:"The fight that gave us Hanukkah.",
+ intro:"In the silent years between the Testaments, a Greek king tried to wipe out the Jewish faith. A priest's family, the Maccabees, fought back. Their story is told in 1 and 2 Maccabees and foretold in Daniel 11.",
+ spans:[["Maccabean revolt","167–142 BC",-167,-142,1],["Seleucid Empire","Greek kings in Syria",-312,-63],["Ptolemaic Egypt","Greek kings in Egypt",-305,-30],["Antiochus IV","Epiphanes",-175,-164],["Hasmonean kingdom","Independent Judea",-142,-63],["Han dynasty, China","Western Han",-202,9]],
+ ev:[
+ [-198,"w","Judea changes hands","Antiochus III of Syria defeats Egypt at Panium and takes Judea."],
+ [-190,"w","Rome humbles Syria","Rome defeats Antiochus III at Magnesia and demands huge payments, leaving his kingdom short of money."],
+ [-175,"b","Greek ways in Jerusalem","Antiochus IV becomes king. Jason buys the high priesthood and builds a Greek gymnasium in Jerusalem.","2 Maccabees 4"],
+ [-171,"b","The priesthood for sale","Menelaus outbids Jason, and the faithful former high priest Onias is murdered.","2 Maccabees 4:23–34",1],
+ [-168,"w","A line in the sand","A Roman envoy draws a circle around Antiochus in Egypt and orders him to decide before stepping out. He leaves Egypt."],
+ [-167,"b","The abomination of desolation","Antiochus bans the Sabbath, circumcision and the Law, and sets up an altar to Zeus in the Temple.","1 Maccabees 1; Daniel 11:31"],
+ [-167,"b","Eleazar and the seven brothers","A 90-year-old scribe and a mother with seven sons die rather than eat pork. Hebrews 11:35 seems to remember them.","2 Maccabees 6–7"],
+ [-167,"b","Mattathias at Modein","An old priest refuses to sacrifice, kills the king's officer and flees to the hills with his five sons.","1 Maccabees 2"],
+ [-166,"b","Judas the Hammer","Judas Maccabeus leads small bands that defeat much larger Greek armies.","1 Maccabees 3–4",1],
+ [-164,"b","The Temple rededicated","Judas cleanses the Temple and relights the lamp: the first Hanukkah. Jesus later attends this feast.","1 Maccabees 4:36–59; John 10:22"],
+ [-164,"w","Antiochus dies","The persecuting king dies on campaign in Persia."],
+ [-161,"b","A treaty with Rome","Judas makes an alliance with the Romans.","1 Maccabees 8",1],
+ [-160,"b","Judas falls in battle","Judas dies at Elasa with only 800 men left.","1 Maccabees 9"],
+ [-152,"b","Jonathan becomes high priest","Judas's brother becomes both leader and high priest.","1 Maccabees 10"],
+ [-150,"w","The Qumran community","A group that will leave the Dead Sea Scrolls settles by the Dead Sea.",0,1],
+ [-146,"w","Rome destroys Carthage and Corinth","Rome becomes master of the Mediterranean."],
+ [-142,"b","Independence","Under Simon, the last brother, the yoke of the Gentiles is lifted from Israel. The Hasmonean kingdom begins.","1 Maccabees 13:41–42"],
+ [-141,"w","Emperor Wu of Han","China's greatest Han emperor begins his reign; the Silk Road opens under him."],
+ [-134,"b","Simon is murdered","His son-in-law kills him; Simon's son John Hyrcanus rules.","1 Maccabees 16"]],
+ notes:[["About the books","1 and 2 Maccabees are in Catholic and Orthodox Bibles. Protestants don't count them as Scripture but value them as history."],["Foretold in Daniel","Daniel 8 and 11 describe a proud king who stops the daily sacrifice and sets up the abomination of desolation, which fits Antiochus IV. Jesus used the same phrase in Matthew 24:15."],["After the Maccabees","The Hasmonean kings ruled until Rome's Pompey took Jerusalem in 63 BC, setting the stage for Herod and the New Testament."]]},
+
+{id:"jesus",n:"Jesus",role:"The Son of God",life:[-5,30],S:-40,E:40,ticks:[-40,-20,1,20,40],
+ teaser:"Born under Augustus; crucified under Tiberius.",
+ intro:"The life of Jesus, set against the Roman world of Augustus and Tiberius and events as far away as Han China.",
+ spans:[["Jesus","c. 5 BC – AD 30",-5,30,1],["Herod the Great","King of Judea",-37,-4],["Caesar Augustus","First emperor",-27,14],["Tiberius","Second emperor",14,37],["Pontius Pilate","Prefect of Judea",26,36],["Han dynasty, China","Western Han",-202,9],["Eastern Han, China","Restored dynasty",25,220]],
+ ev:[
+ [-37,"w","Herod becomes king","With Rome's backing, Herod the Great takes Jerusalem."],
+ [-27,"w","Augustus, first Roman emperor","Octavian takes the title Augustus. The Pax Romana begins."],
+ [-19,"w","Herod rebuilds the Temple","Herod begins a huge rebuilding of the Temple that will run for decades.","John 2:20",1],
+ [-5,"b","Jesus is born in Bethlehem","Born under Augustus's decree that all the world should be registered.","Luke 2:1–7",1],
+ [-4,"w","Herod dies","After the flight to Egypt, Herod dies and his kingdom is split among his sons.","Matthew 2"],
+ [6,"w","Judea becomes a Roman province","Archelaus is removed. Rome rules Judea directly, and a census sparks Judas the Galilean's revolt."],
+ [8,"b","Jesus in the Temple at 12","He stays behind, amazing the teachers in his Father's house.","Luke 2:41–52"],
+ [9,"w","Rome's disaster and China's usurper","Three Roman legions are wiped out in Germany's Teutoburg Forest. In China, Wang Mang seizes the Han throne."],
+ [14,"w","Augustus dies; Tiberius rules","Tiberius becomes emperor. His 15th year dates John the Baptist.","Luke 3:1"],
+ [25,"w","The Han dynasty is restored","Emperor Guangwu re-founds the Han dynasty with its capital at Luoyang."],
+ [26,"w","Pontius Pilate arrives","Pilate becomes prefect of Judea."],
+ [27,"b","Baptism and temptation","John baptizes Jesus, who is about 30, and he begins his ministry.","Luke 3:21–23",1],
+ [28,"b","Teaching and miracles","The Sermon on the Mount, calling the Twelve, healing the sick and feeding the 5,000.","Matthew 5–7; Mark 6",1],
+ [30,"b","Crucifixion and resurrection","Crucified under Pilate at Passover, he rises on the third day. Many date this to AD 33 instead.","Matthew 26–28",1]],
+ notes:[["About the dates","Jesus was born before Herod died in 4 BC, so most place his birth about 6–4 BC. The crucifixion is dated to either AD 30 or AD 33."],["Why BC is off","The monk who set up our BC/AD system in the 500s missed by a few years, so Jesus was born a few years before AD 1."],["Roman witnesses","The Roman historian Tacitus mentions Christ being executed by Pontius Pilate under Tiberius. A stone naming Pilate was found at Caesarea in 1961."]]},
+
+{id:"paul",n:"Paul",role:"Apostle to the Gentiles",life:[5,65],S:1,E:70,ticks:[1,15,30,45,60,70],
+ teaser:"Carried the gospel across Nero's empire.",
+ intro:"Paul's journeys, letters and imprisonments, set against Rome under Caligula, Claudius and Nero and the wider world.",
+ spans:[["Paul","c. AD 5–65",5,65,1],["Tiberius","Emperor",14,37],["Caligula","Emperor",37,41],["Claudius","Emperor",41,54],["Nero","Emperor",54,68],["Eastern Han, China","Han dynasty",25,220],["Kushan Empire","India and Central Asia",30,375]],
+ ev:[
+ [5,"b","Saul is born in Tarsus","Born a Jew and a Roman citizen in Cilicia, later trained under Gamaliel.","Acts 22:3, 28",1],
+ [34,"b","The road to Damascus","After Stephen's death, Saul is stopped by the risen Jesus and becomes his follower.","Acts 7–9",1],
+ [37,"w","Caligula becomes emperor","His wild reign lasts four years before he is murdered."],
+ [41,"w","Claudius becomes emperor","Herod Agrippa I is made king of Judea.","Acts 12"],
+ [43,"w","Rome invades Britain","Claudius's army begins the conquest of Britain."],
+ [46,"w","Famine across the empire","A famine under Claudius, foretold by Agabus, brings relief gifts from Antioch.","Acts 11:28–30",1],
+ [47,"b","First missionary journey","Paul and Barnabas travel through Cyprus and Galatia.","Acts 13–14",1],
+ [49,"b","The Jerusalem Council","The church agrees Gentiles need not keep the law of Moses to be saved.","Acts 15",1],
+ [49,"w","Claudius expels Jews from Rome","Aquila and Priscilla leave Rome and meet Paul in Corinth.","Acts 18:2"],
+ [51,"b","Second journey: Europe","Philippi, Thessalonica, Athens and 18 months in Corinth before Gallio. An inscription at Delphi dates Gallio to AD 51–52.","Acts 16–18",1],
+ [54,"w","Nero becomes emperor","Seneca serves as his advisor in the early years."],
+ [55,"b","Third journey: Ephesus","Three years in Ephesus, a riot over Artemis, letters to the Corinthians, and Romans written about AD 57.","Acts 19–20",1],
+ [57,"b","Arrested in Jerusalem","Paul is seized at the Temple and held two years in Caesarea.","Acts 21–26",1],
+ [60,"b","Shipwreck and Rome","Wrecked on Malta, Paul reaches Rome and lives two years under guard.","Acts 27–28",1],
+ [60,"w","Boudica's revolt","A British queen leads a revolt that burns Roman London.",0,1],
+ [64,"w","The Great Fire of Rome","Nero blames the Christians and begins the first Roman persecution."],
+ [65,"b","Paul is martyred","By early tradition, Paul is beheaded in Rome under Nero, about AD 64–67.","2 Timothy 4:6–8",1],
+ [66,"w","The Jewish revolt begins","Judea rises against Rome; Jerusalem will fall in AD 70."],
+ [68,"w","Buddhism reaches China","By tradition, the White Horse Temple is founded at Luoyang.",0,1]],
+ notes:[["About the dates","Paul's journeys are dated from clues like Gallio's term in Corinth (AD 51–52) and the reigns of Felix and Festus."],["Roads and ships","Rome's roads, sea lanes and common Greek language made it possible for Paul to travel about 10,000 miles."],["His letters","Thirteen New Testament letters bear Paul's name, written from about AD 49 to the mid-60s."]]},
+
+{id:"john",n:"John",role:"The beloved disciple",life:[6,100],S:1,E:110,ticks:[1,25,50,75,100,110],
+ teaser:"Outlived the other apostles into Trajan's reign.",
+ intro:"John the apostle, son of Zebedee, from fisherman on Galilee to elder at Ephesus and exile on Patmos, set against Rome's Flavian emperors and the wider world. Details after Acts come from early church tradition.",
+ spans:[["John","c. AD 6–100",6,100,1],["Tiberius","Emperor",14,37],["Nero","Emperor",54,68],["Flavian emperors","Vespasian, Titus, Domitian",69,96],["Trajan","Emperor",98,117],["Eastern Han, China","Han dynasty",25,220],["Kushan Empire","India and Central Asia",30,375]],
+ ev:[
+ [6,"b","John is born","Son of Zebedee and Salome, a Galilean fisherman with his brother James. His birth year is unknown.","Mark 1:19–20",1],
+ [9,"w","Rome's disaster in Germany","Three Roman legions are destroyed in the Teutoburg Forest; Rome stops at the Rhine."],
+ [27,"b","Called by Jesus","John and James leave their nets to follow Jesus, who calls them Sons of Thunder.","Mark 1:19–20; 3:17",1],
+ [29,"b","On the mountain","John sees the Transfiguration with Peter and James.","Mark 9:2–8",1],
+ [30,"b","At the cross and the empty tomb","Jesus entrusts his mother to John. John runs to the tomb and believes.","John 19:26–27; 20:1–8",1],
+ [30,"b","Pentecost and the early church","John and Peter heal a lame man and are jailed for preaching.","Acts 2–4",1],
+ [44,"b","James is martyred","Herod Agrippa I kills John's brother James with the sword.","Acts 12:1–2"],
+ [49,"b","A pillar of the church","Paul names John with Peter and James as pillars in Jerusalem.","Galatians 2:9",1],
+ [64,"w","Fire in Rome; Peter and Paul die","Nero's persecution follows the Great Fire. By tradition Peter and Paul are martyred in Rome.",0,1],
+ [66,"b","Move to Ephesus","By early tradition John settles in Ephesus, caring for churches in Asia Minor.","Early church tradition",1],
+ [70,"w","Jerusalem and the Temple destroyed","Titus's Roman army destroys the Temple, as Jesus had foretold."],
+ [79,"w","Vesuvius buries Pompeii","The volcano destroys Pompeii and Herculaneum."],
+ [80,"w","The Colosseum opens","Titus opens the great amphitheater in Rome with 100 days of games."],
+ [81,"w","Domitian becomes emperor","He demands to be called Lord and God, and Christians face pressure in Asia."],
+ [90,"b","The Gospel and letters of John","John writes his Gospel and three letters, likely from Ephesus.","John 20:31; 1 John",1],
+ [93,"w","Josephus's history","The Jewish historian Josephus finishes his Antiquities in Rome, mentioning Jesus and James.",0,1],
+ [95,"b","Exile on Patmos","Banished for the word of God, John receives the Revelation.","Revelation 1:9",1],
+ [96,"b","Return to Ephesus","After Domitian's death, Nerva frees exiles and John returns, by tradition.","Early church tradition",1],
+ [97,"w","China reaches toward Rome","Han general Ban Chao sends an envoy, Gan Ying, west to find Rome. He turns back at the Persian Gulf."],
+ [98,"w","Trajan becomes emperor","Rome nears its largest size."],
+ [100,"b","John dies at Ephesus","The last living apostle dies of old age, by tradition the only one not martyred.","Early church tradition",1]],
+ notes:[["About the dates","John's birth year is not known; he was likely younger than Jesus. Dates after Acts come from writers like Irenaeus, who learned from Polycarp, John's own disciple."],["Last of the Twelve","Irenaeus says John lived at Ephesus until the time of Trajan, making him the last apostle alive."],["Patmos","The island where John was exiled is in the Aegean Sea off Turkey. A cave there is still shown as the place of the Revelation."]]},
+
+{id:"church",n:"The Early Church",role:"From Jerusalem's fall to Nicaea",life:null,S:70,E:330,ticks:[70,120,170,220,270,330],
+ hw:"AD 70",hr:"AD 70–325",h1:"The early church, AD 70–325",bl:"Church events",bt:"Church",gd:"events in the church",
+ lab:y=>(y-30)+" years after Pentecost",labNote:"Under each year is how long it was after Pentecost (c. AD 30).",
+ teaser:"Martyrs, persecution, and the Nicene Creed.",
+ intro:"After the apostles, the church grew through persecution until Constantine made it legal. Here is what happened in the church and around the world in those 250 years.",
+ spans:[["Flavian emperors","Vespasian to Domitian",69,96],["Five Good Emperors","Nerva to Marcus Aurelius",96,180],["Crisis of the Third Century","50 years of chaos",235,284],["Diocletian","Great Persecution",284,305],["Constantine","First Christian emperor",306,337],["Han dynasty, China","Eastern Han",25,220],["Three Kingdoms, China","After the Han",220,280],["Sasanian Persia","Rome's great rival",224,651]],
+ ev:[
+ [70,"w","Jerusalem destroyed","Titus destroys the Temple; Christians had fled to Pella beforehand, by tradition."],
+ [96,"b","Clement writes to Corinth","Clement of Rome writes the earliest Christian letter outside the New Testament.","1 Clement",1],
+ [100,"b","The apostles are gone","John dies at Ephesus. The church is led by bishops and elders the apostles trained.","Early church tradition",1],
+ [107,"b","Ignatius goes to the lions","Ignatius of Antioch writes seven letters on his way to martyrdom in Rome.","Letters of Ignatius",1],
+ [112,"w","Pliny writes to Trajan","A Roman governor reports that Christians meet before dawn to sing hymns to Christ as to a god."],
+ [132,"w","Bar Kokhba revolt","A second Jewish revolt is crushed; Jerusalem is rebuilt as a pagan city, Aelia Capitolina."],
+ [155,"b","Polycarp is martyred","John's disciple refuses to curse Christ: 86 years have I served him.","Martyrdom of Polycarp",1],
+ [155,"b","Justin defends the faith","Justin Martyr describes Sunday worship, with readings, prayer and the Lord's Supper.","First Apology",1],
+ [165,"w","The Antonine Plague","A pandemic kills millions. Christians become known for caring for the sick.",0,1],
+ [180,"b","Irenaeus and the four Gospels","Irenaeus of Lyon writes Against Heresies and names Matthew, Mark, Luke and John.","Against Heresies",1],
+ [197,"b","Tertullian's challenge","Tertullian writes that the blood of Christians is seed: persecution only spreads the faith.","Apology",1],
+ [203,"b","Perpetua and Felicity","A young noblewoman and her slave die together in the arena at Carthage.","Passion of Perpetua"],
+ [220,"w","The Han dynasty falls","China splits into the Three Kingdoms."],
+ [224,"w","Sasanian Persia rises","A new Persian dynasty becomes Rome's great rival in the east."],
+ [235,"b","The oldest known church building","At Dura-Europos in Syria, a house is turned into a church with wall paintings of Bible scenes.","c. 232–256",1],
+ [250,"b","Decius's persecution","The first empire-wide persecution demands sacrifices to the gods. Many die; some deny Christ.","Cyprian's letters"],
+ [250,"w","Maya Classic age begins","Maya cities like Tikal start their golden age in Central America.",0,1],
+ [301,"b","Armenia becomes Christian","By tradition, Armenia is the first nation to adopt Christianity.","Armenian tradition",1],
+ [303,"b","The Great Persecution","Diocletian orders churches torn down and Scriptures burned.","Eusebius, Church History"],
+ [312,"w","Constantine at the Milvian Bridge","Constantine fights under the sign of Christ and wins Rome."],
+ [313,"b","The Edict of Milan","Christianity becomes legal across the Roman Empire."],
+ [320,"w","India's Gupta Empire","The Gupta dynasty begins India's classical age.",0,1],
+ [325,"b","The Council of Nicaea","More than 250 bishops affirm that Christ is true God, and write the Nicene Creed.","Nicene Creed"]],
+ notes:[["About the dates","Many events of this era are dated from church writers like Eusebius, whose Church History was written about AD 325."],["Read them yourself","The letters of Clement, Ignatius and Polycarp, and Justin's Apology, are short and easy to find in modern English."],["How it spread","By AD 300 Christians may have been about a tenth of the Roman Empire, without armies or political power."]]},
+
+{id:"martyrs",n:"The Martyrs",role:"Faithful unto death",life:null,S:30,E:2020,ticks:[30,500,1000,1500,2020],
+ hw:"AD 34 →",hr:"Stephen to today",h1:"The Christian martyrs",bl:"Martyrs",bt:"Martyr",gd:"martyrs' stories",
+ lab:y=>{const c=Math.ceil(y/100),s=c%10==1&&c!=11?"st":c%10==2&&c!=12?"nd":c%10==3&&c!=13?"rd":"th";return c+s+" century"},labNote:"Under each year is the century.",
+ teaser:"Their stories, from Stephen to today.",
+ intro:"The word martyr means witness. These are some of the believers who held to Christ to the end, and the stories told of their deaths, from the first century to our own. Stories from Scripture are marked with their reference; others come from early writers, court records and eyewitnesses, and some are tradition.",
+ spans:[["Roman persecutions","Nero to Diocletian",64,313,1],["Western Roman Empire","Until its fall",-27,476],["Middle Ages","Rome to the printing press",476,1450],["Reformation era","Luther to 1648",1517,1648],["World Wars","1914–1945",1914,1945]],
+ ev:[
+ [34,"b","Stephen, the first martyr","Accused before the council, Stephen preached Israel's history, then saw heaven opened. As he was stoned, he prayed, Lord Jesus, receive my spirit, and asked God not to hold this sin against them. A young man named Saul watched over the coats.","Acts 7",1],
+ [44,"b","James, brother of John","Herod Agrippa I had James killed with the sword, the first of the Twelve to die. Clement of Alexandria later wrote that the man who accused him was so moved that he confessed Christ and was beheaded with him.","Acts 12:1–2"],
+ [62,"b","James, the brother of Jesus","The leader of the Jerusalem church was stoned on the high priest's orders. The Jewish historian Josephus records it; later tradition says he died praying for his killers.","Josephus, Antiquities 20"],
+ [64,"w","The Great Fire of Rome","Nero blamed Christians. The Roman historian Tacitus says some were wrapped in animal skins and torn by dogs, and others were burned as torches in Nero's gardens."],
+ [64,"b","Peter, crucified upside down","By early tradition Peter was crucified in Rome under Nero. Origen wrote that he asked to be crucified head down, feeling unworthy to die as his Lord had. Jesus had foretold it in John 21:18–19.","John 21:18–19; tradition",1],
+ [65,"b","Paul, beheaded on the road","As a Roman citizen, Paul was spared crucifixion and beheaded outside Rome. From prison he had written: I have fought the good fight, I have finished the race, I have kept the faith.","2 Timothy 4:6–8; tradition",1],
+ [72,"b","Thomas in India","The Christians of south India have long held that Thomas brought them the gospel and was killed with a spear near Chennai, where a church stands over his tomb.","Tradition of the Saint Thomas Christians",1],
+ [107,"b","Ignatius of Antioch","Arrested as an old bishop, Ignatius was marched to Rome under guard and wrote seven letters to churches along the way. He begged them not to try to save him: let me be food for the wild beasts, through whom I may reach God.","Letters of Ignatius",1],
+ [155,"b","Polycarp of Smyrna","At 86, John's own disciple was ordered to curse Christ. He answered that he had served Him 86 years and He had never done him wrong. Bound to the stake, he prayed and gave thanks; witnesses said the flames arched around him like a sail.","Martyrdom of Polycarp",1],
+ [165,"b","Justin Martyr","The philosopher who became a Christian and defended the faith to emperors was beheaded in Rome with six companions after refusing to sacrifice to the gods. The court record of their trial survives.","Acts of Justin",1],
+ [177,"b","Blandina and the martyrs of Lyon","In Gaul, a crowd turned on the church. Blandina, a young slave girl, was tortured from morning to night and kept repeating, I am a Christian, and nothing wicked happens among us. She encouraged the others and died last.","Letter of the churches of Vienne and Lyon"],
+ [203,"b","Perpetua and Felicity","Perpetua, a 22-year-old noblewoman nursing a baby, kept a prison diary, one of the earliest writings by a Christian woman. Her slave Felicity gave birth in prison days before. They died together in the arena at Carthage.","Passion of Perpetua and Felicity"],
+ [250,"w","The first empire-wide persecution","Emperor Decius ordered every citizen to sacrifice to the gods and carry a certificate proving it."],
+ [258,"b","Cyprian of Carthage","When the sentence was read, the bishop said, Thanks be to God. He gave his executioner 25 gold coins, and his people spread cloths to catch his blood.","Acts of Cyprian"],
+ [258,"b","Lawrence of Rome","Ordered to hand over the church's treasures, the deacon gathered the poor and sick: these are the treasures of the church. Tradition says he was roasted on a gridiron and told his killers to turn him over, that side was done.","Ambrose; tradition",1],
+ [304,"b","Agnes of Rome","A young girl of 12 or 13 who refused to marry a pagan or sacrifice to the gods was killed in Diocletian's persecution. Ambrose and Jerome both wrote of her courage.","Ambrose, On Virgins",1],
+ [304,"b","Alban, first martyr of Britain","Alban sheltered a fleeing priest, came to faith, then traded cloaks with him and was arrested in his place. He was beheaded on the hill where St Albans Cathedral now stands.","Bede, Ecclesiastical History",1],
+ [313,"w","The Edict of Milan","Constantine and Licinius make Christianity legal. Rome's persecutions end."],
+ [476,"w","The Western Roman Empire falls","Germanic rulers take over in Italy."],
+ [754,"b","Boniface in Frisia","The English missionary to the Germans, nearly 80, was attacked by raiders while preparing a baptism. He told his men not to fight, and is said to have held up a Gospel book over his head as the sword fell.","Willibald, Life of Boniface",1],
+ [1415,"b","Jan Hus at Constance","The Czech preacher came to the Council of Constance under a promise of safe conduct, was arrested anyway and burned for teaching that Scripture is above the pope. He died singing and praying.","Records of the Council of Constance"],
+ [1455,"w","The Gutenberg Bible","Printing with movable type puts the Bible within reach of many more people.",0,1],
+ [1517,"w","Luther's 95 Theses","The Reformation begins in Germany."],
+ [1536,"b","William Tyndale","The first to translate the New Testament into English from Greek and print it was betrayed in Antwerp, strangled and burned near Brussels. His last words: Lord, open the King of England's eyes. Within three years, an English Bible was in every church.","Foxe's Book of Martyrs"],
+ [1555,"b","Latimer and Ridley at Oxford","Under Queen Mary, two bishops were burned back to back. Latimer said: Be of good comfort, Master Ridley, and play the man; we shall this day light such a candle in England as shall never be put out.","Foxe's Book of Martyrs"],
+ [1556,"b","Thomas Cranmer","The archbishop who wrote the Book of Common Prayer had signed recantations to save his life. At the end he took them back, and at the stake held the hand that signed them into the fire first.","Foxe's Book of Martyrs"],
+ [1569,"b","Dirk Willems","Fleeing arrest over a frozen pond in the Netherlands, this Anabaptist turned back to pull his pursuer out when the ice broke. He was captured and burned.","Martyrs Mirror"],
+ [1597,"b","The 26 martyrs of Nagasaki","Missionaries and Japanese believers, including boys as young as 12, were marched 600 miles and crucified on a hill above Nagasaki, singing and preaching from their crosses.","Japanese and missionary records"],
+ [1914,"w","World War I begins","A century of world wars and totalitarian states follows."],
+ [1941,"b","Maximilian Kolbe","At Auschwitz, a Polish priest stepped forward to take the place of a stranger, a husband and father condemned to starve. Kolbe led the others in prayer and song and was the last to die. The man he saved lived to 93.","Auschwitz survivors' accounts"],
+ [1945,"b","Dietrich Bonhoeffer","The German pastor who resisted Hitler was hanged at Flossenbürg weeks before the camp was freed. A doctor there said he had rarely seen a man die so entirely submissive to God. His last message: This is the end, for me the beginning of life.","Eyewitness accounts"],
+ [1956,"b","Jim Elliot and four missionaries","Five young men were speared on a river beach in Ecuador trying to reach the Waodani. Elliot's widow Elisabeth and Nate Saint's sister Rachel later lived among the tribe, and some of the killers became Christians.","Elisabeth Elliot, Through Gates of Splendor"],
+ [2015,"b","The 21 on the Libyan beach","Twenty Coptic Christians from Egypt and a man from Ghana were beheaded by ISIS. Many died saying the name of Jesus. The Ghanaian, Matthew Ayariga, reportedly chose to die with them, saying their God was his God.","News accounts; Coptic Church"]],
+ notes:[["About these stories","Some accounts are eyewitness records, like Polycarp's and Perpetua's. Others, like Peter's and Lawrence's, come from later tradition and are marked that way."],["Further reading","John Foxe's Book of Martyrs (1563) and the Mennonite Martyrs Mirror (1660) tell hundreds of these stories. Voice of the Martyrs tells of persecuted Christians today."],["Faithful unto death","Be faithful unto death, and I will give you a crown of life (Revelation 2:10). Tertullian wrote that the blood of the martyrs is seed: the church grew wherever it was persecuted."]]},
+
+{id:"artifacts",n:"Bible Artifacts",role:"Manuscripts and inscriptions",life:null,S:-1250,E:1050,ticks:[-1250,-750,-250,250,750,1050],
+ hw:"1208 BC →",hr:"Stones, scrolls and books",h1:"Bible text artifacts",
+ bl:"Bible manuscripts",bt:"Manuscript",gd:"copies of Scripture itself",wl:"Inscriptions",wt:"Inscription",bd:"inscriptions that name people and events from the Bible",
+ lab:y=>{const a=2026-ast(y);return "about "+(a>=1000?Math.round(a/50)*50:Math.round(a/10)*10).toLocaleString("en-US")+" years old"},labNote:"Each date is when the artifact was made; under it is roughly how old it is today. Each card says when it was found and where it is now.",
+ teaser:"Stones, scrolls and books that back up the Bible.",
+ intro:"These are the actual objects: stone monuments and clay tablets that name Bible kings and places, and the oldest surviving copies of Scripture, from a tiny silver scroll to the oldest complete Hebrew Bible.",
+ spans:[["Old Testament written","Moses to Malachi",-1446,-430,1],["New Testament written","c. AD 48–95",48,95,1],["Dead Sea Scrolls copied","c. 250 BC – AD 68",-250,68],["Masoretic scribes","Guarding the Hebrew text",600,1000],["Assyrian Empire","Records of Israel's kings",-911,-609],["Babylon & Persia","Exile and return",-626,-330],["Roman Empire","New Testament world",-27,476]],
+ ev:[
+ [-1208,"w","The Merneptah Stele","A pharaoh's victory stone says Israel is laid waste, the oldest mention of Israel outside the Bible. Found 1896 at Thebes by Flinders Petrie. Now in the Egyptian Museum, Cairo."],
+ [-925,"w","Shishak's list at Karnak","Shoshenq I carved the towns he conquered in Israel and Judah on a temple wall. Still on the wall at Karnak, Egypt.","1 Kings 14:25",1],
+ [-853,"w","The Kurkh Monolith","Shalmaneser III lists Ahab the Israelite with 2,000 chariots at Qarqar. Found 1861 in Turkey. Now in the British Museum.","1 Kings 16–22"],
+ [-841,"w","The Black Obelisk","Shows Jehu, son of Omri, kneeling before the king of Assyria, the only ancient picture of an Israelite king. Found 1846 at Nimrud. Now in the British Museum.","2 Kings 9–10"],
+ [-840,"w","The Mesha Stele (Moabite Stone)","King Mesha of Moab boasts of breaking free from Omri's son and names Israel's God. Found 1868 in Jordan, broken by locals, then pieced back together. Now in the Louvre, Paris.","2 Kings 3",1],
+ [-840,"w","The Tel Dan Stela","An Aramean king boasts of defeating the king of Israel and the House of David, the first mention of David outside the Bible. Found 1993–94 at Tel Dan. Now in the Israel Museum.","2 Kings 8–9",1],
+ [-701,"w","The Siloam Inscription","Carved where Hezekiah's two tunnel crews met: they heard each other's voices and cut toward each other. Found 1880 by a boy wading the tunnel. Now in the Istanbul Archaeology Museum.","2 Kings 20:20"],
+ [-701,"w","Sennacherib's Prism","The Assyrian king says he shut up Hezekiah in Jerusalem like a bird in a cage, but never claims to take it. Copies in the British Museum and the Oriental Institute in Chicago.","2 Kings 18–19"],
+ [-700,"w","Hezekiah's seal","A clay seal impression reading belonging to Hezekiah son of Ahaz, king of Judah. Found 2009 near the Temple Mount, announced 2015.","2 Kings 18:1",1],
+ [-600,"b","The Ketef Hinnom silver scrolls","Two tiny rolled silver amulets carry the priestly blessing, The Lord bless you and keep you, the oldest Bible text ever found. Found 1979 by Gabriel Barkay in a Jerusalem tomb. Now in the Israel Museum.","Numbers 6:24–26",1],
+ [-597,"w","The Babylonian Chronicle","A clay tablet records Nebuchadnezzar capturing Jerusalem on March 16, 597 BC and appointing a new king. Now in the British Museum.","2 Kings 24:10–17"],
+ [-592,"w","Jehoiachin's ration tablets","Babylonian palace records list oil rations for Jehoiachin, king of Judah, and his sons. Found in Babylon about 1900. Now in Berlin.","2 Kings 25:27–30",1],
+ [-588,"w","The Lachish Letters","Clay notes from a Judean officer as Babylon closed in: we can no longer see the signals of Azekah. Found 1935. In the British Museum and Israel Museum.","Jeremiah 34:7",1],
+ [-539,"w","The Cyrus Cylinder","Cyrus records taking Babylon and sending captive peoples home to rebuild their temples. Found 1879 in Babylon. Now in the British Museum.","Ezra 1:1–4"],
+ [-407,"w","The Elephantine Papyri","Letters from a Jewish colony in Egypt name the sons of Sanballat, Nehemiah's enemy. Found in the 1890s–1900s. In Berlin and the Brooklyn Museum.","Nehemiah 2:10"],
+ [-250,"b","The Dead Sea Scrolls","A Bedouin shepherd searching for a lost goat found jars of scrolls in a cave in 1947. Eleven caves held pieces of every Old Testament book except Esther, copied from about 250 BC to AD 68. Many are in the Israel Museum's Shrine of the Book.","Qumran",1],
+ [-150,"b","The Nash Papyrus","A sheet with the Ten Commandments and the Shema; until the Dead Sea Scrolls, the oldest Hebrew Bible text known. Bought in Egypt in 1902. Now at Cambridge University.","Exodus 20; Deuteronomy 6:4–5",1],
+ [-125,"b","The Great Isaiah Scroll","All 66 chapters of Isaiah on one 24-foot scroll, about 1,000 years older than any Hebrew copy known before, and it matches closely. Found 1947 in Qumran Cave 1. Israel Museum.","Isaiah 1–66",1],
+ [18,"w","The Caiaphas ossuary","A bone box inscribed Joseph son of Caiaphas, likely the high priest at Jesus's trial. Found 1990 in Jerusalem. Now in the Israel Museum.","Matthew 26:57",1],
+ [30,"w","The Pilate Stone","A building stone naming Pontius Pilate, prefect of Judea. Found 1961 in the theater at Caesarea. Now in the Israel Museum.","Luke 23",1],
+ [52,"w","The Gallio Inscription","A letter of Emperor Claudius at Delphi naming Gallio as governor, which dates Paul's time in Corinth to about AD 51–52. Found in pieces 1905. Delphi Museum, Greece.","Acts 18:12"],
+ [55,"w","The Erastus Inscription","A pavement in Corinth paid for by Erastus, a city official, possibly the one Paul names. Found 1929. Still in place in Corinth.","Romans 16:23",1],
+ [125,"b","P52, the John Rylands fragment","A credit-card-sized scrap of John 18, the oldest known piece of the New Testament, copied within decades of John's death. Bought in Egypt in 1920, identified 1934. John Rylands Library, Manchester.","John 18:31–33, 37–38",1],
+ [200,"b","The Chester Beatty and Bodmer papyri","Early books with most of Paul's letters (P46) and almost all of John (P66, P75). Found in Egypt and bought in the 1930s and 1950s. In Dublin, Michigan, Geneva and the Vatican.","Paul's letters; Luke; John",1],
+ [325,"b","Codex Vaticanus","One of the two oldest nearly complete Bibles in Greek. In the Vatican Library since at least 1475.","Old and New Testaments",1],
+ [350,"b","Codex Sinaiticus","The oldest complete New Testament. Constantin Tischendorf found it at St Catherine's Monastery at Mount Sinai in 1844 and 1859. Mostly in the British Library; all of it can be viewed online.","Old and New Testaments",1],
+ [425,"b","Codex Alexandrinus","A fifth-century Greek Bible given to King Charles I of England in 1627. Now in the British Library.","Old and New Testaments",1],
+ [930,"b","The Aleppo Codex","The finest copy of the Masoretic Hebrew Bible, checked by the scribe Aaron ben Asher. Damaged in riots in Syria in 1947, with pages lost. Now in the Israel Museum.","Hebrew Bible",1],
+ [1008,"b","The Leningrad Codex","The oldest complete Hebrew Bible, the basis for most modern translations of the Old Testament. National Library of Russia, St Petersburg.","Hebrew Bible"]],
+ notes:[["About the dates","Manuscripts are dated by handwriting style and sometimes carbon dating, so most dates are given as c. and could be off by decades."],["How many copies?","There are over 5,800 handwritten Greek New Testament manuscripts, far more than for any other ancient book."],["Where to see them","The British Museum, the Israel Museum, the Louvre and the Museum of the Bible in Washington, D.C. hold many of these. Codex Sinaiticus and many Dead Sea Scrolls can be viewed online."]]}
+];
+
+const ast=y=>y<0?y+1:y;
+const fy=y=>y<0?(-y)+" BC":"AD "+y;
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");
+const app=document.getElementById("app");
+let filter="all";
+
+const home=()=>{
+ document.title="Bible Lives in History";
+ app.innerHTML=`<header class="band hero"><div class="wrap">
+ <h1>Bible lives in world history</h1>
+ <p>Pick a Bible character to see what was happening in Egypt, Mesopotamia, Greece, Rome, China and beyond during their lifetime.</p>
+ <div class="era"><span><b>Patriarchs</b> Abraham, Joseph</span><span><b>Exodus & judges</b> Moses, Joshua, Deborah, Gideon, Ruth, Samson</span><span><b>Kings & prophets</b> David, Solomon, Jeroboam, Elijah, Joash, Isaiah, Hezekiah</span><span><b>Exile & return</b> Jeremiah, Daniel, Esther, Nehemiah, Malachi</span><span><b>Between the Testaments</b> Alexander the Great, Maccabean Revolt</span><span><b>New Testament</b> Jesus, Paul, John</span><span><b>Early church</b> AD 70–325</span><span><b>Martyrs</b> Stephen to today</span><span><b>Archaeology</b> Bible artifacts</span></div>
+ </div></header>
+ <main class="band"><div class="wrap"><ol class="people">${C.map(c=>{const d=c.hr||(c.life?`${fy(c.life[0])} – ${fy(c.life[1])}`:"Queen of Persia");return`<li class="person"><a href="#${c.id}"><span class="dot"></span><span class="when">${c.hw||(c.life?"c. "+fy(c.life[0]):"c. 479 BC")}<small>${d}</small></span><span><h3>${c.n}</h3><p>${c.role}. ${c.teaser}</p></span><span class="go">See timeline →</span></a></li>`}).join("")}</ol></div></main>`;
+};
+
+const page=c=>{
+ document.title=c.n+" in World History";
+ const S=ast(c.S),R=ast(c.E)-S,p=y=>Math.min(100,Math.max(0,(ast(y)-S)/R*100));
+ const lab=c.lab||(y=>{const a=ast(y)-ast(c.life[0]);return a<0?"before his birth":a===0?"birth":c.n+" "+a});
+ const life=c.life?`<div class="life" style="--l:${p(c.life[0])/100};--w:${(p(c.life[1])-p(c.life[0]))/100}" aria-hidden="true"></div>`:"";
+ const rows=c.spans.map(([n,s,a,b,g])=>{const l=p(a),r=p(b);const cls=(g?"ab ":"")+(ast(a)<S?"cl ":"")+(ast(b)>ast(c.E)?"cr":"");return`<div class="row"><div class="lab">${n}<small>${s} · ${fy(a).replace(/ BC$/,a<0&&b<0?"":" BC")}–${fy(b)}</small></div><div class="tr"><div class="bar ${cls}" style="left:${l}%;width:${r-l}%"></div></div></div>`}).join("");
+ const ticks=c.ticks.map((y,i,a)=>`<span class="${i&&i<a.length-1?"mid":""}" style="left:${p(y)}%">${fy(y)}</span>`).join("");
+ const i=C.indexOf(c),prev=C[i-1],next=C[i+1];
+ app.innerHTML=`<header class="band hero"><div class="wrap">
+ <a class="back" href="#">← All Bible characters</a>
+ <h1>${c.h1||c.n+"'s world"}${c.h1?"":c.life?`, ${c.life[1]<0?fy(c.life[0]).replace(" BC",""):fy(c.life[0])}–${fy(c.life[1])}`:""}</h1>
+ <p>${c.intro}</p>
+ <div class="chart"><div class="tracks">${life}${rows}</div><div class="axis"><div></div><div class="ticks">${ticks}</div></div>
+ <p class="key">${c.life?"Gold band: "+c.n+"'s lifetime. ":""}Faded ends mean the era runs past the chart.</p></div>
+ </div></header>
+ <main class="band"><div class="wrap">
+ <h2>Year by year</h2>
+ <p class="sub">Gold dots are ${c.gd||"events from the Bible"}; blue dots are ${c.bd||"events elsewhere in the world"}. ${c.labNote||(c.lab?"Under each year is the year of Xerxes's reign.":"Under each year is "+c.n+"'s age.")} Dates marked c. are approximate.</p>
+ <div class="controls" role="group" aria-label="Filter events">
+  <button id="f-all" data-f="all">Everything</button><button id="f-b" data-f="b">${c.bl||c.n+"'s life"}</button><button id="f-w" data-f="w">${c.wl||"World events"}</button>
+ </div>
+ <ol class="tl" id="tl"></ol>
+ <nav class="pn">${prev?`<a href="#${prev.id}">← ${prev.n}</a>`:"<span></span>"}${next?`<a href="#${next.id}">${next.n} →</a>`:`<a href="#">All characters</a>`}</nav>
+ </div></main>
+ <section class="band notes"><div class="wrap grid">${c.notes.map(([h,t])=>`<div><h3>${h}</h3><p>${esc(t)}</p></div>`).join("")}</div></section>`;
+ const tl=document.getElementById("tl"),btns=[...app.querySelectorAll(".controls button")];
+ const render=()=>{btns.forEach(b=>b.setAttribute("aria-pressed",b.dataset.f===filter));
+  tl.innerHTML=c.ev.slice().sort((a,b)=>ast(a[0])-ast(b[0])).filter(e=>filter==="all"||e[1]===filter).map(([y,k,t,d,r,ap])=>`<li class="ev ${k}"><div class="yr">${ap?"c. ":""}${fy(y)}<small>${lab(y)}</small></div><div class="card"><span class="tag">${k==="b"?(c.bt||"Bible"):(c.wt||"World")}</span><h3>${esc(t)}</h3><p>${esc(d)}</p>${r?`<p class="ref">${esc(r)}</p>`:""}</div></li>`).join("")};
+ btns.forEach(b=>b.addEventListener("click",()=>{filter=b.dataset.f;render()}));
+ render();
+};
+
+const route=()=>{const id=location.hash.slice(1),c=C.find(x=>x.id===id);filter="all";c?page(c):home();window.scrollTo(0,0)};
+window.addEventListener("hashchange",route);
+route();
+}
+</script>
+<footer style="text-align:center;font-size:11px;opacity:.5;padding:14px 16px 64px;">© 2026 Dwayne Harris · Created by Dwayne Harris</footer>
+<!-- Add to Home Screen helper -->
+<style>
+#a2hs-btn{position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:2147483000;background:#2f6fdf;color:#fff;border:none;border-radius:999px;padding:9px 14px;font:600 14px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;box-shadow:0 3px 10px rgba(0,0,0,.25);cursor:pointer}
+#a2hs-overlay{display:none;position:fixed;inset:0;z-index:2147483001;background:rgba(0,0,0,.5);overflow-y:auto;padding:20px 14px calc(20px + env(safe-area-inset-bottom))}
+#a2hs-overlay.open{display:block}
+#a2hs-box{max-width:520px;margin:0 auto;background:#fff;color:#1f2933;border-radius:16px;padding:18px 18px 8px;font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;text-align:left}
+#a2hs-box h2{font-size:20px;margin:0 0 4px;color:#1f2933}
+#a2hs-box h3{font-size:16px;margin:16px 0 6px;color:#1f2933}
+#a2hs-box p{margin:0 0 8px;color:#5f6b76;font-size:14px}
+#a2hs-box ol,#a2hs-box ul{margin:0 0 8px;padding-left:22px}
+#a2hs-box li{margin-bottom:6px}
+#a2hs-box .a2hs-tip{background:#eef4ff;border-left:4px solid #2f6fdf;border-radius:8px;padding:10px 12px;font-size:14px;margin:8px 0}
+#a2hs-close{display:block;width:100%;margin:14px 0 10px;padding:12px;border:none;border-radius:10px;background:#2f6fdf;color:#fff;font:600 16px -apple-system,BlinkMacSystemFont,sans-serif;cursor:pointer}
+</style>
+<button id="a2hs-btn" type="button">📲 Add to Home Screen</button>
+<div id="a2hs-overlay" role="dialog" aria-modal="true" aria-label="Add to Home Screen">
+  <div id="a2hs-box">
+    <h2>Put this app on your Home Screen</h2>
+    <p>Takes about 30 seconds. Then it opens with one tap, like a regular app.</p>
+    <h3>Using Safari (recommended)</h3>
+    <ol>
+      <li>Open this page in <b>Safari</b>.</li>
+      <li>Tap the <b>Share</b> button (square with an up arrow). On newer iPhones, tap the <b>•••</b> button by the address bar first, then <b>Share</b>.</li>
+      <li>Scroll down and tap <b>Add to Home Screen</b>. Don't see it? Tap <b>View More</b> or <b>Edit Actions</b>.</li>
+      <li>If you see <b>Open as Web App</b>, leave it on.</li>
+      <li>Tap <b>Add</b> in the top-right corner.</li>
+    </ol>
+    <h3>Using Chrome or Edge</h3>
+    <ol>
+      <li>Tap the <b>Share</b> button next to the address bar.</li>
+      <li>Tap <b>Add to Home Screen</b>, then <b>Add</b>.</li>
+    </ol>
+    <div class="a2hs-tip">Can't find it? Copy the web address, open it in Safari, and follow the Safari steps.</div>
+    <h3>Good to know</h3>
+    <ul>
+      <li><b>Move it:</b> press and hold the icon, then drag.</li>
+      <li><b>Remove it:</b> press and hold, then tap <b>Remove App</b>. Only the shortcut is removed.</li>
+      <li><b>Updates:</b> nothing to install; you always get the latest version.</li>
+    </ul>
+    <button id="a2hs-close" type="button">Got it</button>
+  </div>
+</div>
+<script>
+(function(){
+  var btn=document.getElementById('a2hs-btn'),ov=document.getElementById('a2hs-overlay'),cl=document.getElementById('a2hs-close');
+  var standalone=(window.navigator.standalone===true)||(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches);
+  if(standalone){btn.style.display='none';return;}
+  btn.addEventListener('click',function(){ov.classList.add('open');});
+  cl.addEventListener('click',function(){ov.classList.remove('open');});
+  ov.addEventListener('click',function(e){if(e.target===ov)ov.classList.remove('open');});
+})();
+</script>
+<!-- /Add to Home Screen helper -->
+</body>
+</html>
