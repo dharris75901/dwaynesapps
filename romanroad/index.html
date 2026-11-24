@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Roman Road</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,600&family=Inter:wght@400;500;600&display=swap">
+<style>
+/*
+HOME: two large paving-stone cards, one per language, each showing progress.
+VOICE: calm, reverent, practical — a daily practice tool, not a poster.
+IDEA: a Roman road of five paving-stone milestones; each milestone is one verse.
+PICTURE: the road itself drawn across the top, stones tappable to travel between verses.
+COLOUR and TYPE: white / basalt ink, laurel green for the road's edge, gold accent for the active stop; Literata for scripture, Inter for controls.
+LAYOUT: road at top, then the verse card (phrases you tap to hear), then a compact control bar.
+*/
+:root{color-scheme:light dark;
+--bg:light-dark(#ffffff,#16161b);--ink:light-dark(#22212a,#ecebf2);--mute:light-dark(#6a6873,#a3a1ad);
+--stone:light-dark(#e9e7e2,#2a2a31);--stone2:light-dark(#d6d3cc,#36363e);--line:light-dark(#e4e2dd,#2f2f37);
+--laurel:light-dark(#4f6b3a,#9cbf7f);--gold:light-dark(#b5821c,#e2b34e);--hi:light-dark(#fbf1d9,#3a321f);--card:light-dark(#fafaf8,#1d1d23)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif;overflow-x:clip}
+.wrap{max-width:760px;margin:0 auto;padding:20px max(4vw,16px) 120px}
+h1{font:600 30px/1.1 Literata,Georgia,serif;margin:4px 0 2px;text-wrap:balance}
+.sub{color:var(--mute);margin:0 0 10px;font-size:15px}
+.road{position:relative;height:150px;margin:0 -8px}
+.road svg{position:absolute;inset:0;width:100%;height:100%}
+.stop{cursor:pointer}
+.stop circle{transition:transform .2s}
+.stop text{font:600 15px Inter,sans-serif}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 18px 8px}
+.ref{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.ref h2{font:600 22px/1.2 Literata,Georgia,serif;margin:0}
+.ref .en{color:var(--mute);font-size:14px}
+.ref small{color:var(--gold);font-weight:600;font-size:14px;white-space:nowrap}
+.phr{display:block;width:100%;text-align:left;border:0;background:none;color:inherit;font:inherit;padding:10px 10px;margin:4px -10px;border-radius:10px;cursor:pointer;min-height:44px;width:calc(100% + 20px)}
+.phr:hover{background:var(--stone)}
+.phr:focus-visible,button:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.phr.on{background:var(--hi)}
+.es{font:400 22px/1.35 Literata,Georgia,serif;display:block}
+.pr{display:block;color:var(--laurel);font-size:15px;margin-top:2px;letter-spacing:.01em}
+.tr{display:block;color:var(--mute);font-size:15px;font-style:italic}
+.hidePr .pr,.hideTr .tr{display:none}
+.practice .es{filter:blur(7px);transition:filter .2s}
+.practice .phr.shown .es{filter:none}
+.tip{font-size:14px;color:var(--mute);margin:6px 0 10px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:14px 0}
+button.b{font:600 16px Inter,sans-serif;min-height:46px;padding:0 16px;border-radius:12px;border:1px solid var(--stone2);background:var(--bg);color:var(--ink);cursor:pointer}
+button.b.main{background:var(--laurel);border-color:var(--laurel);color:light-dark(#fff,#111)}
+button.b[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.set{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+label{font-size:14px;color:var(--mute);display:block}
+select,input[type=range]{width:100%;font:16px Inter,sans-serif;margin-top:4px}
+select{min-height:44px;border-radius:10px;border:1px solid var(--stone2);background:var(--bg);color:var(--ink);padding:0 10px}
+input[type=range]{accent-color:var(--laurel);height:36px}
+.warn{background:var(--hi);border-radius:10px;padding:10px 12px;font-size:15px;margin:12px 0;display:none}
+.nav{display:flex;justify-content:space-between;gap:8px;margin-top:14px}
+.done{color:var(--laurel);font-weight:600}
+.note{font-size:13px;color:var(--mute);margin-top:22px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+@media(max-width:600px){h1{font-size:26px}.es{font-size:20px}.road{height:120px}}
+
+.home h1{font-size:34px}
+.pick{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:14px;margin-top:18px}
+.lang{display:block;text-align:left;font:inherit;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;cursor:pointer;min-height:44px;position:relative;overflow:hidden}
+.lang:hover{border-color:var(--gold)}
+.lang .stripe{display:flex;height:8px;border-radius:4px;overflow:hidden;margin-bottom:16px}
+.lang .stripe i{flex:1}
+.lang b{display:block;font:600 26px/1.15 Literata,Georgia,serif}
+.lang span{display:block;color:var(--mute);font-size:15px;margin-top:2px}
+.lang em{display:block;font-style:normal;color:var(--laurel);font-weight:600;font-size:15px;margin-top:14px}
+.dots{display:flex;gap:6px;margin-top:8px}.dots i{width:14px;height:14px;border-radius:50%;border:2px solid var(--stone2)}.dots i.on{background:var(--laurel);border-color:var(--laurel)}
+.homeBtn{background:none;border:0;color:var(--mute);font:500 15px Inter,sans-serif;padding:8px 0;min-height:44px;cursor:pointer}
+[hidden]{display:none!important}
+.lang-en .pr,.lang-en .tr,.lang-en .en{display:none}.lang-en.practice .tr{display:block;font-style:normal;font-size:18px;letter-spacing:.08em;color:var(--laurel)}
+</style>
+</head>
+<body>
+<div class="wrap home" id="home">
+  <h1>The Roman Road</h1>
+  <p class="sub">Five verses from Romans that explain salvation. Choose a language to practice.</p>
+  <div class="road"><svg id="homeRoad"></svg></div>
+  <div class="pick" id="pick"></div>
+  <p class="note">English: NKJV. Spanish: Reina-Valera 1960. Italian: Riveduta (Giovanni Luzzi, 1927). Chinese: Chinese Union Version (1919). Korean: Korean Revised Version (1961). Portuguese: Almeida Revista e Corrigida. Audio uses your device's built-in voices.</p>
+</div>
+
+<div class="wrap" id="app" hidden>
+  <button class="homeBtn" id="goHome">← Choose language</button>
+  <h1 id="h1"></h1>
+  <p class="sub" id="sub"></p>
+  <div class="road" aria-label="Five stops on the Roman Road"><svg id="roadSvg" role="group"></svg></div>
+  <div id="warn" class="warn"></div>
+  <div class="card" id="card"></div>
+  <div class="row">
+    <button class="b main" id="playAll">▶ Play verse</button>
+    <button class="b" id="stop">Stop</button>
+    <button class="b" id="practice" aria-pressed="false">Practice mode</button>
+    <button class="b" id="learned" aria-pressed="false">Mark learned</button>
+  </div>
+  <p class="tip" id="tip"></p>
+  <div class="nav">
+    <button class="b" id="prev">← Previous</button>
+    <button class="b" id="next">Next →</button>
+  </div>
+  <div class="set">
+    <div><label for="rate">Speed: <b id="rateV"></b></label><input type="range" id="rate" min="0.4" max="1.1" step="0.05"></div>
+    <div><label for="rep">Repeat each line</label><select id="rep"><option value="1">Once</option><option value="2">2 times</option><option value="3">3 times</option></select></div>
+    <div><label for="voice" id="voiceL"></label><select id="voice"></select></div>
+    <div id="showBox"><label>Show</label>
+      <div class="row" style="margin:4px 0 0">
+        <button class="b" id="tPr" aria-pressed="true">Sounds</button>
+        <button class="b" id="tTr" aria-pressed="true">English</button>
+      </div>
+    </div>
+  </div>
+  <p class="note" id="note"></p>
+</div>
+
+<script>
+{
+const DATA={
+en:{name:"English",lang:"English",title:"The Roman Road",bible:"New King James Version (NKJV)",code:"en-US",re:/^en/i,pref:["en-US","en-GB"],colors:["#b22234","#f4f4f4","#3c3b6e"],old:"rr-en.",
+tip:"Practice mode hides the words and shows only the first letter of each one. Say the verse out loud, then tap a line to check yourself.",
+note:"Scripture taken from the New King James Version®. Copyright © 1982 by Thomas Nelson. Used by permission. All rights reserved. Audio uses your device's built-in English voice.",
+V:[
+{ref:"Romans 3:23",title:"All have sinned",en:"",ch:[["for all have sinned"],["and fall short"],["of the glory of God,"]]},
+{ref:"Romans 6:23",title:"The wages of sin",en:"",ch:[["For the wages of sin is death,"],["but the gift of God"],["is eternal life"],["in Christ Jesus our Lord."]]},
+{ref:"Romans 5:8",title:"God loves us",en:"",ch:[["But God demonstrates His own love toward us,"],["in that while we were still sinners,"],["Christ died for us."]]},
+{ref:"Romans 10:9–10",title:"Confess and believe",en:"",ch:[["that if you confess with your mouth"],["the Lord Jesus"],["and believe in your heart"],["that God has raised Him from the dead,"],["you will be saved."],["For with the heart one believes unto righteousness,"],["and with the mouth confession is made unto salvation."]]},
+{ref:"Romans 10:13",title:"Call on His name",en:"",ch:[["For “whoever calls"],["on the name of the LORD"],["shall be saved.”"]]}
+].map(v=>({...v,ch:v.ch.map(([t])=>[t,"",t.replace(/([A-Za-z])[A-Za-z']*/g,"$1")])}))},
+es:{name:"Español",lang:"Spanish",title:"Camino de Romanos",bible:"Reina-Valera 1960",code:"es-US",re:/^es/i,pref:["es-US","es-MX","es-419","es-ES"],colors:["#c60b1e","#ffc400","#c60b1e"],old:"camino.",V:[
+{ref:"Romanos 3:23",title:"Todos han pecado",en:"Everyone has sinned",ch:[
+["por cuanto todos pecaron,","por KWAN-to TO-dos peh-KAR-on","for all have sinned"],
+["y están destituidos","ee es-TAN des-tee-too-EE-dos","and fall short"],
+["de la gloria de Dios","deh la GLOR-ya deh DYOS","of the glory of God"]]},
+{ref:"Romanos 6:23",title:"La paga del pecado",en:"Sin leads to death",ch:[
+["Porque la paga del pecado es muerte,","POR-keh la PAH-gah del peh-KAH-do es MWER-teh","for the wages of sin is death"],
+["mas la dádiva de Dios","mahs la DAH-dee-vah deh DYOS","but the gift of God"],
+["es vida eterna","es VEE-dah eh-TER-nah","is eternal life"],
+["en Cristo Jesús Señor nuestro.","en KREES-to heh-SOOS sen-YOR NWES-tro","in Christ Jesus our Lord"]]},
+{ref:"Romanos 5:8",title:"Dios nos ama",en:"Christ died for us",ch:[
+["Mas Dios muestra su amor para con nosotros,","mahs DYOS MWES-trah soo ah-MOR PAH-rah kon no-SO-tros","but God shows his love toward us"],
+["en que siendo aún pecadores,","en keh SYEN-do ah-OON peh-kah-DOR-es","in that while we were still sinners"],
+["Cristo murió por nosotros.","KREES-to moo-RYO por no-SO-tros","Christ died for us"]]},
+{ref:"Romanos 10:9–10",title:"Confiesa y cree",en:"Confess and believe",ch:[
+["que si confesares con tu boca","keh see kon-feh-SAR-es kon too BO-kah","that if you confess with your mouth"],
+["que Jesús es el Señor,","keh heh-SOOS es el sen-YOR","that Jesus is Lord"],
+["y creyeres en tu corazón","ee kreh-YER-es en too kor-ah-SON","and believe in your heart"],
+["que Dios le levantó de los muertos,","keh DYOS leh leh-vahn-TOH deh los MWER-tos","that God raised him from the dead"],
+["serás salvo.","seh-RAHS SAHL-vo","you will be saved"],
+["Porque con el corazón se cree para justicia,","POR-keh kon el kor-ah-SON seh KREH-eh PAH-rah hoos-TEE-syah","for with the heart one believes unto righteousness"],
+["pero con la boca se confiesa para salvación.","PEH-ro kon la BO-kah seh kon-FYEH-sah PAH-rah sahl-vah-SYON","and with the mouth one confesses unto salvation"]]},
+{ref:"Romanos 10:13",title:"Invoca su nombre",en:"Anyone can call on Him",ch:[
+["porque todo aquel que invocare","POR-keh TO-do ah-KEL keh een-vo-KAR-eh","for whoever calls on"],
+["el nombre del Señor,","el NOM-breh del sen-YOR","the name of the Lord"],
+["será salvo.","seh-RAH SAHL-vo","will be saved"]]}
+]},
+it:{name:"Italiano",lang:"Italian",title:"La Via Romana",bible:"Riveduta (Giovanni Luzzi, 1927)",code:"it-IT",re:/^it/i,pref:["it-IT","it-CH"],colors:["#009246","#f1f2f1","#ce2b37"],old:"via.",V:[
+{ref:"Romani 3:23",title:"Tutti hanno peccato",en:"Everyone has sinned",ch:[
+["difatti, tutti hanno peccato","dee-FAHT-tee, TOOT-tee AHN-no pek-KAH-toh","indeed, all have sinned"],
+["e son privi","eh sohn PREE-vee","and are lacking"],
+["della gloria di Dio,","DEL-lah GLOR-yah dee DEE-oh","the glory of God"]]},
+{ref:"Romani 6:23",title:"Il salario del peccato",en:"Sin leads to death",ch:[
+["perché il salario del peccato è la morte;","per-KEH eel sah-LAR-yoh del pek-KAH-toh EH lah MOR-teh","for the wages of sin is death"],
+["ma il dono di Dio","mah eel DOH-noh dee DEE-oh","but the gift of God"],
+["è la vita eterna","EH lah VEE-tah eh-TER-nah","is eternal life"],
+["in Cristo Gesù, nostro Signore.","een KREE-stoh jeh-ZOO, NOH-stroh seen-YOH-reh","in Christ Jesus, our Lord"]]},
+{ref:"Romani 5:8",title:"Dio ci ama",en:"Christ died for us",ch:[
+["ma Iddio mostra la grandezza del proprio amore per noi,","mah eed-DEE-oh MOH-strah lah grahn-DET-tsah del PROH-pree-oh ah-MOH-reh per NOY","but God shows the greatness of his own love for us"],
+["in quanto che, mentre eravamo ancora peccatori,","een KWAHN-toh keh, MEN-treh eh-rah-VAH-moh ahn-KOH-rah pek-kah-TOH-ree","in that, while we were still sinners"],
+["Cristo è morto per noi.","KREE-stoh EH MOR-toh per NOY","Christ died for us"]]},
+{ref:"Romani 10:9–10",title:"Confessa e credi",en:"Confess and believe",ch:[
+["perché, se con la bocca avrai confessato","per-KEH, seh kohn lah BOHK-kah ah-VRY kohn-fes-SAH-toh","for if with your mouth you confess"],
+["Gesù come Signore,","jeh-ZOO KOH-meh seen-YOH-reh","Jesus as Lord"],
+["e avrai creduto col cuore","eh ah-VRY kreh-DOO-toh kohl KWOH-reh","and believe in your heart"],
+["che Dio l’ha risuscitato dai morti,","keh DEE-oh lah ree-zoo-shee-TAH-toh dye MOR-tee","that God raised him from the dead"],
+["sarai salvato;","sah-RY sahl-VAH-toh","you will be saved"],
+["infatti col cuore si crede per ottener la giustizia","een-FAHT-tee kohl KWOH-reh see KREH-deh per ot-teh-NAIR lah joo-STEE-tsyah","for with the heart one believes to receive righteousness"],
+["e con la bocca si fa confessione per esser salvati.","eh kohn lah BOHK-kah see fah kohn-fes-SYOH-neh per ES-ser sahl-VAH-tee","and with the mouth one confesses to be saved"]]},
+{ref:"Romani 10:13",title:"Invoca il suo nome",en:"Anyone can call on Him",ch:[
+["Poiché chiunque avrà invocato","poy-KEH kyoon-KWEH ah-VRAH een-voh-KAH-toh","for whoever calls on"],
+["il nome del Signore","eel NOH-meh del seen-YOH-reh","the name of the Lord"],
+["sarà salvato.","sah-RAH sahl-VAH-toh","will be saved"]]}
+]},
+zh:{name:"中文",lang:"Chinese",title:"罗马书之路",bible:"Chinese Union Version (和合本, 1919)",code:"zh-CN",re:/^(zh|cmn)/i,pref:["zh-CN","cmn","zh-SG","zh-TW","zh-HK"],colors:["#de2910","#ffde00","#de2910"],old:"rr-zh.",
+note:"Scripture: Chinese Union Version (和合本, 1919), Simplified characters. Mandarin is tonal, so the marks over the pinyin show how each syllable rises or falls. Listen closely to the audio. English lines are plain meanings, not a Bible translation. Audio uses your device's built-in Chinese voice.",
+V:[
+{ref:"罗马书 Romans 3:23",title:"世人都犯了罪",en:"Everyone has sinned",ch:[
+["因为世人都犯了罪，","yīnwèi shìrén dōu fàn le zuì","for all people have sinned"],
+["亏缺了神的荣耀；","kuīquē le Shén de róngyào","and fall short of the glory of God"]]},
+{ref:"罗马书 Romans 6:23",title:"罪的工价",en:"Sin leads to death",ch:[
+["因为罪的工价乃是死；","yīnwèi zuì de gōngjià nǎi shì sǐ","for the wages of sin is death"],
+["惟有神的恩赐，","wéiyǒu Shén de ēncì","but the gift of God"],
+["在我们的主基督耶稣里，","zài wǒmen de Zhǔ Jīdū Yēsū lǐ","in Christ Jesus our Lord"],
+["乃是永生。","nǎi shì yǒngshēng","is eternal life"]]},
+{ref:"罗马书 Romans 5:8",title:"神的爱",en:"Christ died for us",ch:[
+["惟有基督在我们还作罪人的时候","wéiyǒu Jīdū zài wǒmen hái zuò zuìrén de shíhou","but while we were still sinners, Christ"],
+["为我们死，","wèi wǒmen sǐ","died for us"],
+["神的爱就在此向我们显明了。","Shén de ài jiù zài cǐ xiàng wǒmen xiǎnmíng le","in this God's love is shown to us"]]},
+{ref:"罗马书 Romans 10:9–10",title:"口里承认，心里相信",en:"Confess and believe",ch:[
+["你若口里认耶稣为主，","nǐ ruò kǒu lǐ rèn Yēsū wéi Zhǔ","if with your mouth you confess Jesus as Lord"],
+["心里信神叫他从死里复活，","xīn lǐ xìn Shén jiào tā cóng sǐ lǐ fùhuó","and believe in your heart that God raised him from the dead"],
+["就必得救。","jiù bì déjiù","you will be saved"],
+["因为人心里相信，就可以称义；","yīnwèi rén xīn lǐ xiāngxìn, jiù kěyǐ chēngyì","for with the heart one believes and is made righteous"],
+["口里承认，就可以得救。","kǒu lǐ chéngrèn, jiù kěyǐ déjiù","with the mouth one confesses and is saved"]]},
+{ref:"罗马书 Romans 10:13",title:"求告主名",en:"Anyone can call on Him",ch:[
+["因为“凡求告主名的，","yīnwèi “fán qiúgào Zhǔ míng de","for whoever calls on the name of the Lord"],
+["就必得救。”","jiù bì déjiù”","will be saved"]]}
+]},
+ko:{name:"한국어",lang:"Korean",title:"로마서의 길",bible:"Korean Revised Version (개역한글, 1961)",code:"ko-KR",re:/^ko/i,pref:["ko-KR"],colors:["#cd2e3a","#f4f4f4","#0047a0"],old:"rr-ko.",
+note:"Scripture: Korean Revised Version (개역한글, 1961). Korean has no strong stressed syllables, so say each syllable evenly, with the same weight. English lines are plain meanings, not a Bible translation. Audio uses your device's built-in Korean voice.",
+V:[
+{ref:"로마서 Romans 3:23",title:"모든 사람이 죄를 범함",en:"Everyone has sinned",ch:[
+["모든 사람이 죄를 범하였으매","mo-deun sa-ra-mi joe-reul beom-ha-yeo-sseu-mae","all people have sinned"],
+["하나님의 영광에 이르지 못하더니","ha-na-ni-me yeong-gwang-e i-reu-ji mo-ta-deo-ni","and fall short of the glory of God"]]},
+{ref:"로마서 Romans 6:23",title:"죄의 삯",en:"Sin leads to death",ch:[
+["죄의 삯은 사망이요","joe-e sak-seun sa-mang-i-yo","the wages of sin is death"],
+["하나님의 은사는","ha-na-ni-me eun-sa-neun","but the gift of God"],
+["그리스도 예수 우리 주 안에 있는","geu-ri-seu-do ye-su u-ri ju a-ne in-neun","that is in Christ Jesus our Lord"],
+["영생이니라","yeong-saeng-i-ni-ra","is eternal life"]]},
+{ref:"로마서 Romans 5:8",title:"하나님의 사랑",en:"Christ died for us",ch:[
+["우리가 아직 죄인 되었을 때에","u-ri-ga a-jik joe-in doe-eo-sseul ttae-e","while we were still sinners"],
+["그리스도께서 우리를 위하여 죽으심으로","geu-ri-seu-do-kke-seo u-ri-reul wi-ha-yeo ju-geu-si-meu-ro","by Christ dying for us"],
+["하나님께서 우리에게 대한 자기의 사랑을 확증하셨느니라","ha-na-nim-kke-seo u-ri-e-ge dae-han ja-gi-e sa-rang-eul hwak-jeung-ha-syeon-neu-ni-ra","God proved his own love toward us"]]},
+{ref:"로마서 Romans 10:9–10",title:"시인하고 믿으라",en:"Confess and believe",ch:[
+["네가 만일 네 입으로","ne-ga ma-nil ne i-beu-ro","if with your mouth"],
+["예수를 주로 시인하며","ye-su-reul ju-ro si-in-ha-myeo","you confess Jesus as Lord"],
+["또 하나님께서 그를 죽은 자 가운데서 살리신 것을","tto ha-na-nim-kke-seo geu-reul ju-geun ja ga-un-de-seo sal-li-sin geo-seul","and that God raised him from the dead"],
+["네 마음에 믿으면","ne ma-eu-me mi-deu-myeon","you believe in your heart"],
+["구원을 얻으리니","gu-wo-neul eo-deu-ri-ni","you will be saved"],
+["사람이 마음으로 믿어 의에 이르고","sa-ra-mi ma-eu-meu-ro mi-deo ui-e i-reu-go","for one believes with the heart unto righteousness"],
+["입으로 시인하여 구원에 이르느니라","i-beu-ro si-in-ha-yeo gu-wo-ne i-reu-neu-ni-ra","and confesses with the mouth unto salvation"]]},
+{ref:"로마서 Romans 10:13",title:"주의 이름을 부르라",en:"Anyone can call on Him",ch:[
+["누구든지 주의 이름을 부르는 자는","nu-gu-deun-ji ju-e i-reu-meul bu-reu-neun ja-neun","whoever calls on the name of the Lord"],
+["구원을 얻으리라","gu-wo-neul eo-deu-ri-ra","will be saved"]]}
+]},
+pt:{name:"Português",lang:"Portuguese",title:"O Caminho de Romanos",bible:"Almeida Revista e Corrigida (ARC)",code:"pt-BR",re:/^pt/i,pref:["pt-BR","pt-PT"],colors:["#009c3b","#ffdf00","#002776"],old:"rr-pt.",
+note:"Scripture: Almeida Revista e Corrigida (ARC), © Sociedade Bíblica do Brasil. The sound guide follows Brazilian pronunciation; stressed syllables are in capitals. English lines are plain meanings, not a Bible translation. Audio uses your device's built-in Portuguese voice.",
+V:[
+{ref:"Romanos 3:23",title:"Todos pecaram",en:"Everyone has sinned",ch:[
+["Porque todos pecaram","por-KEH TOH-doos peh-KAH-rowng","for all have sinned"],
+["e destituídos estão","ee jes-chee-too-EE-doos es-TOWNG","and fall short"],
+["da glória de Deus,","dah GLOH-ree-ah jee DAY-oos","of the glory of God"]]},
+{ref:"Romanos 6:23",title:"O salário do pecado",en:"Sin leads to death",ch:[
+["Porque o salário do pecado é a morte,","por-KEH oo sah-LAH-ree-oo doo peh-KAH-doo EH ah MOR-chee","for the wages of sin is death"],
+["mas o dom gratuito de Deus","mahz oo DOHNG grah-TOO-ee-too jee DAY-oos","but the free gift of God"],
+["é a vida eterna,","EH ah VEE-dah eh-TER-nah","is eternal life"],
+["por Cristo Jesus, nosso Senhor.","por KREES-too zheh-ZOOS, NOH-soo sen-YOR","through Christ Jesus, our Lord"]]},
+{ref:"Romanos 5:8",title:"Deus nos ama",en:"Christ died for us",ch:[
+["Mas Deus prova o seu amor para conosco","mahs DAY-oos PROH-vah oo SAY-oo ah-MOR PAH-rah koh-NOHS-koo","but God proves his love toward us"],
+["em que Cristo morreu por nós,","eng kee KREES-too moh-HAY-oo por NOHS","in that Christ died for us"],
+["sendo nós ainda pecadores.","SEN-doo NOHS ah-EEN-dah peh-kah-DOH-rees","while we were still sinners"]]},
+{ref:"Romanos 10:9–10",title:"Confesse e creia",en:"Confess and believe",ch:[
+["a saber: Se, com a tua boca,","ah sah-BEHR: see, kohng ah TOO-ah BOH-kah","namely: if with your mouth"],
+["confessares ao Senhor Jesus","kohn-feh-SAH-rees ow sen-YOR zheh-ZOOS","you confess the Lord Jesus"],
+["e, em teu coração, creres","ee, eng TAY-oo koh-rah-SOWNG, KREH-rees","and believe in your heart"],
+["que Deus o ressuscitou dos mortos,","kee DAY-oos oo heh-soo-see-TOH doos MOR-toos","that God raised him from the dead"],
+["serás salvo.","seh-RAHS SAHL-voo","you will be saved"],
+["Visto que com o coração se crê para a justiça,","VEES-too kee kohng oo koh-rah-SOWNG see KREH PAH-rah ah zhoos-CHEE-sah","for with the heart one believes unto righteousness"],
+["e com a boca se faz confissão para a salvação.","ee kohng ah BOH-kah see FAHS kohn-fee-SOWNG PAH-rah ah sahl-vah-SOWNG","and with the mouth confession is made unto salvation"]]},
+{ref:"Romanos 10:13",title:"Invoque o seu nome",en:"Anyone can call on Him",ch:[
+["Porque todo aquele que invocar","por-KEH TOH-doo ah-KEH-lee kee een-voh-KAHR","for whoever calls on"],
+["o nome do Senhor","oo NOH-mee doo sen-YOR","the name of the Lord"],
+["será salvo.","seh-RAH SAHL-voo","will be saved"]]}
+]}
+};
+const $=id=>document.getElementById(id);
+function sget(k,d){try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch(e){return d}}
+function sset(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+let L=null,D=null,V=[],cur=0,learned=[],practice=false,voices=[],runId=0;
+let rate=sget('rr.rate',sget('camino.rate',0.75)),rep=sget('rr.rep',1),showPr=sget('rr.pr',true),showTr=sget('rr.tr',true);
+const synth=window.speechSynthesis;
+const P=k=>D.old+k;
+
+function drawPath(s,n,active,done,clickable){
+  const W=s.clientWidth||600,H=s.clientHeight||150;
+  const pts=Array.from({length:n},(_,i)=>[36+i*(W-72)/(n-1),H*0.5+Math.sin(i*1.25+0.4)*H*0.2]);
+  let d=`M-10,${pts[0][1]+12}`;pts.forEach(([x,y],i)=>{if(i===0)d+=` Q${x-20},${y} ${x},${y}`;else{const[px,py]=pts[i-1],mx=(px+x)/2;d+=` C${mx},${py} ${mx},${y} ${x},${y}`}});d+=` L${W+10},${pts[n-1][1]-8}`;
+  s.innerHTML=`<path d="${d}" fill="none" stroke="var(--laurel)" stroke-width="30" stroke-linecap="round" opacity=".18"/>
+  <path d="${d}" fill="none" stroke="var(--stone2)" stroke-width="22" stroke-linecap="round"/>
+  <path d="${d}" fill="none" stroke="var(--stone)" stroke-width="16" stroke-dasharray="14 4"/>
+  ${pts.map(([x,y],i)=>{const on=i===active,dn=done.includes(i);return `<g class="stop" data-i="${i}" ${clickable?`tabindex="0" role="button" aria-label="Stop ${i+1}, ${V[i].ref}"`:''}>
+  <ellipse cx="${x}" cy="${y+16}" rx="18" ry="5" fill="#000" opacity=".12"/>
+  <circle cx="${x}" cy="${y}" r="${on?21:17}" fill="${on?'var(--gold)':dn?'var(--laurel)':'var(--bg)'}" stroke="${on?'var(--gold)':dn?'var(--laurel)':'var(--stone2)'}" stroke-width="3"/>
+  <text x="${x}" y="${y+5}" text-anchor="middle" fill="${on||dn?'var(--bg)':'var(--ink)'}">${dn&&!on?'✓':i+1}</text></g>`}).join('')}`;
+}
+
+function renderHome(){
+  $('pick').innerHTML=Object.entries(DATA).map(([k,d])=>{const l=sget(d.old+'learned',[]);return `<button class="lang" data-l="${k}">
+  <div class="stripe">${d.colors.map(c=>`<i style="background:${c}"></i>`).join('')}</div>
+  <b lang="${k}">${d.name}</b><span lang="${k}">${d.title}</span><span>${d.lang} · ${d.bible}</span>
+  <div class="dots">${d.V.map((_,i)=>`<i class="${l.includes(i)?'on':''}"></i>`).join('')}</div>
+  <em>${l.length?`${l.length} of ${d.V.length} learned · Continue →`:'Start →'}</em></button>`}).join('');
+  $('pick').querySelectorAll('.lang').forEach(b=>b.addEventListener('click',()=>{location.hash=b.dataset.l}));
+  const s=$('homeRoad');V=DATA.es.V;drawPath(s,5,-1,[],false);
+}
+
+function loadVoices(){
+  if(!synth||!D)return;
+  voices=synth.getVoices().filter(v=>D.re.test(v.lang));
+  const rank=v=>{const i=D.pref.findIndex(p=>v.lang.replace('_','-').startsWith(p));return i<0?9:i};
+  voices.sort((a,b)=>rank(a)-rank(b));
+  $('voice').innerHTML=voices.length?voices.map(v=>`<option value="${v.name}">${v.name} (${v.lang})</option>`).join(''):`<option>Default ${D.lang}</option>`;
+  const vn=sget(P('voice'),'');if(voices.some(v=>v.name===vn))$('voice').value=vn;
+  $('warn').style.display=(synth.getVoices().length&&!voices.length)?'block':'none';
+}
+if(synth)synth.onvoiceschanged=loadVoices;
+
+function speak(text){return new Promise(res=>{
+  if(!synth)return res();
+  const u=new SpeechSynthesisUtterance(text);u.lang=D.code;u.rate=rate;
+  const v=voices.find(v=>v.name===$('voice').value);if(v){u.voice=v;u.lang=v.lang}
+  u.onend=u.onerror=()=>res();synth.speak(u);
+})}
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+function mark(i){document.querySelectorAll('.phr').forEach((p,j)=>p.classList.toggle('on',j===i))}
+async function playLines(idx){
+  const id=++runId;if(synth)synth.cancel();
+  for(const i of idx)for(let r=0;r<rep;r++){if(id!==runId)return;mark(i);await speak(V[cur].ch[i][0]);if(id!==runId)return;await wait(r<rep-1?600:350)}
+  if(id===runId)mark(-1);
+}
+function stopAll(){runId++;if(synth)synth.cancel();mark(-1)}
+
+function drawRoad(){
+  if(!D)return;const s=$('roadSvg');drawPath(s,V.length,cur,learned,true);
+  s.querySelectorAll('.stop').forEach(g=>{const go=()=>{stopAll();cur=+g.dataset.i;render()};g.addEventListener('click',go);g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go()}})});
+}
+
+function render(){
+  sset(P('cur'),cur);const v=V[cur],c=$('card');
+  c.className='card lang-'+L+(showPr?'':' hidePr')+(showTr?'':' hideTr')+(practice?' practice':'');
+  c.innerHTML=`<div class="ref"><div><h2 lang="${L}">${cur+1}. ${v.title}</h2><div class="en">${v.en}</div></div><small>${v.ref}${learned.includes(cur)?' · <span class="done">learned</span>':''}</small></div>
+  ${v.ch.map((p,i)=>`<button class="phr" data-i="${i}"><span class="es" lang="${L}">${p[0]}</span><span class="pr">${p[1]}</span><span class="tr">${p[2]}</span></button>`).join('')}`;
+  c.querySelectorAll('.phr').forEach(b=>b.addEventListener('click',()=>{b.classList.add('shown');playLines([+b.dataset.i])}));
+  $('learned').setAttribute('aria-pressed',learned.includes(cur));$('learned').textContent=learned.includes(cur)?'✓ Learned':'Mark learned';
+  $('prev').disabled=cur===0;$('next').disabled=cur===V.length-1;$('prev').style.opacity=cur===0?.4:1;$('next').style.opacity=cur===V.length-1?.4:1;
+  drawRoad();
+}
+
+function open(lang){
+  stopAll();
+  if(!DATA[lang]){L=null;D=null;$('app').hidden=true;$('home').hidden=false;document.title='The Roman Road';renderHome();window.scrollTo(0,0);return}
+  L=lang;D=DATA[lang];V=D.V;cur=Math.min(sget(P('cur'),0),V.length-1);learned=sget(P('learned'),[]);practice=false;
+  $('practice').setAttribute('aria-pressed',false);
+  $('h1').textContent=D.title;$('h1').lang=L;document.title=D.title;
+  $('sub').textContent=`The Roman Road in ${D.lang}. Tap any line to hear it.`;
+  $('tip').textContent=D.tip||`Practice mode hides the ${D.lang}. Read the English, say the ${D.lang} out loud, then tap the line to check yourself.`;
+  $('voiceL').textContent=`${D.lang} voice`;
+  $('note').textContent=D.note||`Scripture: ${D.bible}. English lines are plain meanings to help you follow, not a Bible translation. Audio uses your device's built-in ${D.lang} voice.`;
+  $('warn').textContent=synth?`No ${D.lang} voice was found on this device. On iPhone, add one in Settings → Accessibility → Spoken Content → Voices → ${D.lang}. On Android, install ${D.lang} in your text-to-speech settings.`:'This browser cannot speak text aloud. Try opening the page in Safari or Chrome.';
+  $('warn').style.display=synth?'none':'block';
+  $('showBox').hidden=L==='en';$('home').hidden=true;$('app').hidden=false;window.scrollTo(0,0);
+  loadVoices();render();
+}
+
+$('goHome').addEventListener('click',()=>{location.hash='home'});
+$('playAll').addEventListener('click',()=>{if(practice)document.querySelectorAll('.phr').forEach(p=>p.classList.add('shown'));playLines(V[cur].ch.map((_,i)=>i))});
+$('stop').addEventListener('click',stopAll);
+$('practice').addEventListener('click',()=>{practice=!practice;$('practice').setAttribute('aria-pressed',practice);stopAll();render()});
+$('learned').addEventListener('click',()=>{learned=learned.includes(cur)?learned.filter(x=>x!==cur):[...learned,cur];sset(P('learned'),learned);render()});
+$('prev').addEventListener('click',()=>{if(cur>0){stopAll();cur--;render()}});
+$('next').addEventListener('click',()=>{if(cur<V.length-1){stopAll();cur++;render()}});
+const rl=()=>rate<0.7?'Slow':rate<0.95?'Medium':'Normal';
+$('rate').value=rate;$('rateV').textContent=rl();
+$('rate').addEventListener('input',e=>{rate=+e.target.value;sset('rr.rate',rate);$('rateV').textContent=rl()});
+$('rep').value=rep;$('rep').addEventListener('change',e=>{rep=+e.target.value;sset('rr.rep',rep)});
+$('voice').addEventListener('change',e=>sset(P('voice'),e.target.value));
+$('tPr').setAttribute('aria-pressed',showPr);$('tTr').setAttribute('aria-pressed',showTr);
+$('tPr').addEventListener('click',()=>{showPr=!showPr;sset('rr.pr',showPr);$('tPr').setAttribute('aria-pressed',showPr);render()});
+$('tTr').addEventListener('click',()=>{showTr=!showTr;sset('rr.tr',showTr);$('tTr').setAttribute('aria-pressed',showTr);render()});
+const ro=new ResizeObserver(()=>{if(D)drawRoad();else drawPath($('homeRoad'),5,-1,[],false)});ro.observe($('roadSvg'));ro.observe($('homeRoad'));
+window.addEventListener('hashchange',()=>open(location.hash.slice(1)));
+open(location.hash.slice(1));
+}
+</script>
+<footer style="text-align:center;font-size:11px;color:var(--mute);opacity:.6;margin-top:-90px;padding:0 16px 24px">© 2026 Dwayne Harris · Created by Dwayne Harris</footer>
+<!-- Add to Home Screen helper -->
+<style>
+#a2hs-btn{position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:2147483000;background:#2f6fdf;color:#fff;border:none;border-radius:999px;padding:9px 14px;font:600 14px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;box-shadow:0 3px 10px rgba(0,0,0,.25);cursor:pointer}
+#a2hs-overlay{display:none;position:fixed;inset:0;z-index:2147483001;background:rgba(0,0,0,.5);overflow-y:auto;padding:20px 14px calc(20px + env(safe-area-inset-bottom))}
+#a2hs-overlay.open{display:block}
+#a2hs-box{max-width:520px;margin:0 auto;background:#fff;color:#1f2933;border-radius:16px;padding:18px 18px 8px;font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;text-align:left}
+#a2hs-box h2{font-size:20px;margin:0 0 4px;color:#1f2933}
+#a2hs-box h3{font-size:16px;margin:16px 0 6px;color:#1f2933}
+#a2hs-box p{margin:0 0 8px;color:#5f6b76;font-size:14px}
+#a2hs-box ol,#a2hs-box ul{margin:0 0 8px;padding-left:22px}
+#a2hs-box li{margin-bottom:6px}
+#a2hs-box .a2hs-tip{background:#eef4ff;border-left:4px solid #2f6fdf;border-radius:8px;padding:10px 12px;font-size:14px;margin:8px 0}
+#a2hs-close{display:block;width:100%;margin:14px 0 10px;padding:12px;border:none;border-radius:10px;background:#2f6fdf;color:#fff;font:600 16px -apple-system,BlinkMacSystemFont,sans-serif;cursor:pointer}
+</style>
+<button id="a2hs-btn" type="button">📲 Add to Home Screen</button>
+<div id="a2hs-overlay" role="dialog" aria-modal="true" aria-label="Add to Home Screen">
+  <div id="a2hs-box">
+    <h2>Put this app on your Home Screen</h2>
+    <p>Takes about 30 seconds. Then it opens with one tap, like a regular app.</p>
+    <h3>Using Safari (recommended)</h3>
+    <ol>
+      <li>Open this page in <b>Safari</b>.</li>
+      <li>Tap the <b>Share</b> button (square with an up arrow). On newer iPhones, tap the <b>•••</b> button by the address bar first, then <b>Share</b>.</li>
+      <li>Scroll down and tap <b>Add to Home Screen</b>. Don't see it? Tap <b>View More</b> or <b>Edit Actions</b>.</li>
+      <li>If you see <b>Open as Web App</b>, leave it on.</li>
+      <li>Tap <b>Add</b> in the top-right corner.</li>
+    </ol>
+    <h3>Using Chrome or Edge</h3>
+    <ol>
+      <li>Tap the <b>Share</b> button next to the address bar.</li>
+      <li>Tap <b>Add to Home Screen</b>, then <b>Add</b>.</li>
+    </ol>
+    <div class="a2hs-tip">Can't find it? Copy the web address, open it in Safari, and follow the Safari steps.</div>
+    <h3>Good to know</h3>
+    <ul>
+      <li><b>Move it:</b> press and hold the icon, then drag.</li>
+      <li><b>Remove it:</b> press and hold, then tap <b>Remove App</b>. Only the shortcut is removed.</li>
+      <li><b>Updates:</b> nothing to install; you always get the latest version.</li>
+    </ul>
+    <button id="a2hs-close" type="button">Got it</button>
+  </div>
+</div>
+<script>
+(function(){
+  var btn=document.getElementById('a2hs-btn'),ov=document.getElementById('a2hs-overlay'),cl=document.getElementById('a2hs-close');
+  var standalone=(window.navigator.standalone===true)||(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches);
+  if(standalone){btn.style.display='none';return;}
+  btn.addEventListener('click',function(){ov.classList.add('open');});
+  cl.addEventListener('click',function(){ov.classList.remove('open');});
+  ov.addEventListener('click',function(e){if(e.target===ov)ov.classList.remove('open');});
+})();
+</script>
+<!-- /Add to Home Screen helper -->
+</body>
+</html>
