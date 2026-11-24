@@ -4,36 +4,83 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#1f3a5f">
+<meta name="description" content="Dwayne's Apps: simple, free tools for Bible study, learning, and the workshop.">
 <title>Dwayne's Apps</title>
 <style>
-:root{--bg:#eef2f6;--card:#fff;--ink:#1f2933;--mute:#5f6b76;--line:#d6dde4;--accent:#1f3a5f;--gold:#a8741a}
-@media (prefers-color-scheme:dark){:root{--bg:#121820;--card:#1a232e;--ink:#e8edf2;--mute:#9aa7b3;--line:#2c3a48;--accent:#8db4ea;--gold:#d9a94a}}
+:root{--bg:#eef2f6;--card:#fff;--ink:#1f2933;--mute:#5f6b76;--line:#d6dde4;--accent:#1f3a5f;--gold:#a8741a;--tint:#e3eaf2}
+@media (prefers-color-scheme:dark){:root{--bg:#121820;--card:#1a232e;--ink:#e8edf2;--mute:#9aa7b3;--line:#2c3a48;--accent:#8db4ea;--gold:#d9a94a;--tint:#223142}}
 *{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 Georgia,"Times New Roman",serif;padding:max(24px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom))}
-main{max-width:520px;margin:0 auto}
-h1{font-size:1.7rem;margin:12px 0 4px;text-align:center;color:var(--accent)}
-.sub{text-align:center;color:var(--mute);margin:0 0 26px}
-.apps{display:grid;gap:14px}
-a.app{display:block;text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--line);border-left:5px solid var(--gold);border-radius:14px;padding:16px 18px;min-height:64px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+main{max-width:640px;margin:0 auto}
+header{text-align:center;padding:18px 0 8px}
+.mark{width:56px;height:56px;margin:0 auto 10px;border-radius:14px;background:var(--accent);color:var(--bg);display:grid;place-items:center;font-size:1.6rem;font-weight:bold}
+h1{font-size:2rem;margin:0 0 6px;color:var(--accent);letter-spacing:.01em}
+.sub{color:var(--mute);margin:0 auto 28px;max-width:30em}
+h2{font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--gold);margin:30px 0 10px;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-weight:600}
+.apps{display:grid;gap:12px}
+@media (min-width:600px){.apps{grid-template-columns:1fr 1fr}}
+a.app{display:flex;gap:14px;align-items:flex-start;text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--line);border-left:5px solid var(--gold);border-radius:14px;padding:16px;min-height:72px;box-shadow:0 1px 3px rgba(0,0,0,.06);transition:border-color .15s,box-shadow .15s}
 a.app:hover,a.app:focus-visible{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 35%,transparent)}
 a.app:active{transform:scale(.99)}
-.app b{display:block;font-size:1.15rem;color:var(--accent)}
-.app span{display:block;color:var(--mute);font-size:.95rem;margin-top:2px}
-footer{margin-top:34px;text-align:center;font-size:.7rem;color:var(--mute);opacity:.6}
+.ic{flex:0 0 42px;height:42px;border-radius:10px;background:var(--tint);color:var(--accent);display:grid;place-items:center}
+.ic svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.app b{display:block;font-size:1.1rem;color:var(--accent);line-height:1.25}
+.app span{display:block;color:var(--mute);font-size:.93rem;margin-top:3px}
+.verse{margin:40px auto 0;text-align:center;color:var(--mute);font-style:italic;max-width:28em;font-size:.95rem}
+footer{margin-top:30px;text-align:center;font-size:.7rem;color:var(--mute);opacity:.6}
 </style>
 </head>
 <body>
 <main>
-<h1>Dwayne's Apps</h1>
-<p class="sub">Choose an app to open.</p>
-<nav class="apps" aria-label="Apps">
-<a class="app" href="/math/"><b>Math Sharp</b><span>Timed math quizzes to keep you sharp.</span></a>
-<a class="app" href="/biblestories/"><b>Bible Stories</b><span>Children's Bible stories with printable coloring pages.</span></a>
-<a class="app" href="/cutsheet/"><b>Plywood Cut Sheet</b><span>Plan your plywood cuts.</span></a>
-<a class="app" href="/romanroad/"><b>The Roman Road</b><span>Practice the Roman Road in six languages.</span></a>
-<a class="app" href="/weld/"><b>Weld Settings</b><span>Welding settings, equipment, and consumables.</span></a>
-<a class="app" href="/timeline/"><b>Bible Lives in History</b><span>Bible characters on a timeline of world events.</span></a>
+<header>
+  <div class="mark" aria-hidden="true">D</div>
+  <h1>Dwayne's Apps</h1>
+  <p class="sub">Simple tools for Bible study, staying sharp, and the workshop. Pick one to open.</p>
+</header>
+
+<h2>Faith &amp; Bible</h2>
+<nav class="apps" aria-label="Faith and Bible apps">
+  <a class="app" href="/timeline/">
+    <div class="ic"><svg viewBox="0 0 24 24"><path d="M3 12h18"/><circle cx="6" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="18" cy="12" r="2"/><path d="M6 6v4M12 14v4M18 6v4"/></svg></div>
+    <div><b>Bible Lives in History</b><span>Bible characters on a timeline of world events.</span></div>
+  </a>
+  <a class="app" href="/biblestories/">
+    <div class="ic"><svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M11 7v6M8 10h6"/></svg></div>
+    <div><b>Bible Stories</b><span>Children's Bible stories with printable coloring pages.</span></div>
+  </a>
+  <a class="app" href="/romanroad/">
+    <div class="ic"><svg viewBox="0 0 24 24"><path d="M8 21 11 3M16 21 13 3"/><path d="M12 7v1M12 12v1.5M12 17v2"/></svg></div>
+    <div><b>The Roman Road</b><span>Practice the Roman Road in six languages.</span></div>
+  </a>
 </nav>
+
+<h2>Learning</h2>
+<nav class="apps" aria-label="Learning apps">
+  <a class="app" href="/math/">
+    <div class="ic"><svg viewBox="0 0 24 24"><path d="M5 7h5M7.5 4.5v5M14 7h5M5 16.5l4 4M9 16.5l-4 4M14 16h5M14 20h5"/></svg></div>
+    <div><b>Math Sharp</b><span>Timed math quizzes to keep you sharp.</span></div>
+  </a>
+</nav>
+
+<h2>Workshop</h2>
+<nav class="apps" aria-label="Workshop apps">
+  <a class="app" href="/weld/">
+    <div class="ic"><svg viewBox="0 0 24 24"><path d="M13 2 6 13h5l-1 9 7-11h-5z"/></svg></div>
+    <div><b>Weld Settings</b><span>Welding settings, equipment, and consumables.</span></div>
+  </a>
+  <a class="app" href="/cutsheet/">
+    <div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="1"/><path d="M12 5v14M3 12h9"/></svg></div>
+    <div><b>Plywood Cut Sheet</b><span>Plan your plywood cuts.</span></div>
+  </a>
+  <a class="app" href="/plasma/">
+    <div class="ic"><svg viewBox="0 0 24 24"><path d="M4 20 14 10"/><path d="M14 10l3-3 3 3-3 3z"/><path d="M19 3v2M21 5h-2M16 2.5l.5 1.5"/></svg></div>
+    <div><b>Plasma Cut Sign Maker</b><span>Turn words, monograms, and shapes into plasma-cut SVGs.</span></div>
+  </a>
+</nav>
+
+<p class="verse">"Whatsoever ye do, do it heartily, as to the Lord." — Colossians 3:23 (KJV)</p>
+
 <footer>&copy; 2026 Dwayne Harris &middot; Created by Dwayne Harris</footer>
 </main>
 </body>
