@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plywood Box Cut Calculator</title>
+<style>
+:root{--bg:#f6f1e7;--card:#fffdf8;--ink:#2b2418;--mute:#7a6d58;--line:#e2d8c5;--acc:#b5651d;--acc2:#8a4a12;--ok:#2f6b3a;--err:#a3271f}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.4}
+header{background:linear-gradient(135deg,#c98a4b,#9a5a24);color:#fff;padding:18px 16px 14px}
+header h1{margin:0;font-size:1.35rem}
+header p{margin:4px 0 0;opacity:.9;font-size:.9rem}
+main{max-width:980px;margin:0 auto;padding:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+h2{font-size:1.05rem;margin:0 0 10px;color:var(--acc2)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+label{display:block;font-size:.8rem;color:var(--mute);margin-bottom:3px;font-weight:600}
+input,select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:1rem;background:#fff;color:var(--ink)}
+input:focus,select:focus{outline:2px solid #e3b98a;border-color:var(--acc)}
+.box{border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:10px;position:relative;border-left:6px solid var(--c)}
+.box .top{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+.box .top input{flex:1;font-weight:600}
+.sides{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.sides label{display:flex;align-items:center;gap:5px;background:#f3ece0;border-radius:20px;padding:6px 11px;margin:0;font-size:.85rem;color:var(--ink);cursor:pointer;font-weight:500}
+.sides input{width:auto;margin:0}
+button{font:inherit;border:none;border-radius:8px;padding:10px 14px;cursor:pointer;font-weight:600}
+.btn{background:var(--acc);color:#fff}
+.btn:hover{background:var(--acc2)}
+.ghost{background:#efe6d6;color:var(--ink)}
+.del{background:none;color:var(--err);padding:6px 8px;font-size:1.1rem}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.toggle{display:flex;align-items:center;gap:8px;font-size:.9rem;margin-top:10px}
+.toggle input{width:auto}
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.stat{background:#f3ece0;border-radius:10px;padding:10px;text-align:center}
+.stat b{display:block;font-size:1.6rem;color:var(--acc2)}
+.stat span{font-size:.8rem;color:var(--mute)}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+th,td{padding:7px 6px;border-bottom:1px solid var(--line);text-align:left}
+th{font-size:.75rem;text-transform:uppercase;color:var(--mute);letter-spacing:.03em}
+.code{display:inline-block;min-width:26px;text-align:center;border-radius:6px;padding:2px 6px;font-weight:700;color:#fff;background:var(--acc)}
+.sheet{margin:14px 0}
+.sheet h3{margin:0 0 6px;font-size:.95rem}
+.sheet svg{width:100%;height:auto;background:#f0dcb8;border:1px solid #c9a978;border-radius:4px}
+.err{color:var(--err);font-weight:600}
+.note{font-size:.82rem;color:var(--mute)}
+.hint{font-size:.8rem;color:var(--mute);margin-top:6px}
+.dim-out{font-size:.8rem;color:var(--ok);margin-top:8px}
+@media print{header,.noprint{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <h1>🪚 Plywood Box Cut Calculator</h1>
+  <p>Enter your box sizes and the sides you need. It builds the cut list and packs it onto the fewest sheets.</p>
+</header>
+<main>
+
+<section class="card">
+  <h2>Plywood &amp; Saw</h2>
+  <div class="grid">
+    <div><label>Plywood thickness</label>
+      <select id="thkSel">
+        <option value="0.25">1/4"</option>
+        <option value="0.375">3/8"</option>
+        <option value="0.5">1/2"</option>
+        <option value="0.625">5/8"</option>
+        <option value="0.75" selected>3/4"</option>
+        <option value="0.703125">23/32" (actual 3/4)</option>
+        <option value="0.46875">15/32" (actual 1/2)</option>
+        <option value="custom">Custom…</option>
+      </select>
+    </div>
+    <div id="thkCustomWrap" style="display:none"><label>Custom thickness (in)</label><input id="thkCustom" value="0.75" inputmode="decimal"></div>
+    <div><label>Sheet length (in)</label><input id="sheetL" value="96" inputmode="decimal"></div>
+    <div><label>Sheet width (in)</label><input id="sheetW" value="48" inputmode="decimal"></div>
+    <div><label>Saw kerf (in)</label><input id="kerf" value="1/8" inputmode="decimal"></div>
+  </div>
+  <div class="grid" style="margin-top:10px">
+    <div><label>Box dimensions are</label>
+      <select id="dimType"><option value="out">Outside (finished size)</option><option value="in">Inside (usable space)</option></select>
+    </div>
+  </div>
+  <label class="toggle"><input type="checkbox" id="rotate" checked> Allow pieces to rotate (turn off to keep wood grain running the long way on every piece)</label>
+  <p class="hint">Fractions are fine: 23 1/2, 23-1/2 or 23.5. All sizes in inches.</p>
+</section>
+
+<section class="card">
+  <h2>Boxes</h2>
+  <div id="boxes"></div>
+  <div class="row noprint">
+    <button class="ghost" id="addBox">+ Add another box</button>
+  </div>
+  <p class="note" style="margin-top:10px">Construction: front &amp; back run the full length, the two ends fit between them, and the top &amp; bottom lay over the walls at full length × width.</p>
+</section>
+
+<section class="card">
+  <h2>Shelves &amp; Extra Panels</h2>
+  <p class="hint" style="margin-top:0">Flat pieces cut to an exact size: shelves, dividers, backs. Enter in inches (72 = 6 ft).</p>
+  <div id="panels"></div>
+  <div class="row noprint">
+    <button class="ghost" id="addPanel">+ Add shelf / panel</button>
+    <button class="btn" id="calc">Calculate</button>
+  </div>
+</section>
+
+<section id="results"></section>
+
+</main>
+<script>
+const COLORS=['#b5651d','#2f6b8a','#5f7d2e','#8a3f6b','#b08a1d','#4b5ea8','#a3452a','#2e7d74'];
+const SIDE_NAMES=['top','bottom','front','back','left','right'];
+const SIDE_LABEL={top:'Top',bottom:'Bottom',front:'Front',back:'Back',left:'Left end',right:'Right end'};
+const PRESETS={6:{top:1,bottom:1,front:1,back:1,left:1,right:1},5:{top:0,bottom:1,front:1,back:1,left:1,right:1},4:{top:0,bottom:0,front:1,back:1,left:1,right:1},3:{top:0,bottom:1,front:0,back:1,left:1,right:1},2:{top:0,bottom:1,front:0,back:1,left:0,right:0},1:{top:0,bottom:1,front:0,back:0,left:0,right:0}};
+let boxes=[];
+let panels=null;
+const PANEL_COLOR='#6b6b5e';
+const DEFAULT_PANELS=[{name:'Shelf 2ft',L:'72',W:'24',qty:'2'},{name:'Shelf 1ft',L:'72',W:'12',qty:'1'}];
+function newPanel(i){return{name:'Panel '+(i+1),L:'72',W:'12',qty:'1'}}
+function renderPanels(){
+  const wrap=document.getElementById('panels');wrap.innerHTML='';
+  panels.forEach((p,i)=>{
+    const d=document.createElement('div');d.className='box';d.style.setProperty('--c',PANEL_COLOR);
+    d.innerHTML=`<div class="top"><input data-k="name" value="${esc(p.name)}" aria-label="Panel name"><button class="del" title="Remove">✕</button></div>
+    <div class="grid">
+      <div><label>Length</label><input data-k="L" value="${esc(p.L)}" inputmode="decimal"></div>
+      <div><label>Width</label><input data-k="W" value="${esc(p.W)}" inputmode="decimal"></div>
+      <div><label>How many</label><input data-k="qty" value="${esc(p.qty)}" inputmode="numeric"></div>
+    </div>`;
+    d.querySelectorAll('[data-k]').forEach(el=>el.addEventListener('input',()=>{p[el.dataset.k]=el.value;save()}));
+    d.querySelector('.del').onclick=()=>{panels.splice(i,1);renderPanels();save()};
+    wrap.appendChild(d);
+  });
+}
+
+function parseLen(s){
+  if(typeof s==='number')return s;
+  s=String(s||'').trim().replace(/["”in]/g,'').replace(/(\d)-(\d)/g,'$1 $2');
+  if(!s)return NaN;
+  let t=0;
+  for(const tok of s.split(/\s+/)){
+    if(tok.includes('/')){const [a,b]=tok.split('/').map(Number);if(!b)return NaN;t+=a/b;}
+    else{const v=Number(tok);if(isNaN(v))return NaN;t+=v;}
+  }
+  return t;
+}
+function gcd(a,b){return b?gcd(b,a%b):a}
+function fmt(x){
+  const n=Math.round(x*16);const w=Math.floor(n/16);const r=n%16;
+  if(!r)return w+'"';
+  const g=gcd(r,16);const fr=(r/g)+'/'+(16/g);
+  return (w?w+' ':'')+fr+'"';
+}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+
+function newBox(i){return{name:'Box '+(i+1),L:'24',W:'16',H:'12',qty:'1',preset:'6',sides:{...PRESETS[6]}}}
+
+function save(){try{localStorage.setItem('plyboxes',JSON.stringify({boxes,panels,settings:readSettingsRaw()}))}catch(e){}}
+function load(){
+  try{const d=JSON.parse(localStorage.getItem('plyboxes'));if(d&&d.boxes&&d.boxes.length){boxes=d.boxes;panels=Array.isArray(d.panels)?d.panels:null;const s=d.settings||{};
+    for(const k in s){const el=document.getElementById(k);if(!el)continue;if(el.type==='checkbox')el.checked=s[k];else el.value=s[k];}
+    document.getElementById('thkCustomWrap').style.display=document.getElementById('thkSel').value==='custom'?'':'none';return;}}catch(e){}
+  boxes=[newBox(0)];
+}
+function readSettingsRaw(){const o={};['thkSel','thkCustom','sheetL','sheetW','kerf','dimType','rotate'].forEach(k=>{const el=document.getElementById(k);o[k]=el.type==='checkbox'?el.checked:el.value});return o}
+
+function renderBoxes(){
+  const wrap=document.getElementById('boxes');wrap.innerHTML='';
+  boxes.forEach((b,i)=>{
+    const d=document.createElement('div');d.className='box';d.style.setProperty('--c',COLORS[i%COLORS.length]);
+    d.innerHTML=`<div class="top"><input data-k="name" value="${esc(b.name)}" aria-label="Box name">${boxes.length>1?'<button class="del" title="Remove">✕</button>':''}</div>
+    <div class="grid">
+      <div><label>Length</label><input data-k="L" value="${esc(b.L)}" inputmode="decimal"></div>
+      <div><label>Width (depth)</label><input data-k="W" value="${esc(b.W)}" inputmode="decimal"></div>
+      <div><label>Height</label><input data-k="H" value="${esc(b.H)}" inputmode="decimal"></div>
+      <div><label>How many boxes</label><input data-k="qty" value="${esc(b.qty)}" inputmode="numeric"></div>
+      <div><label>Number of sides</label><select data-k="preset">
+        <option value="6">6 – closed box</option><option value="5">5 – open top</option><option value="4">4 – no top or bottom</option>
+        <option value="3">3 – bottom, back, ends</option><option value="2">2 – bottom &amp; back</option><option value="1">1 – single panel</option><option value="custom">Custom…</option></select></div>
+    </div>
+    <div class="sides">${SIDE_NAMES.map(s=>`<label><input type="checkbox" data-side="${s}" ${b.sides[s]?'checked':''}>${SIDE_LABEL[s]}</label>`).join('')}</div>
+    <div class="dim-out"></div>`;
+    d.querySelector('[data-k=preset]').value=b.preset;
+    d.querySelectorAll('[data-k]').forEach(el=>{
+      el.addEventListener('input',()=>{b[el.dataset.k]=el.value;
+        if(el.dataset.k==='preset'&&PRESETS[el.value]){b.sides={...PRESETS[el.value]};d.querySelectorAll('[data-side]').forEach(c=>c.checked=!!b.sides[c.dataset.side]);}
+        save();});
+    });
+    d.querySelectorAll('[data-side]').forEach(c=>c.addEventListener('change',()=>{b.sides[c.dataset.side]=c.checked?1:0;
+      const n=SIDE_NAMES.filter(s=>b.sides[s]).length;const p=Object.keys(PRESETS).find(k=>SIDE_NAMES.every(s=>!!PRESETS[k][s]===!!b.sides[s]));
+      b.preset=p||'custom';d.querySelector('[data-k=preset]').value=b.preset;save();}));
+    const del=d.querySelector('.del');if(del)del.onclick=()=>{boxes.splice(i,1);renderBoxes();save();};
+    wrap.appendChild(d);
+  });
+}
+
+function getThk(){const v=document.getElementById('thkSel').value;return v==='custom'?parseLen(document.getElementById('thkCustom').value):Number(v)}
+
+function boxPieces(b,t,inside){
+  let L=parseLen(b.L),W=parseLen(b.W),H=parseLen(b.H),q=parseInt(b.qty)||0;
+  if([L,W,H].some(v=>!(v>0)))throw new Error(`${b.name}: enter a length, width and height greater than zero.`);
+  if(q<1)throw new Error(`${b.name}: quantity must be at least 1.`);
+  const s=b.sides;
+  if(!SIDE_NAMES.some(k=>s[k]))throw new Error(`${b.name}: pick at least one side.`);
+  const nTB=(s.top?1:0)+(s.bottom?1:0),nFB=(s.front?1:0)+(s.back?1:0),nLR=(s.left?1:0)+(s.right?1:0);
+  if(inside){L+=t*nLR;W+=t*nFB;H+=t*nTB;}
+  const Hw=H-t*nTB, Wend=W-t*nFB;
+  if(Hw<=0||Wend<=0)throw new Error(`${b.name}: box is too small for ${fmt(t)} plywood.`);
+  const out=[];
+  const add=(part,a,c)=>{out.push({box:b.name,part,len:Math.max(a,c),wid:Math.min(a,c),q})};
+  if(s.top)add('Top',L,W);
+  if(s.bottom)add('Bottom',L,W);
+  if(s.front)add('Front',L,Hw);
+  if(s.back)add('Back',L,Hw);
+  if(s.left)add('Left end',Wend,Hw);
+  if(s.right)add('Right end',Wend,Hw);
+  return {pieces:out,outside:{L,W,H}};
+}
+
+/* ---------- MaxRects bin packing ---------- */
+const EPS=1e-6;
+function contains(a,b){return b.x>=a.x-EPS&&b.y>=a.y-EPS&&b.x+b.w<=a.x+a.w+EPS&&b.y+b.h<=a.y+a.h+EPS}
+class Sheet{
+  constructor(W,H){this.W=W;this.H=H;this.free=[{x:0,y:0,w:W,h:H}];this.used=[];this.area=0}
+  score(w,h,heur,rot){
+    let best=null;
+    const opts=rot&&Math.abs(w-h)>EPS?[[w,h,false],[h,w,true]]:[[w,h,false]];
+    for(const f of this.free)for(const [pw,ph,r] of opts){
+      if(pw>f.w+EPS||ph>f.h+EPS)continue;
+      const lh=f.w-pw,lv=f.h-ph;let s1,s2;
+      if(heur==='bssf'){s1=Math.min(lh,lv);s2=Math.max(lh,lv)}
+      else if(heur==='blsf'){s1=Math.max(lh,lv);s2=Math.min(lh,lv)}
+      else if(heur==='baf'){s1=f.w*f.h-pw*ph;s2=Math.min(lh,lv)}
+      else{s1=f.y+ph;s2=f.x}
+      if(!best||s1<best.s1-EPS||(Math.abs(s1-best.s1)<EPS&&s2<best.s2))best={x:f.x,y:f.y,w:pw,h:ph,rot:r,s1,s2};
+    }
+    return best;
+  }
+  place(n){
+    const out=[];
+    for(const f of this.free){
+      if(n.x>=f.x+f.w-EPS||n.x+n.w<=f.x+EPS||n.y>=f.y+f.h-EPS||n.y+n.h<=f.y+EPS){out.push(f);continue}
+      if(n.x>f.x+EPS)out.push({x:f.x,y:f.y,w:n.x-f.x,h:f.h});
+      if(n.x+n.w<f.x+f.w-EPS)out.push({x:n.x+n.w,y:f.y,w:f.x+f.w-n.x-n.w,h:f.h});
+      if(n.y>f.y+EPS)out.push({x:f.x,y:f.y,w:f.w,h:n.y-f.y});
+      if(n.y+n.h<f.y+f.h-EPS)out.push({x:f.x,y:n.y+n.h,w:f.w,h:f.y+f.h-n.y-n.h});
+    }
+    this.free=out.filter((a,i)=>!out.some((b,j)=>j!==i&&contains(b,a)&&(!contains(a,b)||j<i)));
+    this.used.push(n);this.area+=n.w*n.h;
+  }
+}
+function packOnce(items,SL,SW,kerf,rot,heur,mode){
+  const sheets=[];
+  for(const p of items){
+    const w=p.len+kerf,h=p.wid+kerf;let best=null,bi=-1;
+    for(let i=0;i<sheets.length;i++){
+      const s=sheets[i].score(w,h,heur,rot);
+      if(s&&(!best||s.s1<best.s1-EPS||(Math.abs(s.s1-best.s1)<EPS&&s.s2<best.s2))){best=s;bi=i;if(mode==='first')break}
+    }
+    if(!best){const sh=new Sheet(SL+kerf,SW+kerf);best=sh.score(w,h,heur,rot);if(!best)return null;sheets.push(sh);bi=sheets.length-1}
+    sheets[bi].place({x:best.x,y:best.y,w:best.w,h:best.h,rot:best.rot,piece:p});
+  }
+  return sheets;
+}
+function optimize(items,SL,SW,kerf,rot){
+  const orders={
+    area:(a,b)=>b.len*b.wid-a.len*a.wid||b.len-a.len,
+    long:(a,b)=>b.len-a.len||b.wid-a.wid,
+    wide:(a,b)=>b.wid-a.wid||b.len-a.len,
+    perim:(a,b)=>(b.len+b.wid)-(a.len+a.wid)||b.len-a.len,
+  };
+  let best=null;
+  for(const o in orders){const sorted=[...items].sort(orders[o]);
+    for(const heur of ['bssf','blsf','baf','bl'])for(const mode of ['best','first']){
+      const r=packOnce(sorted,SL,SW,kerf,rot,heur,mode);if(!r)continue;
+      const n=r.length,last=r[n-1].area;
+      // fewer sheets wins; then emptiest last sheet (most usable offcut)
+      if(!best||n<best.n||(n===best.n&&last<best.last-EPS))best={n,last,sheets:r};
+    }}
+  return best;
+}
+
+/* ---------- Calculate & render ---------- */
+function calculate(){
+  const res=document.getElementById('results');
+  try{
+    const t=getThk(),SL=parseLen(document.getElementById('sheetL').value),SW=parseLen(document.getElementById('sheetW').value);
+    const kerf=parseLen(document.getElementById('kerf').value)||0,rot=document.getElementById('rotate').checked,inside=document.getElementById('dimType').value==='in';
+    if(!(t>0))throw new Error('Enter a plywood thickness.');
+    if(!(SL>0&&SW>0))throw new Error('Enter the sheet size.');
+    const sheetLong=Math.max(SL,SW),sheetShort=Math.min(SL,SW);
+    let parts=[];const outsides=[];
+    boxes.forEach((b,i)=>{const r=boxPieces(b,t,inside);r.pieces.forEach(p=>p.color=COLORS[i%COLORS.length]);parts=parts.concat(r.pieces);outsides.push(r.outside)});
+    panels.forEach(pn=>{const a=parseLen(pn.L),c=parseLen(pn.W),q=parseInt(pn.qty)||0;
+      if(!(a>0&&c>0))throw new Error(`${pn.name}: enter a length and width greater than zero.`);
+      if(q<1)throw new Error(`${pn.name}: quantity must be at least 1.`);
+      parts.push({box:pn.name,part:'',len:Math.max(a,c),wid:Math.min(a,c),q,color:PANEL_COLOR})});
+    // group by size for letter codes
+    const groups={};
+    parts.forEach(p=>{const k=fmt(p.len)+'x'+fmt(p.wid);(groups[k]=groups[k]||{len:p.len,wid:p.wid,count:0,uses:[]});groups[k].count+=p.q;groups[k].uses.push(p.q+'× '+p.box+' '+p.part)});
+    const gList=Object.values(groups).sort((a,b)=>b.len*b.wid-a.len*a.wid);
+    gList.forEach((g,i)=>g.code=i<26?String.fromCharCode(65+i):'Z'+(i-25));
+    const codeOf=p=>groups[fmt(p.len)+'x'+fmt(p.wid)].code;
+    const items=[];
+    parts.forEach(p=>{for(let k=0;k<p.q;k++)items.push({...p,code:codeOf(p)})});
+    for(const p of items){
+      const fits=rot?(p.len<=sheetLong+EPS&&p.wid<=sheetShort+EPS):(p.len<=sheetLong+EPS&&p.wid<=sheetShort+EPS);
+      if(!fits)throw new Error(`${p.box} ${p.part} (${fmt(p.len)} × ${fmt(p.wid)}) is bigger than a ${fmt(sheetLong)} × ${fmt(sheetShort)} sheet.`);
+    }
+    const best=optimize(items,sheetLong,sheetShort,kerf,rot);
+    if(!best)throw new Error('Could not fit the pieces on the sheet.');
+    const totalArea=items.reduce((s,p)=>s+p.len*p.wid,0),sheetArea=sheetLong*sheetShort*best.n;
+    const yieldPct=Math.round(totalArea/sheetArea*100);
+
+    // outside dims notes
+    document.querySelectorAll('.box .dim-out').forEach((el,i)=>{const o=outsides[i];el.textContent=o?`Finished outside size: ${fmt(o.L)} L × ${fmt(o.W)} W × ${fmt(o.H)} H`:''});
+
+    let h=`<div class="card"><h2>Results</h2><div class="summary">
+      <div class="stat"><b>${best.n}</b><span>sheet${best.n>1?'s':''} of ${fmt(sheetLong)} × ${fmt(sheetShort)}</span></div>
+      <div class="stat"><b>${items.length}</b><span>pieces to cut</span></div>
+      <div class="stat"><b>${yieldPct}%</b><span>of plywood used</span></div>
+      <div class="stat"><b>${(totalArea/144).toFixed(1)}</b><span>sq ft of parts</span></div>
+    </div></div>`;
+
+    h+=`<div class="card"><h2>Cut List</h2><table><thead><tr><th>Code</th><th>Qty</th><th>Length × Width</th><th>Used for</th></tr></thead><tbody>`;
+    gList.forEach(g=>{h+=`<tr><td><span class="code">${g.code}</span></td><td><b>${g.count}</b></td><td>${fmt(g.len)} × ${fmt(g.wid)}</td><td class="note">${g.uses.map(esc).join('<br>')}</td></tr>`});
+    h+=`</tbody></table><div class="row noprint" style="margin-top:10px"><button class="ghost" id="copyBtn">Copy cut list</button><span id="copyMsg" class="note"></span></div></div>`;
+
+    h+=`<div class="card"><h2>Sheet Layouts</h2><p class="note">Grain runs left-to-right along the ${fmt(sheetLong)} side. Gaps between pieces allow for the ${fmt(kerf)} saw kerf. ${rot?'Pieces marked ↻ are turned 90°.':''}</p>`;
+    best.sheets.forEach((s,i)=>{
+      const used=s.used.reduce((a,u)=>a+u.piece.len*u.piece.wid,0);
+      h+=`<div class="sheet"><h3>Sheet ${i+1} — ${s.used.length} pieces, ${Math.round(used/(sheetLong*sheetShort)*100)}% used</h3>${drawSheet(s,sheetLong,sheetShort,kerf)}`;
+      const list=[...s.used].sort((a,b)=>a.y-b.y||a.x-b.x).map(u=>`${u.piece.code}: ${u.piece.box} ${u.piece.part}`);
+      h+=`<p class="note">${list.map(esc).join(' · ')}</p></div>`;
+    });
+    h+=`</div>`;
+    res.innerHTML=h;
+    const text=`PLYWOOD CUT LIST (${fmt(t)} plywood, ${best.n} sheet(s) ${fmt(sheetLong)} x ${fmt(sheetShort)})\n`+gList.map(g=>`${g.code}  ${g.count} x  ${fmt(g.len)} x ${fmt(g.wid)}   (${g.uses.join(', ')})`).join('\n');
+    document.getElementById('copyBtn').onclick=async()=>{const m=document.getElementById('copyMsg');try{await navigator.clipboard.writeText(text);m.textContent='Copied!'}catch(e){m.textContent='Copy not allowed here — long-press the table to copy.'}};
+    res.scrollIntoView({behavior:'smooth'});
+  }catch(e){res.innerHTML=`<div class="card"><p class="err">${esc(e.message)}</p></div>`}
+}
+
+function drawSheet(s,L,W,kerf){
+  const pad=1;
+  let g=`<svg viewBox="${-pad} ${-pad} ${L+pad*2} ${W+pad*2}" xmlns="http://www.w3.org/2000/svg">`;
+  g+=`<rect x="0" y="0" width="${L}" height="${W}" fill="#ecd3a6" stroke="#8a6a3a" stroke-width=".3"/>`;
+  for(let y=3;y<W;y+=4)g+=`<line x1="0" y1="${y}" x2="${L}" y2="${y+0.6}" stroke="#d9b989" stroke-width=".25"/>`;
+  for(const u of s.used){
+    const p=u.piece,w=u.w-kerf,h=u.h-kerf;
+    const fs=Math.max(1.6,Math.min(5,Math.min(w,h)/3.2));
+    g+=`<g><rect x="${u.x}" y="${u.y}" width="${w}" height="${h}" fill="${p.color}" fill-opacity=".82" stroke="#2b2418" stroke-width=".25"/>`;
+    g+=`<text x="${u.x+w/2}" y="${u.y+h/2}" text-anchor="middle" dominant-baseline="middle" font-size="${fs}" font-weight="700" fill="#fff" font-family="sans-serif">${p.code}${u.rot?' ↻':''}</text>`;
+    if(Math.min(w,h)>7)g+=`<text x="${u.x+w/2}" y="${u.y+h/2+fs*1.05}" text-anchor="middle" dominant-baseline="middle" font-size="${fs*.6}" fill="#fff" font-family="sans-serif">${esc(fmt(u.rot?p.wid:p.len))} × ${esc(fmt(u.rot?p.len:p.wid))}</text>`;
+    g+=`</g>`;
+  }
+  return g+'</svg>';
+}
+
+document.getElementById('thkSel').addEventListener('change',e=>{document.getElementById('thkCustomWrap').style.display=e.target.value==='custom'?'':'none';save()});
+['thkCustom','sheetL','sheetW','kerf','dimType','rotate'].forEach(k=>document.getElementById(k).addEventListener('change',save));
+document.getElementById('addBox').onclick=()=>{boxes.push(newBox(boxes.length));renderBoxes();save()};
+document.getElementById('addPanel').onclick=()=>{panels.push(newPanel(panels.length));renderPanels();save()};
+document.getElementById('calc').onclick=calculate;
+load();if(!panels||!panels.length)panels=DEFAULT_PANELS.map(p=>({...p}));renderBoxes();renderPanels();save();calculate();
+</script>
+<footer style="text-align:center;font-size:11px;color:var(--mute);opacity:.6;padding:10px 0 calc(64px + env(safe-area-inset-bottom))">© 2026 Dwayne Harris · Created by Dwayne Harris</footer>
+<!-- Add to Home Screen helper -->
+<style>
+#a2hs-btn{position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:2147483000;background:#2f6fdf;color:#fff;border:none;border-radius:999px;padding:9px 14px;font:600 14px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;box-shadow:0 3px 10px rgba(0,0,0,.25);cursor:pointer}
+#a2hs-overlay{display:none;position:fixed;inset:0;z-index:2147483001;background:rgba(0,0,0,.5);overflow-y:auto;padding:20px 14px calc(20px + env(safe-area-inset-bottom))}
+#a2hs-overlay.open{display:block}
+#a2hs-box{max-width:520px;margin:0 auto;background:#fff;color:#1f2933;border-radius:16px;padding:18px 18px 8px;font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;text-align:left}
+#a2hs-box h2{font-size:20px;margin:0 0 4px;color:#1f2933}
+#a2hs-box h3{font-size:16px;margin:16px 0 6px;color:#1f2933}
+#a2hs-box p{margin:0 0 8px;color:#5f6b76;font-size:14px}
+#a2hs-box ol,#a2hs-box ul{margin:0 0 8px;padding-left:22px}
+#a2hs-box li{margin-bottom:6px}
+#a2hs-box .a2hs-tip{background:#eef4ff;border-left:4px solid #2f6fdf;border-radius:8px;padding:10px 12px;font-size:14px;margin:8px 0}
+#a2hs-close{display:block;width:100%;margin:14px 0 10px;padding:12px;border:none;border-radius:10px;background:#2f6fdf;color:#fff;font:600 16px -apple-system,BlinkMacSystemFont,sans-serif;cursor:pointer}
+</style>
+<button id="a2hs-btn" type="button">📲 Add to Home Screen</button>
+<div id="a2hs-overlay" role="dialog" aria-modal="true" aria-label="Add to Home Screen">
+  <div id="a2hs-box">
+    <h2>Put this app on your Home Screen</h2>
+    <p>Takes about 30 seconds. Then it opens with one tap, like a regular app.</p>
+    <h3>Using Safari (recommended)</h3>
+    <ol>
+      <li>Open this page in <b>Safari</b>.</li>
+      <li>Tap the <b>Share</b> button (square with an up arrow). On newer iPhones, tap the <b>•••</b> button by the address bar first, then <b>Share</b>.</li>
+      <li>Scroll down and tap <b>Add to Home Screen</b>. Don't see it? Tap <b>View More</b> or <b>Edit Actions</b>.</li>
+      <li>If you see <b>Open as Web App</b>, leave it on.</li>
+      <li>Tap <b>Add</b> in the top-right corner.</li>
+    </ol>
+    <h3>Using Chrome or Edge</h3>
+    <ol>
+      <li>Tap the <b>Share</b> button next to the address bar.</li>
+      <li>Tap <b>Add to Home Screen</b>, then <b>Add</b>.</li>
+    </ol>
+    <div class="a2hs-tip">Can't find it? Copy the web address, open it in Safari, and follow the Safari steps.</div>
+    <h3>Good to know</h3>
+    <ul>
+      <li><b>Move it:</b> press and hold the icon, then drag.</li>
+      <li><b>Remove it:</b> press and hold, then tap <b>Remove App</b>. Only the shortcut is removed.</li>
+      <li><b>Updates:</b> nothing to install; you always get the latest version.</li>
+    </ul>
+    <button id="a2hs-close" type="button">Got it</button>
+  </div>
+</div>
+<script>
+(function(){
+  var btn=document.getElementById('a2hs-btn'),ov=document.getElementById('a2hs-overlay'),cl=document.getElementById('a2hs-close');
+  var standalone=(window.navigator.standalone===true)||(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches);
+  if(standalone){btn.style.display='none';return;}
+  btn.addEventListener('click',function(){ov.classList.add('open');});
+  cl.addEventListener('click',function(){ov.classList.remove('open');});
+  ov.addEventListener('click',function(e){if(e.target===ov)ov.classList.remove('open');});
+})();
+</script>
+<!-- /Add to Home Screen helper -->
+</body>
+</html>
