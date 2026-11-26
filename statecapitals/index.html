@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>State Capitals Flash Cards</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Libre+Franklin:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: friendly, sturdy, schoolroom-meets-road-trip; clear for daily drill
+   IDEA: an old road-atlas postcard: each state is a postcard you flip over
+   PICTURE: the big flip card itself, front and center, under a modest title
+   COLOUR and TYPE: Old Glory red, white and blue fields; Alfa Slab One road-sign titles, Libre Franklin body
+   LAYOUT: blue header band with tabs, settings strip, card + answer buttons, results; stacks on phones */
+:root{color-scheme:light dark;
+--bg:light-dark(#f6f4ee,#10142a);--ink:light-dark(#1a1d2e,#eef0f8);--mut:light-dark(#5b6075,#a8aec6);
+--blue:light-dark(#2b3a7a,#1c2656);--red:#b22234;--card:light-dark(#ffffff,#1b2147);--line:light-dark(#d9d6cc,#2e3768);
+--good:light-dark(#1f7a4d,#4fc58a);--chip:light-dark(#ffffff,#1b2147)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Libre Franklin",system-ui,sans-serif;overflow-x:clip}
+header{background:var(--blue);color:#fff;padding:22px max(5vw,16px) 0;border-bottom:6px solid var(--red)}
+h1{font:400 clamp(30px,5vw,46px)/1.05 "Alfa Slab One",Georgia,serif;margin:0 0 4px;text-wrap:balance}
+header p{margin:0 0 16px;color:#d6dbf5}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tabs button{font:600 16px "Libre Franklin",sans-serif;border:0;border-radius:10px 10px 0 0;padding:11px 16px;min-height:44px;cursor:pointer;background:rgba(255,255,255,.14);color:#fff}
+.tabs button[aria-selected=true]{background:var(--bg);color:var(--ink)}
+main{max-width:900px;margin:0 auto;padding:22px max(4vw,14px) 40px}
+.set{display:grid;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.row b{width:100%;font-size:14px;color:var(--mut);font-weight:600}
+.chip{font:600 15px "Libre Franklin",sans-serif;min-height:44px;padding:8px 14px;border-radius:22px;border:2px solid var(--line);background:var(--chip);color:var(--ink);cursor:pointer}
+.chip[aria-pressed=true]{background:var(--blue);border-color:var(--blue);color:#fff}
+.go{font:400 20px "Alfa Slab One",serif;min-height:52px;padding:10px 26px;border:0;border-radius:12px;background:var(--red);color:#fff;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid #f2c14e;outline-offset:2px}
+.stage{margin-top:22px}
+.bar{height:10px;background:var(--line);border-radius:6px;overflow:hidden}.bar i{display:block;height:100%;background:var(--red);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;font-size:15px;color:var(--mut);margin:8px 0 14px}
+.scene{perspective:1200px;height:clamp(240px,42vw,330px);cursor:pointer}
+.flip{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
+.flip.on{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;border-radius:18px;display:grid;place-content:center;text-align:center;padding:20px;
+background:var(--card);border:2px solid var(--line);box-shadow:0 10px 0 -4px var(--line),0 18px 30px rgba(0,0,0,.12)}
+.face::before{content:"";position:absolute;inset:10px;border:2px dashed var(--line);border-radius:12px;pointer-events:none}
+.back{transform:rotateY(180deg);background:var(--blue);color:#fff;border-color:var(--blue)}
+.back::before{border-color:rgba(255,255,255,.3)}
+.k{font-size:14px;letter-spacing:.02em;color:var(--mut);font-weight:600}.back .k{color:#cfd5f3}
+.big{font:400 clamp(34px,8vw,64px)/1.05 "Alfa Slab One",serif;margin:6px 0;overflow-wrap:anywhere}
+.hint{font-size:14px;color:var(--mut)}.back .hint{color:#cfd5f3}
+.ans{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+.ans button{font:800 18px "Libre Franklin",sans-serif;min-height:56px;border-radius:12px;cursor:pointer;border:2px solid}
+.miss{background:var(--card);color:var(--red);border-color:var(--red)!important}
+.got{background:var(--good);color:#fff;border-color:var(--good)!important}
+.keys{text-align:center;font-size:13px;color:var(--mut);margin-top:10px}
+.done{text-align:center;background:var(--card);border:2px solid var(--line);border-radius:18px;padding:26px 18px}
+.score{font:400 clamp(48px,12vw,84px)/1 "Alfa Slab One",serif;color:var(--red)}
+.missed{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:14px 0}
+.missed span{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:4px 10px;font-size:15px}
+.ghost{font:600 16px "Libre Franklin",sans-serif;min-height:48px;padding:8px 18px;border-radius:12px;border:2px solid var(--blue);background:transparent;color:var(--ink);cursor:pointer}
+.type{display:flex;gap:10px;flex-wrap:wrap}
+.type input{flex:1 1 220px;font:16px "Libre Franklin",sans-serif;min-height:52px;padding:10px 14px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink)}
+.count{font:400 34px "Alfa Slab One",serif;color:var(--red)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,200px),1fr));gap:14px;margin-top:16px}
+.reg{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+.reg h3{margin:0 0 8px;font:400 18px "Alfa Slab One",serif}
+.reg li{list-style:none;padding:2px 0;font-size:15px;color:transparent;border-bottom:1px dashed var(--line)}
+.reg li.f{color:var(--ink)}.reg li.r{color:var(--red)}
+.reg ul{margin:0;padding:0}
+.flash{animation:fl .6s}@keyframes fl{from{background:#f2c14e}}
+footer{text-align:center;font-size:13px;color:var(--mut);padding:20px}
+@media(prefers-reduced-motion:reduce){.flip,.bar i{transition:none}.flash{animation:none}}
+@media(max-width:600px){.tabs button{padding:10px 12px;font-size:15px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>State Capitals</h1>
+  <p>Learn the 50 states, then their capitals. Flip, check yourself, repeat.</p>
+  <div class="tabs" role="tablist">
+    <button role="tab" data-tab="states" aria-selected="true">1 · Learn the States</button>
+    <button role="tab" data-tab="caps" aria-selected="false">2 · States &amp; Capitals</button>
+    <button role="tab" data-tab="all" aria-selected="false">Name All 50</button>
+  </div>
+</header>
+<main>
+  <section id="cardsView">
+    <div class="set">
+      <div class="row" id="regRow"><b>Regions to study</b></div>
+      <div class="row" id="dirRow"><b>Card direction</b></div>
+      <div class="row"><b>Order</b>
+        <button class="chip" data-ord="order" aria-pressed="true">In order (A to Z)</button>
+        <button class="chip" data-ord="mix" aria-pressed="false">Mixed</button>
+      </div>
+      <div class="row"><button class="go" id="start">Start cards</button><span class="hint" id="pickCount"></span></div>
+    </div>
+    <div class="stage" id="stage" hidden></div>
+  </section>
+  <section id="allView" hidden>
+    <div class="set">
+      <div class="row" style="justify-content:space-between"><span><span class="count" id="cnt">0</span> <span class="hint">of 50 states named</span></span>
+        <span class="row"><button class="ghost" id="giveUp">Show the rest</button><button class="ghost" id="reset">Start over</button></span></div>
+      <div class="type"><input id="guess" autocomplete="off" placeholder="Type a state name…" aria-label="Type a state name"></div>
+      <span class="hint">Type from memory. Each state fills in under its region as soon as you spell it right.</span>
+    </div>
+    <div class="grid" id="regGrid"></div>
+  </section>
+</main>
+<footer>© 2026 Dwayne Harris · Created by Dwayne Harris</footer>
+<script>
+{
+const S=[["Alabama","AL","Montgomery","Southeast"],["Alaska","AK","Juneau","West"],["Arizona","AZ","Phoenix","Southwest"],["Arkansas","AR","Little Rock","Southeast"],["California","CA","Sacramento","West"],["Colorado","CO","Denver","West"],["Connecticut","CT","Hartford","Northeast"],["Delaware","DE","Dover","Northeast"],["Florida","FL","Tallahassee","Southeast"],["Georgia","GA","Atlanta","Southeast"],["Hawaii","HI","Honolulu","West"],["Idaho","ID","Boise","West"],["Illinois","IL","Springfield","Midwest"],["Indiana","IN","Indianapolis","Midwest"],["Iowa","IA","Des Moines","Midwest"],["Kansas","KS","Topeka","Midwest"],["Kentucky","KY","Frankfort","Southeast"],["Louisiana","LA","Baton Rouge","Southeast"],["Maine","ME","Augusta","Northeast"],["Maryland","MD","Annapolis","Northeast"],["Massachusetts","MA","Boston","Northeast"],["Michigan","MI","Lansing","Midwest"],["Minnesota","MN","Saint Paul","Midwest"],["Mississippi","MS","Jackson","Southeast"],["Missouri","MO","Jefferson City","Midwest"],["Montana","MT","Helena","West"],["Nebraska","NE","Lincoln","Midwest"],["Nevada","NV","Carson City","West"],["New Hampshire","NH","Concord","Northeast"],["New Jersey","NJ","Trenton","Northeast"],["New Mexico","NM","Santa Fe","Southwest"],["New York","NY","Albany","Northeast"],["North Carolina","NC","Raleigh","Southeast"],["North Dakota","ND","Bismarck","Midwest"],["Ohio","OH","Columbus","Midwest"],["Oklahoma","OK","Oklahoma City","Southwest"],["Oregon","OR","Salem","West"],["Pennsylvania","PA","Harrisburg","Northeast"],["Rhode Island","RI","Providence","Northeast"],["South Carolina","SC","Columbia","Southeast"],["South Dakota","SD","Pierre","Midwest"],["Tennessee","TN","Nashville","Southeast"],["Texas","TX","Austin","Southwest"],["Utah","UT","Salt Lake City","West"],["Vermont","VT","Montpelier","Northeast"],["Virginia","VA","Richmond","Southeast"],["Washington","WA","Olympia","West"],["West Virginia","WV","Charleston","Southeast"],["Wisconsin","WI","Madison","Midwest"],["Wyoming","WY","Cheyenne","West"]].map(([n,a,c,r])=>({n,a,c,r}));
+const REG=["Northeast","Southeast","Midwest","Southwest","West"];
+const DIRS={states:[["a2n","Abbreviation → State"],["n2a","State → Abbreviation"]],caps:[["s2c","State → Capital"],["c2s","Capital → State"]]};
+const $=id=>document.getElementById(id);
+let tab="states",regs=new Set(REG),ord="order",dir={states:"a2n",caps:"s2c"},deck=[],i=0,missed=[],flipped=false,named=new Set();
+try{const m=JSON.parse(localStorage.getItem("sc-named")||"[]");m.forEach(x=>named.add(x))}catch(e){}
+const shuffle=a=>{for(let j=a.length-1;j>0;j--){const k=Math.floor(Math.random()*(j+1));[a[j],a[k]]=[a[k],a[j]]}return a};
+const regRow=$("regRow"),dirRow=$("dirRow");
+regRow.insertAdjacentHTML("beforeend",`<button class="chip" data-reg="all" aria-pressed="true">All 50</button>`+REG.map(r=>`<button class="chip" data-reg="${r}" aria-pressed="true">${r} (${S.filter(s=>s.r===r).length})</button>`).join(""));
+function paintSet(){
+  regRow.querySelectorAll("[data-reg]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.reg==="all"?regs.size===5:regs.has(b.dataset.reg)));
+  dirRow.innerHTML="<b>Card direction</b>"+DIRS[tab].map(([k,l])=>`<button class="chip" data-dir="${k}" aria-pressed="${dir[tab]===k}">${l}</button>`).join("");
+  document.querySelectorAll("[data-ord]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.ord===ord));
+  const n=S.filter(s=>regs.has(s.r)).length;$("pickCount").textContent=n+" cards";$("start").disabled=!n;
+}
+regRow.onclick=e=>{const b=e.target.closest("[data-reg]");if(!b)return;const r=b.dataset.reg;
+  if(r==="all")regs=regs.size===5?new Set():new Set(REG);else regs.has(r)?regs.delete(r):regs.add(r);paintSet()};
+dirRow.onclick=e=>{const b=e.target.closest("[data-dir]");if(b){dir[tab]=b.dataset.dir;paintSet()}};
+document.querySelectorAll("[data-ord]").forEach(b=>b.onclick=()=>{ord=b.dataset.ord;paintSet()});
+document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{
+  tab=b.dataset.tab;document.querySelectorAll("[data-tab]").forEach(x=>x.setAttribute("aria-selected",x===b));
+  $("cardsView").hidden=tab==="all";$("allView").hidden=tab!=="all";$("stage").hidden=true;$("stage").innerHTML="";deck=[];
+  if(tab==="all"){paintAll();$("guess").focus()}else paintSet()});
+function sides(s){const d=dir[tab];
+  if(d==="a2n")return[["Which state is",s.a,s.r+" region"],["State",s.n,s.a+" · capital: "+s.c]];
+  if(d==="n2a")return[["Postal abbreviation for",s.n,s.r+" region"],["Abbreviation",s.a,s.n]];
+  if(d==="s2c")return[["What is the capital of",s.n,s.r+" region"],["Capital",s.c,s.n+" ("+s.a+")"]];
+  return[["Which state has the capital",s.c,s.r+" region"],["State",s.n,"Capital: "+s.c]]}
+function begin(list){deck=ord==="mix"?shuffle(list.slice()):list.slice().sort((a,b)=>a.n.localeCompare(b.n));i=0;missed=[];$("stage").hidden=false;show()}
+$("start").onclick=()=>begin(S.filter(s=>regs.has(s.r)));
+function show(){
+  const st=$("stage");if(i>=deck.length)return finish();
+  const[f,b]=sides(deck[i]);flipped=false;
+  st.innerHTML=`<div class="bar"><i style="width:${i/deck.length*100}%"></i></div>
+  <div class="meta"><span>Card ${i+1} of ${deck.length}</span><span>Missed so far: ${missed.length}</span></div>
+  <div class="scene" id="scene" role="button" tabindex="0" aria-label="Flip card"><div class="flip" id="flip">
+   <div class="face"><div class="k">${f[0]}</div><div class="big">${f[1]}</div><div class="hint">${f[2]} · tap to flip</div></div>
+   <div class="face back"><div class="k">${b[0]}</div><div class="big">${b[1]}</div><div class="hint">${b[2]}</div></div></div></div>
+  <div class="ans"><button class="miss" id="miss">✗ Missed it</button><button class="got" id="got">✓ Got it</button></div>
+  <div class="keys">Space flips · ← missed · → got it</div>`;
+  $("scene").onclick=flip;$("miss").onclick=()=>mark(false);$("got").onclick=()=>mark(true);
+}
+function flip(){flipped=!flipped;$("flip").classList.toggle("on",flipped)}
+function mark(ok){if(!ok)missed.push(deck[i]);i++;show()}
+function finish(){
+  const n=deck.length,g=n-missed.length,st=$("stage");
+  st.innerHTML=`<div class="done"><div class="k">Your score</div><div class="score">${g} / ${n}</div>
+  <p>${g===n?"Perfect round. Every card right!":missed.length+" to work on:"}</p>
+  <div class="missed">${missed.map(s=>`<span>${tab==="caps"?s.n+" · "+s.c:s.a+" · "+s.n}</span>`).join("")}</div>
+  <div class="row" style="justify-content:center">${missed.length?'<button class="go" id="again">Drill the missed ones</button>':""}<button class="ghost" id="redo">Run the whole set again</button></div></div>`;
+  if(missed.length)$("again").onclick=()=>begin(missed);
+  $("redo").onclick=()=>begin(S.filter(s=>regs.has(s.r)));
+}
+document.addEventListener("keydown",e=>{if(tab==="all"||!$("flip"))return;
+  if(e.key===" "){e.preventDefault();flip()}else if(e.key==="ArrowRight")mark(true);else if(e.key==="ArrowLeft")mark(false)});
+const norm=t=>t.toLowerCase().replace(/[^a-z]/g,"");
+function save(){try{localStorage.setItem("sc-named",JSON.stringify([...named]))}catch(e){}}
+function paintAll(reveal){
+  $("cnt").textContent=named.size;
+  $("regGrid").innerHTML=REG.map(r=>`<div class="reg"><h3>${r}</h3><ul>${S.filter(s=>s.r===r).map(s=>`<li id="li-${s.a}" class="${named.has(s.a)?"f":reveal?"r":""}">${s.n}</li>`).join("")}</ul></div>`).join("");
+}
+$("guess").oninput=e=>{const v=norm(e.target.value);const s=S.find(x=>norm(x.n)===v);
+  if(s&&!named.has(s.a)){named.add(s.a);save();e.target.value="";paintAll();$("li-"+s.a).classList.add("flash");
+    if(named.size===50)$("cnt").textContent="50 🎉"}};
+$("giveUp").onclick=()=>paintAll(true);
+$("reset").onclick=()=>{named.clear();save();paintAll();$("guess").focus()};
+paintSet();
+}
+</script>
+</body>
+</html>
