@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1f3a5f">
+<meta name="description" content="Times Tables: practice multiplication facts 1 through 12 and see which ones need work.">
+<title>Times Tables</title>
+<style>
+:root{--bg:#eef2f6;--card:#fff;--ink:#1f2933;--mute:#5f6b76;--line:#d6dde4;--accent:#1f3a5f;--gold:#a8741a;--tint:#e3eaf2;--good:#1f8a4c;--bad:#c0392b;--goodbg:#dff3e6;--badbg:#fbe3e0}
+@media (prefers-color-scheme:dark){:root{--bg:#121820;--card:#1a232e;--ink:#e8edf2;--mute:#9aa7b3;--line:#2c3a48;--accent:#8db4ea;--gold:#d9a94a;--tint:#223142;--good:#5cc98a;--bad:#ef7b6e;--goodbg:#173326;--badbg:#3a1f1c}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;padding:max(16px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom))}
+main{max-width:560px;margin:0 auto}
+a.home{color:var(--mute);text-decoration:none;font-size:.9rem;display:inline-block;padding:8px 0}
+h1{font:700 2rem/1.1 Georgia,serif;color:var(--accent);margin:6px 0 4px}
+.sub{color:var(--mute);margin:0 0 18px}
+.tabs{display:flex;gap:6px;margin-bottom:16px}
+.tabs button{flex:1;min-height:44px;border:1px solid var(--line);background:var(--card);border-radius:10px;font:inherit;font-weight:600;color:var(--ink);cursor:pointer}
+.tabs button[aria-selected=true]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.lbl{font-weight:600;margin:0 0 8px;display:block}
+.chips{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.chip{min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--tint);font:inherit;font-weight:600;color:var(--ink);cursor:pointer}
+.chip[aria-pressed=true]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.opts{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;align-items:center}
+.opts select{font:inherit;min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:0 10px}
+.go{width:100%;min-height:54px;margin-top:18px;border:0;border-radius:12px;background:var(--gold);color:#fff;font:700 1.15rem system-ui,sans-serif;cursor:pointer}
+.small{background:none;border:0;color:var(--accent);font:inherit;text-decoration:underline;cursor:pointer;padding:8px 4px}
+.bar{display:flex;justify-content:space-between;color:var(--mute);font-size:.9rem;margin-bottom:6px}
+.prog{height:6px;background:var(--tint);border-radius:3px;overflow:hidden;margin-bottom:18px}
+.prog i{display:block;height:100%;background:var(--gold);width:0;transition:width .2s}
+.q{text-align:center;font:700 3.4rem/1.1 Georgia,serif;margin:10px 0 6px;font-variant-numeric:tabular-nums}
+.ans{text-align:center;font:700 2.4rem/1 system-ui,sans-serif;min-height:64px;border-bottom:3px solid var(--line);margin:0 auto 14px;max-width:180px;padding:10px 0;font-variant-numeric:tabular-nums}
+.ans.ok{color:var(--good);border-color:var(--good)}
+.ans.no{color:var(--bad);border-color:var(--bad)}
+.fb{text-align:center;min-height:1.5em;color:var(--mute);margin-bottom:10px}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pad button{min-height:58px;border-radius:12px;border:1px solid var(--line);background:var(--tint);font:700 1.5rem system-ui,sans-serif;color:var(--ink);cursor:pointer}
+.pad button.enter{background:var(--accent);color:var(--bg)}
+.big{font:700 3rem/1 Georgia,serif;color:var(--accent);text-align:center;margin:6px 0}
+.miss{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.miss span{background:var(--badbg);color:var(--bad);border-radius:8px;padding:4px 10px;font-weight:600}
+.gridwrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:.9rem}
+th,td{text-align:center;padding:6px 0;border:1px solid var(--line);min-width:30px}
+th{background:var(--tint);color:var(--accent)}
+td{cursor:pointer}
+td.hl{background:var(--tint)}
+td.sel{background:var(--gold);color:#fff;font-weight:700}
+td.s1{background:var(--goodbg)}td.s0{background:var(--badbg)}
+.legend{color:var(--mute);font-size:.85rem;margin-top:10px}
+.legend b{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin:0 4px 0 10px}
+.fact{text-align:center;font:700 1.4rem Georgia,serif;margin-top:12px;min-height:1.6em;color:var(--accent)}
+[hidden]{display:none!important}
+footer{margin-top:28px;text-align:center;font-size:.7rem;color:var(--mute);opacity:.6}
+</style>
+</head>
+<body>
+<main>
+<a class="home" href="/">&larr; Dwayne's Apps</a>
+<h1>Times Tables</h1>
+<p class="sub">Practice multiplication facts 1&ndash;12 and see which ones need work.</p>
+
+<div class="tabs" role="tablist">
+  <button role="tab" aria-selected="true" data-tab="practice">Practice</button>
+  <button role="tab" aria-selected="false" data-tab="chart">Chart</button>
+</div>
+
+<section id="practice">
+  <div class="card" id="setup">
+    <span class="lbl">Which tables?</span>
+    <div class="chips" id="tables"></div>
+    <div class="opts">
+      <button class="small" id="all">Select all</button>
+      <button class="small" id="none">Clear</button>
+      <label style="margin-left:auto">Questions
+        <select id="count"><option>10</option><option selected>20</option><option>30</option><option>50</option></select>
+      </label>
+    </div>
+    <button class="go" id="start">Start</button>
+  </div>
+
+  <div class="card" id="drill" hidden>
+    <div class="bar"><span id="pos">1 of 20</span><span id="score">0 right</span></div>
+    <div class="prog"><i id="progbar"></i></div>
+    <div class="q" id="q">7 &times; 8</div>
+    <div class="ans" id="ans">&nbsp;</div>
+    <div class="fb" id="fb"></div>
+    <div class="pad" id="pad"></div>
+    <div style="text-align:center"><button class="small" id="quit">Stop</button></div>
+  </div>
+
+  <div class="card" id="done" hidden>
+    <div class="big" id="final">18 / 20</div>
+    <p style="text-align:center;margin:0;color:var(--mute)" id="time"></p>
+    <div id="missedwrap"><p class="lbl" style="margin-top:16px">Ones to practice</p><div class="miss" id="missed"></div></div>
+    <button class="go" id="again">Practice again</button>
+    <div style="text-align:center"><button class="small" id="back">Change tables</button></div>
+  </div>
+</section>
+
+<section id="chart" hidden>
+  <div class="card">
+    <div class="gridwrap"><table id="grid"></table></div>
+    <div class="fact" id="fact">Tap a square</div>
+    <div class="legend">Your practice history:<b style="background:var(--goodbg)"></b>usually right<b style="background:var(--badbg)"></b>often missed</div>
+    <div style="text-align:center"><button class="small" id="reset">Clear history</button></div>
+  </div>
+</section>
+
+<footer>&copy; 2026 Dwayne Harris</footer>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const store={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+let picked=new Set(store.get('tt.tables',[2,3,4,5,6,7,8,9]));
+let hist=store.get('tt.hist',{}); // "a×b": [right, tries]
+
+// table chips
+for(let n=1;n<=12;n++){const b=document.createElement('button');b.className='chip';b.textContent=n;b.dataset.n=n;b.onclick=()=>{picked.has(n)?picked.delete(n):picked.add(n);paint()};$('tables').append(b)}
+function paint(){document.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',picked.has(+c.dataset.n)));$('start').disabled=!picked.size;$('start').style.opacity=picked.size?1:.5;store.set('tt.tables',[...picked])}
+$('all').onclick=()=>{for(let n=1;n<=12;n++)picked.add(n);paint()};
+$('none').onclick=()=>{picked.clear();paint()};
+paint();
+
+// tabs
+document.querySelectorAll('[data-tab]').forEach(t=>t.onclick=()=>{document.querySelectorAll('[data-tab]').forEach(x=>{x.setAttribute('aria-selected',x===t);$(x.dataset.tab).hidden=x!==t});if(t.dataset.tab==='chart')drawGrid()});
+
+// keypad
+['1','2','3','4','5','6','7','8','9','⌫','0','OK'].forEach(k=>{const b=document.createElement('button');b.textContent=k;if(k==='OK')b.className='enter';b.onclick=()=>key(k);$('pad').append(b)});
+document.addEventListener('keydown',e=>{if($('drill').hidden)return;if(/^\d$/.test(e.key))key(e.key);else if(e.key==='Backspace')key('⌫');else if(e.key==='Enter')key('OK')});
+
+let qs=[],i=0,right=0,typed='',locked=false,missed=[],t0=0;
+function makeQs(n){
+  // weight facts that have been missed more often
+  const pool=[];[...picked].forEach(a=>{for(let b=1;b<=12;b++){const h=hist[a+'×'+b]||[0,0];const w=1+Math.round(3*(1-(h[1]?h[0]/h[1]:.5)));for(let k=0;k<w;k++)pool.push([a,b])}});
+  const out=[];let last='';
+  while(out.length<n){const [a,b]=pool[Math.floor(Math.random()*pool.length)];const p=Math.random()<.5?[a,b]:[b,a];const s=p.join();if(s!==last||pool.length<3){out.push(p);last=s}}
+  return out;
+}
+function start(){qs=makeQs(+$('count').value);i=0;right=0;missed=[];t0=Date.now();$('setup').hidden=true;$('done').hidden=true;$('drill').hidden=false;show()}
+function show(){typed='';locked=false;const [a,b]=qs[i];$('q').textContent=`${a} × ${b}`;$('ans').innerHTML='&nbsp;';$('ans').className='ans';$('fb').textContent='';$('pos').textContent=`${i+1} of ${qs.length}`;$('score').textContent=`${right} right`;$('progbar').style.width=(i/qs.length*100)+'%'}
+function key(k){
+  if(locked)return;
+  if(k==='⌫')typed=typed.slice(0,-1);
+  else if(k==='OK'){if(typed)check();return}
+  else if(typed.length<3)typed+=k;
+  $('ans').textContent=typed||' ';
+}
+function check(){
+  locked=true;const [a,b]=qs[i],c=a*b,ok=+typed===c;
+  const key=Math.min(a,b)+'×'+Math.max(a,b),h=hist[key]||[0,0];h[1]++;if(ok)h[0]++;hist[key]=h;
+  // keep chart lookups simple: mirror both orders
+  hist[Math.max(a,b)+'×'+Math.min(a,b)]=h;store.set('tt.hist',hist);
+  if(ok){right++;$('ans').className='ans ok';$('fb').textContent='Right!'}
+  else{$('ans').className='ans no';$('fb').textContent=`${a} × ${b} = ${c}`;missed.push(`${a}×${b}=${c}`)}
+  setTimeout(()=>{i++;i<qs.length?show():finish()},ok?500:1600);
+}
+function finish(){
+  $('drill').hidden=true;$('done').hidden=false;
+  $('final').textContent=`${right} / ${qs.length}`;
+  const s=Math.round((Date.now()-t0)/1000);$('time').textContent=`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')} — ${right===qs.length?'perfect!':'nice work'}`;
+  $('missedwrap').hidden=!missed.length;$('missed').innerHTML=[...new Set(missed)].map(m=>`<span>${m}</span>`).join('');
+}
+$('start').onclick=start;$('again').onclick=start;
+$('quit').onclick=()=>{$('drill').hidden=true;$('setup').hidden=false};
+$('back').onclick=()=>{$('done').hidden=true;$('setup').hidden=false};
+
+// chart
+function drawGrid(){
+  let h='<tr><th>×</th>'+Array.from({length:12},(_,j)=>`<th>${j+1}</th>`).join('')+'</tr>';
+  for(let a=1;a<=12;a++){h+=`<tr><th>${a}</th>`;for(let b=1;b<=12;b++){const r=hist[a+'×'+b];const cls=r&&r[1]?(r[0]/r[1]>=.8?'s1':'s0'):'';h+=`<td class="${cls}" data-a="${a}" data-b="${b}">${a*b}</td>`}h+='</tr>'}
+  $('grid').innerHTML=h;
+}
+$('grid').onclick=e=>{const td=e.target.closest('td');if(!td)return;const a=+td.dataset.a,b=+td.dataset.b;
+  document.querySelectorAll('#grid td').forEach(c=>{c.classList.remove('hl','sel');if((+c.dataset.a===a&&+c.dataset.b<=b)||(+c.dataset.b===b&&+c.dataset.a<=a))c.classList.add('hl')});
+  td.classList.add('sel');const r=hist[a+'×'+b];$('fact').textContent=`${a} × ${b} = ${a*b}`+(r&&r[1]?`  (${r[0]}/${r[1]} right)`:'')};
+$('reset').onclick=()=>{if(confirm('Clear your practice history?')){hist={};store.set('tt.hist',hist);drawGrid();$('fact').textContent='Tap a square'}};
+</script>
+</body>
+</html>
