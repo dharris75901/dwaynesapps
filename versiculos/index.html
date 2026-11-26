@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Versículos en Español</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: warm, devotional, encouraging — a daily companion, not a classroom.
+   IDEA: a pocket memory card tucked in a Spanish Bible, framed by talavera tile.
+   PICTURE: the live verse card itself, large, with the practice mode working inside it.
+   COLOUR and TYPE: cobalt talavera blue dominant, white tile ground, saffron accent; DM Serif Display for scripture, Nunito Sans for controls.
+   LAYOUT: tiled cobalt header band, tabs, verse card first; list and add form in one calm column. */
+:root{color-scheme:light dark;
+--bg:light-dark(#f4f6fb,#0c1226);--card:light-dark(#ffffff,#141c38);--ink:light-dark(#141a33,#eef1fb);
+--mute:light-dark(#5a6283,#a4acc9);--line:light-dark(#d9deee,#2a3460);
+--blue:#1f3a93;--blue2:light-dark(#2f55c9,#7d9bff);--sun:#f2b705;--ok:light-dark(#137a43,#4fd08a);--bad:light-dark(#b3261e,#ff8a80);--soft:light-dark(#e8edfb,#1c2650)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Nunito Sans",system-ui,sans-serif;overflow-x:clip}
+header{background:var(--blue);color:#fff;position:relative;overflow:hidden}
+header .in{max-width:860px;margin:auto;padding:28px max(5vw,16px) 22px;position:relative}
+header h1{font:400 clamp(32px,6vw,46px)/1.05 "DM Serif Display",Georgia,serif;margin:0;text-wrap:balance}
+header p{margin:6px 0 0;color:#cdd8ff}
+.tiles{height:34px;display:block;width:100%}
+nav{display:flex;gap:6px;max-width:860px;margin:auto;padding:14px max(5vw,16px) 0;flex-wrap:wrap}
+nav button{flex:1 1 0}
+button,select,input,textarea{font:inherit;color:inherit}
+button{min-height:44px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);padding:8px 14px;font-weight:700;cursor:pointer}
+button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+button.on,.pri{background:var(--blue);border-color:var(--blue);color:#fff}
+.sun{background:var(--sun);border-color:var(--sun);color:#141a33}
+main{max-width:860px;margin:auto;padding:16px max(5vw,16px) 40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:clamp(18px,4vw,30px);box-shadow:0 10px 30px -18px #1f3a9366}
+.ref{font-weight:800;color:var(--blue2);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline}
+.ref small{color:var(--mute);font-weight:600}
+.verse{font:400 clamp(22px,4vw,30px)/1.4 "DM Serif Display",Georgia,serif;margin:12px 0 6px}
+.en{color:var(--mute);font-style:italic;margin:4px 0 0}
+.w{cursor:pointer;border-radius:6px;padding:0 2px}.w:hover{background:var(--soft)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:14px}
+.modes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin:16px 0}
+.modes button{font-size:14px;padding:6px}
+.pick{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 10px;scroll-snap-type:x mandatory}
+.pick button{flex:none;scroll-snap-align:start;font-size:14px;white-space:nowrap}
+.blank{width:calc(var(--n)*0.72em + 1.2em);font:inherit;font-size:.8em;border:0;border-bottom:2px solid var(--blue2);background:var(--soft);border-radius:6px 6px 0 0;padding:0 4px;text-align:center}
+.blank.good{border-color:var(--ok);color:var(--ok)}.blank.wrong{border-color:var(--bad);color:var(--bad)}
+.hid{color:var(--blue2);cursor:pointer;letter-spacing:.04em}
+.bank{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.bank button{font-weight:600}.bank button.used{visibility:hidden}
+.shake{animation:sh .3s}@keyframes sh{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+textarea,input[type=text],select{width:100%;border:1.5px solid var(--line);border-radius:12px;background:var(--card);padding:10px 12px;font-size:16px}
+textarea{min-height:110px;resize:vertical}
+label{display:block;font-weight:700;margin:14px 0 6px}
+.msg{margin-top:12px;font-weight:700}
+.g{color:var(--ok)}.b{color:var(--bad);text-decoration:line-through}.m{color:var(--bad)}
+.list{display:grid;gap:10px}
+.item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center}
+.item p{margin:4px 0 0;font-family:"DM Serif Display",Georgia,serif;font-size:18px;line-height:1.35}
+.badge{display:inline-block;font-size:13px;font-weight:800;padding:2px 10px;border-radius:99px;background:var(--soft);color:var(--blue2)}
+.badge.done{background:var(--sun);color:#141a33}
+.dots{display:inline-flex;gap:4px;margin-left:6px;vertical-align:middle}.dots i{width:9px;height:9px;border-radius:50%;background:var(--line)}.dots i.f{background:var(--sun)}
+.empty{text-align:center;color:var(--mute)}
+.note{font-size:14px;color:var(--mute)}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-weight:700;display:none;gap:12px;align-items:center;z-index:9}
+.toast button{min-height:34px;padding:4px 10px;background:transparent;color:inherit;border-color:currentColor}
+footer{text-align:center;font-size:13px;color:var(--mute);padding:10px 16px 28px}
+[hidden]{display:none!important}
+@media(max-width:600px){.modes{grid-template-columns:repeat(3,minmax(0,1fr))}nav button{font-size:14px;padding:6px}}
+@media(prefers-reduced-motion:reduce){.shake{animation:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="in">
+    <h1>Versículos en Español</h1>
+    <p>Put in a verse in English. Learn to say it in Spanish.</p>
+  </div>
+  <svg class="tiles" viewBox="0 0 400 34" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs><pattern id="t" width="34" height="34" patternUnits="userSpaceOnUse">
+      <rect width="34" height="34" fill="#f4f6fb"/><rect x="1" y="1" width="32" height="32" fill="none" stroke="#1f3a93" stroke-width="1.2"/>
+      <path d="M17 4 L22 17 L17 30 L12 17Z M4 17 L17 12 L30 17 L17 22Z" fill="#2f55c9"/>
+      <circle cx="17" cy="17" r="3.4" fill="#f2b705"/>
+      <path d="M1 1h6M1 1v6M33 1h-6M33 1v6M1 33h6M1 33v-6M33 33h-6M33 33v-6" stroke="#1f3a93" stroke-width="2"/>
+    </pattern></defs>
+    <rect width="400" height="34" fill="url(#t)"/>
+  </svg>
+</header>
+
+<style>
+.prompt{font:400 clamp(20px,3.6vw,26px)/1.4 "DM Serif Display",Georgia,serif;margin:10px 0 0}
+.tag{font-size:13px;font-weight:800;color:var(--mute);margin:14px 0 2px}
+.ph{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.ph .es{font:400 22px/1.3 "DM Serif Display",Georgia,serif}
+.ph .say{color:var(--blue2);font-weight:700;font-size:15px}
+.ph .gl{color:var(--mute);font-size:15px}
+.ph button{grid-row:span 3;min-width:48px}
+.step{background:var(--soft);border-radius:16px;padding:18px;text-align:center;margin-top:14px}
+.step .gl{font-size:18px;font-weight:700}
+.step .es{font:400 clamp(26px,5vw,34px)/1.25 "DM Serif Display",Georgia,serif;margin-top:10px}
+.step .say{color:var(--blue2);font-weight:800;margin-top:4px}
+.tips{background:var(--soft);border-radius:12px;padding:10px 14px;margin-top:14px;font-size:15px}
+.spin{display:inline-block;width:16px;height:16px;border:3px solid currentColor;border-right-color:transparent;border-radius:50%;animation:sp 1s linear infinite;vertical-align:-3px;margin-right:8px}
+@keyframes sp{to{transform:rotate(1turn)}}
+@media(prefers-reduced-motion:reduce){.spin{animation-duration:3s}}
+</style>
+<nav>
+  <button id="tPractice" class="on">Practice</button>
+  <button id="tList">My verses</button>
+  <button id="tAdd">+ Add verse</button>
+</nav>
+
+<main>
+  <section id="vPractice">
+    <div class="pick" id="pick"></div>
+    <div class="card" id="card"></div>
+  </section>
+
+  <section id="vList" hidden>
+    <div class="list" id="list"></div>
+    <div class="card" style="margin-top:18px">
+      <strong>Backup</strong>
+      <p class="note">Your verses are saved in this browser on this device. Copy them to keep a backup or move them to another phone, then paste them back here.</p>
+      <div class="row"><button id="bCopy">Copy my verses</button><button id="bShowImp">Paste a backup</button></div>
+      <div id="imp" hidden><label for="impTxt">Paste backup text</label><textarea id="impTxt"></textarea><div class="row"><button class="pri" id="bImp">Import</button></div></div>
+      <div class="msg" id="bMsg"></div>
+    </div>
+  </section>
+
+  <section id="vAdd" hidden>
+    <form class="card" id="form">
+      <strong id="fTitle">Add a verse in English</strong>
+      <label for="fRef">Reference</label>
+      <input type="text" id="fRef" placeholder="John 3:16">
+      <label for="fEn">English verse</label>
+      <textarea id="fEn" placeholder="Paste the verse from your English Bible" required></textarea>
+      <label for="fVer">Spanish Bible to learn it from</label>
+      <select id="fVer"><option value="RVR1960">Reina-Valera 1960 (most common)</option><option value="NVI">Nueva Versión Internacional (NVI)</option><option value="NTV">Nueva Traducción Viviente (NTV)</option><option value="LBLA">La Biblia de las Américas (LBLA)</option><option value="RV1909">Reina-Valera 1909</option></select>
+      <div class="row"><button class="pri" type="button" id="fTeach">Teach me the Spanish</button><button type="button" id="fCancel" hidden>Cancel</button></div>
+      <div class="msg" id="fMsg"></div>
+      <div id="prev" hidden>
+        <label for="fEs">Spanish (you can correct it to match your Spanish Bible)</label>
+        <textarea id="fEs"></textarea>
+        <div id="prevPh"></div>
+        <div class="row"><button class="sun" type="button" id="fHear">▶ Hear it</button><button class="pri" type="submit">Save verse</button></div>
+      </div>
+      <p class="note" id="manualNote" hidden>The Spanish helper isn't available in this view (for example, after hosting the page on your own site). You can type or paste the Spanish yourself, and the app will still drill you on it.</p>
+    </form>
+  </section>
+</main>
+
+<div class="toast" id="toast"><span id="toastTxt"></span><button id="toastUndo">Undo</button></div>
+<footer>© 2026 Dwayne Harris · Created by Dwayne Harris</footer>
+
+<script>
+{
+const KEY='dh-spanish-verses-v2';
+const SAMPLES=[
+ {ref:'John 3:16',ver:'RV1909',en:'For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.',
+  es:'Porque de tal manera amó Dios al mundo, que ha dado a su Hijo unigénito, para que todo aquel que en él cree, no se pierda, mas tenga vida eterna.',
+  phrases:[{es:'Porque de tal manera',en:'For in such a way',say:'por-KEH deh tahl mah-NEH-rah'},{es:'amó Dios al mundo,',en:'God loved the world,',say:'ah-MOH dee-OHS ahl MOON-doh'},{es:'que ha dado a su Hijo unigénito,',en:'that he has given his only begotten Son,',say:'keh ah DAH-doh ah soo EE-hoh oo-nee-HEH-nee-toh'},{es:'para que todo aquel que en él cree,',en:'so that everyone who believes in him',say:'PAH-rah keh TOH-doh ah-KEL keh en el KREH-eh'},{es:'no se pierda,',en:'will not be lost,',say:'noh seh pee-EHR-dah'},{es:'mas tenga vida eterna.',en:'but have eternal life.',say:'mahs TEN-gah VEE-dah eh-TEHR-nah'}],
+  tips:['"Unigénito" means only-begotten: "uni" (one) + "génito" (born).','"Mas" without an accent is an old word for "but" (today you would say "sino" or "pero").']},
+ {ref:'Philippians 4:13',ver:'RV1909',en:'I can do all things through Christ which strengtheneth me.',
+  es:'Todo lo puedo en Cristo que me fortalece.',
+  phrases:[{es:'Todo lo puedo',en:'All things I can do',say:'TOH-doh loh PWEH-doh'},{es:'en Cristo',en:'in Christ',say:'en KREES-toh'},{es:'que me fortalece.',en:'who strengthens me.',say:'keh meh for-tah-LEH-seh'}],
+  tips:['Spanish puts "todo" (everything) first for emphasis: literally "everything it I can".']},
+ {ref:'Psalm 119:11',ver:'RV1909',en:'Thy word have I hid in mine heart, that I might not sin against thee.',
+  es:'En mi corazón he guardado tus dichos, para no pecar contra ti.',
+  phrases:[{es:'En mi corazón',en:'In my heart',say:'en mee koh-rah-SOHN'},{es:'he guardado tus dichos,',en:'I have kept your sayings,',say:'eh gwar-DAH-doh toos DEE-chohs'},{es:'para no pecar contra ti.',en:'so as not to sin against you.',say:'PAH-rah noh peh-KAR KOHN-trah tee'}],
+  tips:['"He guardado" = "I have kept" — "he" here is the verb haber, said "eh".']}
+];
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+let S;
+try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+if(!S||!Array.isArray(S.verses)){S={verses:SAMPLES.map(v=>({...v,id:uid(),ok:0,sample:true})),cur:null,mode:'aprender',level:50,step:0}}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-zñ0-9]/g,'');
+const cur=()=>S.verses.find(v=>v.id===S.cur)||S.verses[0];
+const toks=t=>t.trim().split(/\s+/);
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+
+/* Claude helper */
+let sample=null;
+try{claude.use('sample').then(s=>{sample=s;$('fTeach').hidden=!s;if(!s)$('manualNote').hidden=false;else if(!draft&&!$('fEs').value)$('prev').hidden=true}).catch(()=>{$('manualNote').hidden=false})}catch(e){$('manualNote').hidden=false}
+async function teach(ref,en,ver){
+  const p=`You are a patient Spanish tutor helping an English-speaking Christian man memorize a Bible verse in Spanish.
+Reference (may be blank): ${ref||'(none)'}
+English verse: ${en}
+Spanish Bible version wanted: ${ver}
+
+Give the verse as it reads in the ${ver} Spanish Bible. If you are not sure of that version's exact wording, give the closest faithful Spanish rendering.
+Return ONLY JSON, no other text:
+{"ref":"the reference in English, e.g. John 3:16 (guess from the text if blank)","es":"the full Spanish verse","phrases":[{"es":"short Spanish phrase","en":"its literal English meaning","say":"easy pronunciation for an English speaker, stressed syllable in CAPS, e.g. por-KEH deh tahl mah-NEH-rah"}],"tips":["1 to 3 short tips on tricky words or grammar"]}
+Split the Spanish into 2 to 8 phrases of 2 to 7 words, in order, that together are exactly the whole Spanish verse.`;
+  let val;
+  try{val=await sample.json(p,{modelTier:'default'})}catch(e){if(e&&e.code)throw e;const r=await sample(p,{modelTier:'default'});val=JSON.parse(r.text.replace(/^[^{]*/,'').replace(/[^}]*$/,''))}
+  if(!val||typeof val.es!=='string')throw {message:'No Spanish came back.'};
+  return {ref:String(val.ref||ref||''),es:val.es.trim(),phrases:(Array.isArray(val.phrases)?val.phrases:[]).map(x=>({es:String(x.es||''),en:String(x.en||''),say:String(x.say||'')})).filter(x=>x.es),tips:(Array.isArray(val.tips)?val.tips:[]).map(String).slice(0,3)};
+}
+
+/* speech */
+let voice=null;
+const pickVoice=()=>{try{const vs=speechSynthesis.getVoices().filter(v=>/^es/i.test(v.lang));voice=vs.find(v=>/es-MX|es-US/i.test(v.lang))||vs[0]||null}catch(e){}};
+try{pickVoice();speechSynthesis.onvoiceschanged=pickVoice}catch(e){}
+const speak=(text,rate=0.9)=>{try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang=voice?voice.lang:'es-MX';if(voice)u.voice=voice;u.rate=rate;speechSynthesis.speak(u)}catch(e){toast('Audio is not available in this browser')}};
+
+/* toast */
+let undoFn=null,tt;
+const toast=(t,undo)=>{$('toastTxt').textContent=t;undoFn=undo||null;$('toastUndo').hidden=!undo;$('toast').style.display='flex';clearTimeout(tt);tt=setTimeout(()=>{$('toast').style.display='none';undoFn=null},5000)};
+$('toastUndo').onclick=()=>{if(undoFn)undoFn();$('toast').style.display='none'};
+
+/* tabs */
+const views={Practice:'vPractice',List:'vList',Add:'vAdd'};
+const show=n=>{for(const k in views){$(views[k]).hidden=k!==n;$('t'+k).classList.toggle('on',k===n)}if(n==='Practice')renderPractice();if(n==='List')renderList();window.scrollTo(0,0)};
+$('tPractice').onclick=()=>show('Practice');$('tList').onclick=()=>show('List');$('tAdd').onclick=()=>{resetForm();show('Add')};
+
+/* practice */
+const MODES=[['aprender','1 · Learn'],['letras','2 · First letters'],['espacios','3 · Blanks'],['ordenar','4 · Word order'],['escribir','5 · Write it']];
+function credit(score){
+  const v=cur();if(score>=90){v.ok=Math.min((v.ok||0)+1,3);v.last=Date.now();save()}
+  renderPick();return v.ok>=3?' ¡Excelente! Verse mastered.':score>=90?` Progress ${v.ok}/3.`:' Keep going — you need 90%.';
+}
+function renderPick(){
+  $('pick').innerHTML=S.verses.map(v=>`<button data-id="${esc(v.id)}" class="${v.id===cur()?.id?'on':''}">${esc(v.ref||'Verse')}${v.ok>=3?' ★':''}</button>`).join('');
+}
+const phrasesOf=v=>v.phrases&&v.phrases.length?v.phrases:[{es:v.es,en:v.en,say:''}];
+function renderPractice(){
+  renderPick();
+  const v=cur(),c=$('card');
+  if(!v){c.innerHTML=`<p class="empty">No verses yet.</p><div class="row" style="justify-content:center"><button class="pri" id="goAdd">Add a verse</button></div>`;$('goAdd').onclick=()=>show('Add');return}
+  if(S.cur!==v.id){S.cur=v.id;S.step=0}
+  c.innerHTML=`<div class="ref"><span>${esc(v.ref)}</span><small>${esc(v.ver)} <span class="dots">${[0,1,2].map(i=>`<i class="${i<(v.ok||0)?'f':''}"></i>`).join('')}</span></small></div>
+  <p class="prompt">${esc(v.en)}</p>
+  <div class="modes">${MODES.map(([k,n])=>`<button data-m="${k}" class="${S.mode===k?'on':''}">${n}</button>`).join('')}</div>
+  <div id="area"></div>
+  <div class="row"><button class="sun" id="pSay">▶ Hear Spanish</button><button id="pSlow">Slow</button></div>
+  <div class="msg" id="pMsg"></div>`;
+  $('pSay').onclick=()=>speak(v.es,0.9);$('pSlow').onclick=()=>speak(v.es,0.6);
+  c.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{S.mode=b.dataset.m;save();renderPractice()});
+  renderMode(v);
+}
+function renderMode(v){
+  const a=$('area'),words=toks(v.es),m=S.mode;
+  if(m==='aprender'){
+    const ph=phrasesOf(v),i=Math.min(S.step||0,ph.length-1),p=ph[i];
+    a.innerHTML=`<div class="step"><div class="note">Phrase ${i+1} of ${ph.length}</div><div class="gl">${esc(p.en)}</div>
+      <div id="stEs" hidden><div class="es">${esc(p.es)}</div>${p.say?`<div class="say">${esc(p.say)}</div>`:''}</div>
+      <div class="row" style="justify-content:center"><button id="stPrev" ${i?'':'disabled'}>‹ Back</button><button class="pri" id="stShow">Show Spanish</button><button id="stNext" ${i<ph.length-1?'':'disabled'}>Next ›</button></div></div>
+      <p class="note">Read the English, try saying it in Spanish out loud, then tap Show Spanish to check yourself and hear it.</p>
+      <div class="tag">The whole verse, phrase by phrase</div>
+      ${ph.map((x,k)=>`<div class="ph"><div class="es">${esc(x.es)}</div><button data-say="${k}" aria-label="Hear phrase ${k+1}">▶</button>${x.say?`<div class="say">${esc(x.say)}</div>`:''}<div class="gl">${esc(x.en)}</div></div>`).join('')}
+      ${v.tips&&v.tips.length?`<div class="tips"><strong>Tips</strong>${v.tips.map(t=>`<div>• ${esc(t)}</div>`).join('')}</div>`:''}`;
+    $('stShow').onclick=()=>{$('stEs').hidden=false;speak(p.es,0.75)};
+    $('stPrev').onclick=()=>{S.step=i-1;save();renderMode(v)};$('stNext').onclick=()=>{S.step=i+1;save();renderMode(v)};
+    a.querySelectorAll('[data-say]').forEach(b=>b.onclick=()=>speak(ph[b.dataset.say].es,0.75));
+  }
+  if(m==='letras'){
+    const fl=w=>{const mm=w.match(/^([^\p{L}\p{N}]*)([\p{L}\p{N}])([\p{L}\p{N}]*)(.*)$/u);return mm?mm[1]+mm[2]+(mm[3]?'_':'')+mm[4]:w};
+    a.innerHTML=`<p class="verse">${words.map((w,i)=>`<span class="hid" data-i="${i}" title="Tap to reveal">${esc(fl(w))}</span>`).join(' ')}</p>
+    <p class="note">Say the Spanish out loud using only the first letters. Tap a word to peek.</p><div class="row"><button id="rev">Show all</button></div>`;
+    a.querySelectorAll('.hid').forEach(s=>s.onclick=()=>{s.textContent=words[s.dataset.i];s.className='w';speak(words[s.dataset.i].replace(/[^\p{L}\p{N}]/gu,''),0.75)});
+    $('rev').onclick=()=>a.querySelectorAll('.hid').forEach(s=>{s.textContent=words[s.dataset.i];s.className='w'});
+  }
+  if(m==='espacios'){
+    const idx=words.map((w,i)=>i).filter(i=>norm(words[i]));
+    const n=Math.max(1,Math.round(idx.length*S.level/100));
+    const hide=new Set(shuffle(idx).slice(0,n));
+    a.innerHTML=`<div class="row" style="margin-top:0">${[25,50,75,100].map(l=>`<button data-l="${l}" class="${S.level===l?'on':''}">${l}%</button>`).join('')}</div>
+    <p class="verse">${words.map((w,i)=>{if(!hide.has(i))return esc(w);const p=w.match(/[^\p{L}\p{N}]+$/u);return `<input class="blank" data-i="${i}" style="--n:${norm(w).length}" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="word ${i+1}">${p?esc(p[0]):''}`}).join(' ')}</p>
+    <p class="note">Accents are optional: "corazon" counts for "corazón".</p>
+    <div class="row"><button class="pri" id="chk">Check</button><button id="hint">Hint</button><button id="again">New round</button></div>`;
+    a.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{S.level=+b.dataset.l;save();renderMode(v)});
+    $('again').onclick=()=>renderMode(v);
+    $('hint').onclick=()=>{const e=[...a.querySelectorAll('.blank')].find(x=>norm(x.value)!==norm(words[x.dataset.i]));if(e){e.value=words[e.dataset.i].replace(/[^\p{L}\p{N}]+$/u,'');e.classList.add('good');e.focus()}};
+    $('chk').onclick=()=>{const bl=[...a.querySelectorAll('.blank')];let ok=0;bl.forEach(x=>{const g=norm(x.value)===norm(words[x.dataset.i]);ok+=g;x.classList.toggle('good',g);x.classList.toggle('wrong',!g)});
+      const sc=Math.round(ok/bl.length*100);$('pMsg').innerHTML=`<span class="${sc>=90?'g':'m'}">${ok} of ${bl.length} correct.${esc(credit(sc))}</span>`};
+  }
+  if(m==='ordenar'){
+    let pos=0,miss=0;
+    const order=shuffle(words.map((w,i)=>i));
+    a.innerHTML=`<p class="note" style="margin-top:0">Tap the Spanish words in order.</p><p class="verse" id="built" style="min-height:1.4em"></p><div class="bank">${order.map(i=>`<button data-i="${i}">${esc(words[i])}</button>`).join('')}</div>`;
+    a.querySelectorAll('.bank button').forEach(b=>b.onclick=()=>{
+      if(norm(words[b.dataset.i])===norm(words[pos])){
+        $('built').textContent+=(pos?' ':'')+words[pos];b.classList.add('used');pos++;
+        if(pos===words.length){const sc=Math.max(0,100-miss*10);$('pMsg').innerHTML=`<span class="${sc>=90?'g':'m'}">¡Bien! ${miss} mistake${miss===1?'':'s'}.${esc(credit(sc))}</span> <button id="ag2">Again</button>`;$('ag2').onclick=()=>renderMode(v)}
+      }else{miss++;b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake')}
+    });
+  }
+  if(m==='escribir'){
+    a.innerHTML=`<label for="typ" style="margin-top:0">Write the verse in Spanish from memory</label><textarea id="typ" autocapitalize="sentences" spellcheck="false"></textarea>
+    <div class="row"><button class="pri" id="chk">Check</button><button id="clr">Clear</button></div><p class="verse" id="diff" style="font-size:20px"></p>`;
+    $('clr').onclick=()=>{$('typ').value='';$('diff').innerHTML='';$('pMsg').textContent=''};
+    $('chk').onclick=()=>{
+      const t=toks($('typ').value).filter(w=>norm(w)),tw=words.filter(w=>norm(w)),A=t.map(norm),B=tw.map(norm);
+      const L=Array.from({length:A.length+1},()=>Array(B.length+1).fill(0));
+      for(let i=A.length-1;i>=0;i--)for(let j=B.length-1;j>=0;j--)L[i][j]=A[i]===B[j]?L[i+1][j+1]+1:Math.max(L[i+1][j],L[i][j+1]);
+      let i=0,j=0;const out=[];
+      while(i<A.length||j<B.length){if(i<A.length&&j<B.length&&A[i]===B[j]){out.push(`<span class="g">${esc(tw[j])}</span>`);i++;j++}
+        else if(j<B.length&&(i>=A.length||L[i][j+1]>=L[i+1][j])){out.push(`<span class="m">[${esc(tw[j])}]</span>`);j++}
+        else{out.push(`<span class="b">${esc(t[i])}</span>`);i++}}
+      $('diff').innerHTML=out.join(' ');
+      const sc=Math.round(L[0][0]/Math.max(B.length,A.length,1)*100);
+      $('pMsg').innerHTML=`<span class="${sc>=90?'g':'m'}">${sc}% correct.${esc(credit(sc))}</span> <span class="note">Green = right, [red] = missed, crossed out = extra.</span>`;
+    };
+  }
+}
+$('pick').onclick=e=>{const b=e.target.closest('[data-id]');if(b){S.cur=b.dataset.id;S.step=0;save();renderPractice()}};
+
+/* list */
+function renderList(){
+  const l=$('list');
+  if(!S.verses.length){l.innerHTML=`<div class="card empty">No verses yet. Tap <b>+ Add verse</b> to add your first one.</div>`;return}
+  l.innerHTML=S.verses.map(v=>`<div class="card item"><div><strong>${esc(v.ref)}</strong> <span class="note">${esc(v.ver)}</span> <span class="badge ${v.ok>=3?'done':''}">${v.ok>=3?'Mastered ★':`${v.ok||0}/3`}</span>${v.sample?' <span class="note">· sample</span>':''}<div class="note" style="margin-top:4px">${esc(v.en)}</div><p>${esc(v.es)}</p></div>
+  <div class="row" style="margin:0;flex-direction:column"><button data-p="${esc(v.id)}" class="pri">Practice</button><button data-e="${esc(v.id)}">Edit</button><button data-d="${esc(v.id)}">Delete</button></div></div>`).join('');
+}
+$('list').onclick=e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.p){S.cur=b.dataset.p;S.step=0;S.mode='aprender';save();show('Practice')}
+  if(b.dataset.e)editVerse(b.dataset.e);
+  if(b.dataset.d){const i=S.verses.findIndex(v=>v.id===b.dataset.d),gone=S.verses.splice(i,1)[0];save();renderList();toast(`Deleted ${gone.ref}`,()=>{S.verses.splice(i,0,gone);save();renderList()})}
+};
+
+/* add / edit */
+let editing=null,draft=null;
+function resetForm(){editing=null;draft=null;$('form').reset();$('fTitle').textContent='Add a verse in English';$('fCancel').hidden=true;$('fMsg').textContent='';$('prev').hidden=!!sample;$('prevPh').innerHTML='';$('fTeach').hidden=!sample}
+function showDraft(d){draft=d;$('prev').hidden=false;$('fEs').value=d.es;if(d.ref&&!$('fRef').value)$('fRef').value=d.ref;
+  $('prevPh').innerHTML=d.phrases.map(x=>`<div class="ph"><div class="es">${esc(x.es)}</div><span></span><div class="say">${esc(x.say)}</div><div class="gl">${esc(x.en)}</div></div>`).join('')}
+function editVerse(id){const v=S.verses.find(x=>x.id===id);resetForm();editing=id;$('fRef').value=v.ref;$('fEn').value=v.en;$('fVer').value=v.ver;showDraft({es:v.es,phrases:v.phrases||[],tips:v.tips||[],ref:v.ref});$('fTitle').textContent='Edit '+v.ref;$('fCancel').hidden=false;show('Add')}
+$('fCancel').onclick=()=>{resetForm();show('List')};
+$('fHear').onclick=()=>speak($('fEs').value,0.85);
+$('fTeach').onclick=async()=>{
+  const en=$('fEn').value.trim();if(!en){$('fMsg').textContent='Paste the English verse first.';return}
+  if(!sample){$('prev').hidden=false;return}
+  const btn=$('fTeach');btn.disabled=true;$('fMsg').innerHTML='<span class="spin"></span>Finding the Spanish and breaking it into phrases…';
+  try{const d=await teach($('fRef').value.trim(),en,$('fVer').value);showDraft(d);$('fMsg').textContent='Here it is. Look it over, then tap Save verse.'}
+  catch(e){$('fMsg').textContent=e&&e.code==='rate_limited'?'Too many requests right now. Wait a minute and try again.':e&&e.code==='not_granted'?'The Spanish helper needs your OK. You can also type the Spanish below yourself.':'That didn\'t work. Try again, or type the Spanish below yourself.';$('prev').hidden=false}
+  finally{btn.disabled=false}
+};
+$('form').onsubmit=e=>{e.preventDefault();
+  const es=$('fEs').value.trim().replace(/\s+/g,' '),en=$('fEn').value.trim().replace(/\s+/g,' ');
+  if(!en||!es){$('fMsg').textContent='The verse needs both the English and the Spanish.';return}
+  const keepPh=draft&&draft.es.replace(/\s+/g,' ')===es;
+  const d={ref:$('fRef').value.trim()||(draft&&draft.ref)||'Verse',en,es,ver:$('fVer').value,phrases:keepPh?draft.phrases:[],tips:draft?draft.tips:[]};
+  if(editing){const v=S.verses.find(x=>x.id===editing);if(v.es!==d.es)v.ok=0;Object.assign(v,d,{sample:false});S.cur=v.id}
+  else{const v={...d,id:uid(),ok:0};S.verses.unshift(v);S.cur=v.id}
+  S.step=0;S.mode='aprender';save();resetForm();toast('Verse saved. ¡Vamos!');show('Practice');
+};
+
+/* backup */
+$('bCopy').onclick=async()=>{const txt=JSON.stringify(S.verses.map(({ref,es,en,ver,ok,phrases,tips})=>({ref,es,en,ver,ok,phrases,tips})));try{await navigator.clipboard.writeText(txt);$('bMsg').textContent='Copied! Paste it into Notes or an email to keep it safe.'}catch(e){$('imp').hidden=false;$('impTxt').value=txt;$('impTxt').select();$('bMsg').textContent='Copy the selected text above.'}};
+$('bShowImp').onclick=()=>{$('imp').hidden=!$('imp').hidden;$('impTxt').value='';$('bMsg').textContent=''};
+$('bImp').onclick=()=>{try{const arr=JSON.parse($('impTxt').value);if(!Array.isArray(arr))throw 0;let n=0;
+  arr.forEach(x=>{if(x&&typeof x.es==='string'&&typeof x.en==='string'&&!S.verses.some(v=>v.es===x.es)){S.verses.push({ref:String(x.ref||'Verse'),es:x.es,en:x.en,ver:String(x.ver||'RVR1960'),ok:Math.min(+x.ok||0,3),phrases:Array.isArray(x.phrases)?x.phrases.map(p=>({es:String(p.es||''),en:String(p.en||''),say:String(p.say||'')})):[],tips:Array.isArray(x.tips)?x.tips.map(String):[],id:uid()});n++}});
+  save();renderList();$('bMsg').textContent=`Imported ${n} verse${n===1?'':'s'}.`}catch(e){$('bMsg').textContent='That text is not a valid backup.'}};
+
+resetForm();renderPractice();
+}
+</script>
+</body>
+</html>
