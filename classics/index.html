@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Classics in a Nutshell</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE: a quiet, well-kept library — warm, unhurried, easy to read on a phone
+   IDEA: a bookshelf of 25 classics; pull a spine to read its pocket notes
+   PICTURE: a wooden shelf of coloured spines, scrollable, each one tappable
+   COLOUR and TYPE: library green ground, brass accent, paper-white cards; Fraunces titles, Source Sans body
+   LAYOUT: title, shelf, filters + search, list of book cards; tapping opens a notes sheet */
+:root{color-scheme:light dark;
+--bg:light-dark(#f4f1ea,#111813);--ink:light-dark(#1b211d,#ece8de);--soft:light-dark(#5b625d,#a9ada6);
+--card:light-dark(#ffffff,#1a231d);--line:light-dark(#ddd6c6,#2c3a30);
+--green:#1f3b2d;--brass:#c9a227;--wood:#6b4423;--wood2:#4a2e17}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 "Source Sans 3",system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;margin:0;text-wrap:balance}
+.top{background:var(--green);color:#f4f1ea;padding:28px max(5vw,16px) 0}
+.top h1{font-size:clamp(32px,7vw,48px);line-height:1.05}
+.top p{margin:8px 0 18px;color:#cfd8cf;max-width:60ch}
+.prog{display:flex;align-items:center;gap:12px;margin-bottom:18px;font-size:15px;color:#e6e1cf}
+.bar{flex:1;max-width:260px;height:8px;background:#ffffff22;border-radius:9px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--brass);width:0;transition:width .4s}
+.shelf{display:flex;align-items:flex-end;gap:4px;overflow-x:auto;padding:16px 4px 0;height:230px;scroll-snap-type:x proximity;
+background:linear-gradient(#00000033,transparent 30%)}
+.spine{flex:none;width:42px;border:0;border-radius:3px 3px 0 0;cursor:pointer;color:#fff;padding:10px 0;display:flex;justify-content:center;
+writing-mode:vertical-rl;transform:rotate(180deg);font:600 13px/1.1 "Source Sans 3",sans-serif;letter-spacing:.02em;text-align:start;
+box-shadow:inset -6px 0 0 #00000030,inset 3px 0 0 #ffffff26;transition:transform .2s;scroll-snap-align:start;overflow:hidden;white-space:nowrap}
+.spine:hover,.spine:focus-visible{transform:rotate(180deg) translateY(8px)}
+.spine.read::after{content:"";position:absolute}
+.spine .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--brass);margin-block:0 6px}
+.plank{height:18px;background:linear-gradient(var(--wood),var(--wood2));box-shadow:0 6px 10px #0004;margin:0 calc(-1*max(5vw,16px))}
+.band{padding:22px max(5vw,16px) 40px;max-width:1000px;margin:0 auto}
+.tools{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.tab{min-height:44px;padding:0 16px;border-radius:22px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 15px "Source Sans 3",sans-serif;cursor:pointer}
+.tab[aria-pressed=true]{background:var(--green);color:#fff;border-color:var(--green)}
+input[type=search]{width:100%;min-height:46px;font-size:16px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);margin-bottom:16px}
+:focus-visible{outline:3px solid var(--brass);outline-offset:2px}
+.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:12px}
+.item{display:flex;gap:14px;align-items:flex-start;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;cursor:pointer;color:var(--ink);font:inherit}
+.num{flex:none;width:40px;height:56px;border-radius:3px;display:grid;place-items:center;color:#fff;font:700 18px Fraunces,serif;box-shadow:inset -5px 0 0 #00000030}
+.item h3{font-size:19px;line-height:1.2}
+.meta{font-size:14px;color:var(--soft)}
+.chk{color:var(--brass);font-weight:600;font-size:14px}
+.empty{color:var(--soft);padding:20px 0}
+.sheet{position:fixed;inset:0;background:#000a;display:none;align-items:flex-end;justify-content:center;z-index:9}
+.sheet.on{display:flex}
+.paper{background:var(--card);color:var(--ink);width:min(720px,100%);max-height:92vh;overflow-y:auto;border-radius:18px 18px 0 0;padding:0 0 24px;animation:up .25s ease}
+@keyframes up{from{transform:translateY(30px);opacity:0}}
+@media(prefers-reduced-motion:reduce){.paper{animation:none}.spine{transition:none}}
+.cover{padding:22px 22px 18px;color:#fff;position:relative}
+.cover h2{font-size:clamp(28px,6vw,38px);line-height:1.05;padding-right:44px}
+.cover .meta{color:#ffffffd0;margin-top:6px}
+.x{position:absolute;top:12px;right:12px;width:44px;height:44px;border-radius:50%;border:0;background:#00000040;color:#fff;font-size:24px;cursor:pointer}
+.sec{padding:16px 22px 0}
+.sec h4{margin:0 0 4px;font:700 14px "Source Sans 3",sans-serif;color:var(--brass)}
+.sec p{margin:0;max-width:65ch}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips span{border:1px solid var(--line);border-radius:14px;padding:3px 10px;font-size:14px}
+.take{margin:16px 22px 0;padding:14px 16px;border-left:4px solid var(--brass);background:light-dark(#faf6e8,#232c22);border-radius:0 10px 10px 0;font-family:Fraunces,serif;font-size:18px}
+.acts{display:flex;flex-wrap:wrap;gap:8px;padding:18px 22px 0}
+.btn{min-height:44px;padding:0 16px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 15px "Source Sans 3",sans-serif;cursor:pointer}
+.btn.main{background:var(--green);color:#fff;border-color:var(--green)}
+.stabs{display:flex;gap:6px;overflow-x:auto;padding:12px 16px 4px;position:sticky;top:0;background:var(--card);z-index:2;border-bottom:1px solid var(--line)}
+.stab{flex:none;min-height:40px;padding:0 14px;border-radius:20px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 14px "Source Sans 3",sans-serif;cursor:pointer}
+.stab[aria-selected=true]{background:var(--brass);border-color:var(--brass);color:#1b211d}
+.who{display:grid;gap:10px}
+.who div{border-bottom:1px solid var(--line);padding-bottom:10px}
+.who b{display:block;font-family:Fraunces,serif;font-size:17px}
+.step{display:grid;grid-template-columns:30px 1fr;gap:10px;margin-bottom:14px}
+.step span{width:30px;height:30px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;font:700 14px "Source Sans 3",sans-serif}
+.step b{display:block;font-family:Fraunces,serif;font-size:17px}
+.qs{margin:0;padding-left:22px}.qs li{margin-bottom:8px}
+footer{text-align:center;font-size:13px;color:var(--soft);padding:10px 16px 30px}
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>Classics in a Nutshell</h1>
+  <p>Pocket notes on 25 of the greatest novels and short stories ever written. Tap a book for its summary, characters, part-by-part plot, and background.</p>
+  <div class="prog"><span id="pcount">0 of 25 read</span><div class="bar"><i id="pbar"></i></div></div>
+  <div class="shelf" id="shelf" aria-label="Bookshelf"></div>
+  <div class="plank"></div>
+</header>
+
+<main class="band">
+  <div class="tools" role="group" aria-label="Filter">
+    <button class="tab" data-f="all" aria-pressed="true">All 25</button>
+    <button class="tab" data-f="novel" aria-pressed="false">Novels</button>
+    <button class="tab" data-f="short" aria-pressed="false">Short stories</button>
+    <button class="tab" data-f="faith" aria-pressed="false">Faith themes</button>
+    <button class="tab" data-f="adv" aria-pressed="false">Adventure</button>
+    <button class="tab" data-f="unread" aria-pressed="false">Not read yet</button>
+  </div>
+  <input type="search" id="q" placeholder="Search title, author or theme" aria-label="Search">
+  <div class="list" id="list"></div>
+</main>
+
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="stitle"><div class="paper" id="paper"></div></div>
+
+<footer>© 2026 Dwayne Harris · Created by Dwayne Harris</footer>
+
+<script src="deep1.js"></script>
+<script src="deep2.js"></script>
+<script>
+{
+const C=['#7a2e2e','#1f4e5f','#5a3e7a','#2f5d3a','#8a5a1f','#26364f','#6d2a4f','#3e5a5a','#7a4b2e','#2e3f6d'];
+const B=[
+["Don Quixote","Miguel de Cervantes","1605/1615","novel",["adv"],"An aging Spanish gentleman reads so many tales of knights that he loses touch with reality. He renames himself Don Quixote, takes the farmer Sancho Panza as his squire, and rides out to right wrongs. He charges windmills he thinks are giants and flocks of sheep he thinks are armies. In Part Two he has become famous, and a duke and duchess play cruel tricks on him. After he loses a duel to a neighbor in disguise, he goes home, gives up knighthood, gets his sanity back, and dies.","Illusion vs. reality, idealism, friendship","Often called the first modern novel. It's both funny and sad about a man who lives by ideals the world laughs at."],
+["The Pilgrim's Progress","John Bunyan","1678","novel",["faith"],"An allegory of the Christian life. A man named Christian flees the City of Destruction with a heavy burden on his back. He passes the Slough of Despond and the Wicket Gate, and his burden falls away at the cross. He climbs the Hill Difficulty, fights the demon Apollyon, and walks through the Valley of the Shadow of Death. His companion Faithful is martyred at Vanity Fair. With a new friend, Hopeful, he escapes Giant Despair's Doubting Castle using a key called Promise, then crosses the river into the Celestial City. In Part Two his wife Christiana and their children make the same journey.","Salvation, perseverance, temptation, faith","For centuries it was the most-read book in English after the Bible."],
+["Pride and Prejudice","Jane Austen","1813","novel",[],"Mrs. Bennet is set on marrying off her five daughters. Elizabeth, the sharp-witted second daughter, decides the proud Mr. Darcy is arrogant, and she believes charming Mr. Wickham's lies about him. When Darcy first proposes, she turns him down. His letter afterward sets the record straight. When her sister Lydia runs off with Wickham, Darcy quietly arranges their marriage to save the family's name. Elizabeth's view of him changes, and she accepts his second proposal. Her older sister Jane marries Darcy's friend Mr. Bingley.","First impressions, class, marriage, self-knowledge","Both main characters have to face their own pride and prejudice before they can find love."],
+["Frankenstein","Mary Shelley","1818","novel",[],"The young scientist Victor Frankenstein gives life to a creature and then runs from it in horror. The abandoned creature teaches itself to speak by secretly watching a family, but people reject it everywhere it goes. It kills Victor's little brother William, and an innocent servant, Justine, is hanged for the crime. The creature asks Victor for a mate. Victor starts building one, then destroys it, and in revenge the creature kills his friend Clerval and his bride Elizabeth. Victor chases it into the Arctic and dies there. The creature mourns him and goes off to die.","The responsibility of a creator, ambition, isolation","Often called the first science-fiction novel. It asks who the real monster is."],
+["Jane Eyre","Charlotte Brontë","1847","novel",["faith"],"Orphaned Jane survives a cruel aunt and a harsh charity school, then becomes governess at Thornfield Hall and falls in love with its brooding master, Mr. Rochester. Their wedding is stopped when it comes out that Rochester already has a wife, Bertha, who is mentally ill and locked in the attic. Jane leaves him, is taken in by relatives she didn't know she had, inherits money, and turns down a loveless missionary marriage. She goes back and finds Thornfield burned down, Bertha dead, and Rochester blind. They marry.","Integrity, independence, faith, love","Jane refuses to give up her principles, even for love."],
+["Moby-Dick","Herman Melville","1851","novel",["adv"],"Ishmael signs on to the whaling ship Pequod with his harpooner friend Queequeg. Captain Ahab, who lost a leg to the great white whale Moby Dick, turns the voyage into a quest for revenge, even though his first mate Starbuck objects. After a three-day chase, the whale wrecks the ship. Ishmael is the only survivor, floating on Queequeg's coffin.","Obsession, man vs. nature, fate, the limits of human knowledge","It shows what happens when one man's obsession pulls everyone around him down with him."],
+["The Scarlet Letter","Nathaniel Hawthorne","1850","novel",["faith"],"In Puritan Boston, Hester Prynne has a baby, Pearl, outside of marriage and is made to wear a scarlet \"A.\" She won't name the father, who is the respected minister Arthur Dimmesdale. Her long-lost husband shows up under the name Roger Chillingworth and secretly torments Dimmesdale. Wasting away from hidden guilt, Dimmesdale finally confesses on the town scaffold and dies.","Sin, guilt, hypocrisy, redemption","Sin that's confessed openly can be lived with. Sin that's kept hidden eats you alive."],
+["Les Misérables","Victor Hugo","1862","novel",["faith","adv"],"Jean Valjean spends 19 years in prison for stealing bread and trying to escape. When he gets out, a bishop shows him mercy by giving him silver candlesticks, and that changes him. He becomes an honest mayor, rescues the orphan Cosette, and raises her as his own, all while the relentless Inspector Javert hunts him. During the 1832 Paris uprising he carries the wounded Marius, Cosette's love, to safety through the sewers. Javert can't reconcile Valjean's mercy with his own rigid sense of law, and he takes his own life. Marius and Cosette marry, and Valjean dies at peace.","Grace vs. law, redemption, justice, sacrifice","One act of grace can remake a whole life."],
+["Crime and Punishment","Fyodor Dostoevsky","1866","novel",["faith"],"Raskolnikov, a poor former student in St. Petersburg, convinces himself that \"extraordinary\" men are above moral law, and he murders an old pawnbroker and her sister. Guilt sends him into fever and paranoia while the shrewd detective Porfiry closes in. Sonya, a gentle young woman forced into prostitution, reads him the story of Lazarus. He confesses and is sent to Siberia. Sonya follows him there, and his spiritual renewal begins.","Guilt, pride, suffering, redemption","No theory can silence a conscience. Healing starts with confession."],
+["War and Peace","Leo Tolstoy","1869","novel",["faith"],"Russian aristocratic families live through the Napoleonic Wars from 1805 to 1812. The three main characters are awkward Pierre Bezukhov, proud Prince Andrei Bolkonsky, and lively Natasha Rostova. The story covers Austerlitz, Borodino, and the burning of Moscow. Andrei dies of his wounds. Pierre is taken prisoner, finds meaning in simple faith, and marries Natasha.","The meaning of life, history vs. the individual, love, family","Ordinary people, not \"great men,\" are the ones who really make history."],
+["Great Expectations","Charles Dickens","1861","novel",[],"The orphan Pip helps an escaped convict, Magwitch. Later he is drawn to the bitter, jilted Miss Havisham and her cold ward Estella. When a secret benefactor makes him a London gentleman, he grows ashamed of Joe, the kind blacksmith who raised him. The benefactor turns out to be Magwitch. Their escape attempt fails, Magwitch dies, and Pip, humbled, learns what true worth is. He meets a changed Estella at the end.","Ambition, class, loyalty, gratitude","Character matters more than status."],
+["The Count of Monte Cristo","Alexandre Dumas","1844","novel",["adv"],"On his wedding day, the sailor Edmond Dantès is framed by jealous rivals and locked in the island prison of Château d'If for 14 years. A fellow prisoner, Abbé Faria, educates him and tells him where a treasure is hidden. Edmond escapes by hiding in Faria's burial sack, gets rich, and comes back as the mysterious Count of Monte Cristo to ruin the men who betrayed him. In the end he learns the limits of revenge and shows mercy.","Revenge, justice, patience, God's providence","The book closes on \"wait and hope.\""],
+["Adventures of Huckleberry Finn","Mark Twain","1884","novel",["adv"],"Huck fakes his own death to get away from his abusive father and rafts down the Mississippi with Jim, an enslaved man who has escaped. Along the way they meet feuding families and two con men, the \"Duke\" and the \"King.\" Huck is torn over helping Jim, but he decides he would rather be damned than betray his friend. Tom Sawyer turns Jim's rescue into a silly game, and it turns out Jim was already free.","Conscience vs. society, freedom, friendship, race","Hemingway said all modern American literature comes from this book."],
+["The Brothers Karamazov","Fyodor Dostoevsky","1880","novel",["faith"],"The crude father Fyodor Karamazov has three sons: passionate Dmitri, intellectual Ivan, and Alyosha, a young monk-in-training. When Fyodor is murdered, Dmitri is convicted. The real killer is Smerdyakov, believed to be Fyodor's illegitimate son, who acted on Ivan's idea that without God \"everything is permitted.\" Smerdyakov hangs himself, Ivan breaks down, and Alyosha holds on to faith and love. The book includes the famous \"Grand Inquisitor\" chapter.","Faith vs. doubt, free will, suffering, everyone's responsibility for everyone","Many call it the greatest novel ever written about God."],
+["The Great Gatsby","F. Scott Fitzgerald","1925","novel",[],"Nick Carraway rents a house on Long Island in 1922, next door to the mysterious millionaire Jay Gatsby. Gatsby throws lavish parties hoping to win back Daisy, the woman he lost years earlier, who is now married to the brutish Tom Buchanan. Daisy, driving Gatsby's car, hits and kills Tom's mistress Myrtle. Myrtle's husband shoots Gatsby and then himself. Hardly anyone comes to Gatsby's funeral.","The American Dream, wealth, the past, emptiness","Money can't buy back the past."],
+["Nineteen Eighty-Four","George Orwell","1949","novel",[],"Winston Smith rewrites history for the Party in Oceania, a totalitarian state ruled by Big Brother. He starts a forbidden affair with Julia and trusts O'Brien, who turns out to be a Party loyalist. In Room 101 he is broken by torture and his greatest fear (rats). He betrays Julia and ends up loving Big Brother.","Surveillance, propaganda, truth, freedom","It gave us \"Big Brother,\" \"doublethink,\" and \"thought police.\""],
+["To Kill a Mockingbird","Harper Lee","1960","novel",[],"In 1930s Alabama, young Scout Finch watches her father Atticus defend Tom Robinson, a Black man falsely accused of rape. The evidence clears Tom, but the jury convicts him anyway, and he is later killed. The accuser's father, Bob Ewell, attacks Scout and her brother. Their reclusive neighbor Boo Radley saves them.","Justice, prejudice, moral courage, empathy","Atticus's lesson is that you have to see things from another person's point of view."],
+["The Old Man and the Sea","Ernest Hemingway","1952","novel",["adv"],"The aging Cuban fisherman Santiago has gone 84 days without a catch. He sails far out into the Gulf Stream and hooks a giant marlin. After three days of struggle he kills it and lashes it to his small boat, but sharks eat it on the way home. He comes back with only the skeleton and sleeps, dreaming of lions.","Endurance, dignity, pride, defeat vs. destruction","A man can be destroyed but not defeated. The book helped win Hemingway the Nobel Prize."],
+["Rip Van Winkle","Washington Irving","1819","short",[],"Easygoing Rip wanders into the Catskill Mountains, drinks with a strange crew of ghostly men, and falls asleep for 20 years. He wakes up after the American Revolution to a changed world. His nagging wife has died and King George's portrait has been replaced by George Washington's.","Change, time, escapism","The world keeps moving whether you're awake or not."],
+["The Overcoat","Nikolai Gogol","1842","short",[],"Akaky Akakievich is a poor, mocked copy clerk in St. Petersburg. He scrimps for months to buy a new overcoat, and it is stolen the very first night. A pompous official scolds him instead of helping, and he dies of fever. Afterward his ghost haunts the city, stealing overcoats.","Dignity of the \"little man,\" cruelty, bureaucracy","Dostoevsky is often quoted as saying the great Russian writers all \"came out from under Gogol's overcoat.\""],
+["The Tell-Tale Heart","Edgar Allan Poe","1843","short",[],"A narrator who insists he is sane murders an old man because of his \"vulture eye\" and hides the body under the floorboards. When police come to the house, he starts hearing the dead man's heart beating louder and louder, and he screams out a confession.","Guilt, madness, paranoia","Guilt is something you can't bury."],
+["The Necklace","Guy de Maupassant","1884","short",[],"Mathilde Loisel dreams of a richer life. She borrows a diamond necklace for a fancy ball and loses it. She and her husband go deep into debt to replace it and spend ten hard years paying it off. Then she learns the original was fake and worth almost nothing.","Vanity, pride, appearances, irony","Pride and keeping up appearances can cost a lifetime."],
+["How Much Land Does a Man Need?","Leo Tolstoy","1886","short",["faith"],"The peasant Pahom keeps wanting more land. The Bashkirs offer him all the land he can walk around in one day for a fixed price, but only if he's back by sunset. Greed drives him too far. He races back, collapses at the finish, and dies. His servant buries him in a grave about six feet long, which is all the land he needed.","Greed, contentment, mortality","James Joyce reportedly called it the greatest story ever written."],
+["The Gift of the Magi","O. Henry","1905","short",["faith"],"A poor young couple, Della and Jim, each want to buy the other a Christmas gift. Della sells her beautiful long hair to buy a chain for Jim's prized watch. Jim sells the watch to buy combs for her hair.","Sacrificial love, generosity, irony","The narrator calls them the wisest gift-givers of all, because they gave up what they treasured most."],
+["The Lottery","Shirley Jackson","1948","short",[],"A friendly small town gathers on a sunny June day for its yearly lottery. The \"winner,\" Tessie Hutchinson, is stoned to death by her neighbors, including her own family, because that's how it's always been done.","Blind tradition, mob conformity, hidden cruelty","It caused a huge public outcry when The New Yorker published it. Ordinary people can do evil things just by going along with the crowd."]
+].map((b,i)=>({i,t:b[0],a:b[1],y:b[2],k:b[3],tags:b[4],plot:b[5],th:b[6],take:b[7],c:C[i%C.length]}));
+
+const esc=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const $=id=>document.getElementById(id);
+let read=new Set(),filter='all',cur=null;
+try{read=new Set(JSON.parse(localStorage.getItem('classics-read')||'[]'))}catch(e){}
+try{filter=localStorage.getItem('classics-filter')||'all'}catch(e){}
+const save=()=>{try{localStorage.setItem('classics-read',JSON.stringify([...read]))}catch(e){}};
+const kind=b=>b.k==='novel'?'Novel':'Short story';
+
+function progress(){$('pcount').textContent=`${read.size} of 25 read`;$('pbar').style.width=(read.size/25*100)+'%'}
+
+function shelf(){
+  $('shelf').innerHTML=B.map(b=>`<button class="spine" data-i="${b.i}" style="background:${b.c};height:${150+((b.i*37)%60)}px" aria-label="${esc(b.t)}">${read.has(b.i)?'<span class="dot"></span>':''}${esc(b.t)}</button>`).join('');
+}
+
+function list(){
+  const q=$('q').value.trim().toLowerCase();
+  const rows=B.filter(b=>{
+    if(filter==='novel'&&b.k!=='novel')return false;
+    if(filter==='short'&&b.k!=='short')return false;
+    if((filter==='faith'||filter==='adv')&&!b.tags.includes(filter))return false;
+    if(filter==='unread'&&read.has(b.i))return false;
+    return !q||(b.t+' '+b.a+' '+b.th).toLowerCase().includes(q);
+  });
+  $('list').innerHTML=rows.length?rows.map(b=>`<button class="item" data-i="${b.i}"><span class="num" style="background:${b.c}">${b.i+1}</span><span><h3>${esc(b.t)}</h3><span class="meta">${esc(b.a)} · ${esc(b.y)} · ${kind(b)}</span><br><span class="meta">${esc(b.th)}</span>${read.has(b.i)?'<br><span class="chk">✓ Read</span>':''}</span></button>`).join(''):'<p class="empty">No books match. Try another word or filter.</p>';
+  document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-pressed',t.dataset.f===filter));
+}
+
+const TABS=[['sum','Summary'],['ch','Characters'],['pt','Plot by part'],['bg','Background']];
+let tab='sum';
+function body(b,i){
+  const d=(window.DEEP||{})[i];
+  if(tab==='sum'||!d)return `<div class="sec"><h4>Plot</h4><p>${esc(b.plot)}</p></div>
+  <div class="sec"><h4>Themes</h4><div class="chips">${b.th.split(', ').map(t=>`<span>${esc(t)}</span>`).join('')}</div></div>
+  <div class="take">${esc(b.take)}</div>`;
+  if(tab==='ch')return `<div class="sec"><h4>Main characters</h4><div class="who">${d.ch.map(([n,x])=>`<div><b>${esc(n)}</b>${esc(x)}</div>`).join('')}</div></div>`;
+  if(tab==='pt')return `<div class="sec"><h4>The story, part by part</h4>${d.pt.map(([n,x],k)=>`<div class="step"><span>${k+1}</span><div><b>${esc(n)}</b>${esc(x)}</div></div>`).join('')}</div>`;
+  return `<div class="sec"><h4>Background & author</h4><p>${esc(d.bg)}</p></div>`;
+}
+function open(i){
+  const b=B[i];cur=i;
+  $('paper').innerHTML=`<div class="cover" style="background:${b.c}"><button class="x" id="x" aria-label="Close">×</button><h2 id="stitle">${esc(b.t)}</h2><div class="meta">${esc(b.a)} · ${esc(b.y)} · ${kind(b)}</div></div>
+  <div class="stabs" role="tablist">${TABS.map(([k,l])=>`<button class="stab" role="tab" data-t="${k}" aria-selected="${k===tab}">${l}</button>`).join('')}</div>
+  <div id="tbody">${body(b,i)}</div>
+  <div class="acts"><button class="btn main" id="mark">${read.has(i)?'✓ Read · undo':'Mark as read'}</button><button class="btn" id="prev">‹ Previous</button><button class="btn" id="next">Next ›</button></div>`;
+  $('sheet').classList.add('on');
+  if(location.hash!=='#book-'+(i+1))history.replaceState(null,'','#book-'+(i+1));
+  $('x').focus();
+}
+function close(){$('sheet').classList.remove('on');cur=null;history.replaceState(null,'',location.pathname+location.search)}
+
+document.addEventListener('click',e=>{
+  const st=e.target.closest('.stab');
+  if(st){tab=st.dataset.t;document.querySelectorAll('.stab').forEach(x=>x.setAttribute('aria-selected',x===st));$('tbody').innerHTML=body(B[cur],cur);return}
+  const s=e.target.closest('.spine,.item');if(s){tab='sum';open(+s.dataset.i);return}
+  const t=e.target.closest('.tab');
+  if(t){filter=t.dataset.f;try{localStorage.setItem('classics-filter',filter)}catch(err){}list();return}
+  if(e.target.id==='x'||e.target.id==='sheet'){close();return}
+  if(e.target.id==='mark'){read.has(cur)?read.delete(cur):read.add(cur);save();progress();shelf();list();open(cur);return}
+  if(e.target.id==='prev'){open((cur+24)%25);return}
+  if(e.target.id==='next'){open((cur+1)%25)}
+});
+document.addEventListener('keydown',e=>{
+  if(cur===null)return;
+  if(e.key==='Escape')close();
+  if(e.key==='ArrowRight')open((cur+1)%25);
+  if(e.key==='ArrowLeft')open((cur+24)%25);
+});
+$('q').addEventListener('input',list);
+function fromHash(){const m=location.hash.match(/^#book-(\d+)$/);if(m&&+m[1]>=1&&+m[1]<=25)open(+m[1]-1)}
+window.addEventListener('hashchange',fromHash);
+
+progress();shelf();list();fromHash();
+}
+</script>
+</body>
+</html>
