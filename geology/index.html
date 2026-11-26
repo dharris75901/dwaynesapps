@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#5a3e2b">
+<meta name="description" content="Rock Hound: a pocket guide to rocks, minerals, hardness, and the geologic time scale, with a quiz.">
+<title>Rock Hound</title>
+<style>
+:root{--bg:#f3eee7;--card:#fff;--ink:#2a221c;--mute:#6e6359;--line:#ddd2c4;--accent:#5a3e2b;--gold:#b0702a;--tint:#efe6da;--good:#1f8a4c;--bad:#c0392b;--ig:#c4553a;--sed:#c9a24a;--met:#5e6f8f}
+@media (prefers-color-scheme:dark){:root{--bg:#17130f;--card:#221c17;--ink:#ede6dd;--mute:#a8998a;--line:#3a3028;--accent:#e0b48a;--gold:#e0a050;--tint:#2d251e;--good:#5cc98a;--bad:#ef7b6e;--ig:#e07a5f;--sed:#e0c06a;--met:#8ea2c8}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;padding:max(16px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom))}
+main{max-width:640px;margin:0 auto}
+a.home{color:var(--mute);text-decoration:none;font-size:.9rem;display:inline-block;padding:8px 0}
+h1{font:700 2rem/1.1 Georgia,serif;color:var(--accent);margin:6px 0 4px}
+h2{font:700 1.3rem/1.2 Georgia,serif;color:var(--accent);margin:0 0 6px}
+.sub{color:var(--mute);margin:0 0 18px}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:16px}
+.tabs button{min-height:44px;border:1px solid var(--line);background:var(--card);border-radius:10px;font:inherit;font-weight:600;font-size:.95rem;color:var(--ink);cursor:pointer}
+.tabs button[aria-selected=true]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:12px}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.filters button{min-height:40px;padding:0 14px;border-radius:20px;border:1px solid var(--line);background:var(--card);font:inherit;font-size:.9rem;color:var(--ink);cursor:pointer}
+.filters button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+input[type=search]{width:100%;font:inherit;min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:0 12px;margin-bottom:10px}
+details.rock{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--c,var(--gold));border-radius:12px;margin-bottom:8px}
+details.rock summary{padding:12px 14px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+details.rock summary::-webkit-details-marker{display:none}
+details.rock summary b{font-size:1.05rem}
+details.rock summary small{color:var(--mute);font-size:.8rem;text-transform:uppercase;letter-spacing:.06em}
+details.rock .body{padding:0 14px 12px;color:var(--ink)}
+details.rock dl{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;margin:8px 0 0;font-size:.93rem}
+details.rock dt{color:var(--mute)}details.rock dd{margin:0}
+.ig{--c:var(--ig)}.sed{--c:var(--sed)}.met{--c:var(--met)}
+.cycle{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;font-size:.85rem}
+.cycle div{border-radius:10px;padding:10px 6px;background:var(--tint);border-top:4px solid var(--c)}
+.cycle b{display:block;font-size:.95rem}
+.mohs{display:grid;gap:6px}
+.mohs .m{display:grid;grid-template-columns:36px 1fr;gap:10px;align-items:center}
+.mohs .n{width:36px;height:36px;border-radius:8px;display:grid;place-items:center;font-weight:700;background:var(--accent);color:var(--bg)}
+.mohs .m span{color:var(--mute);font-size:.88rem;display:block}
+.tip{background:var(--tint);border-radius:10px;padding:10px 12px;font-size:.92rem;margin-top:12px}
+.era{display:grid;grid-template-columns:8px 1fr;gap:12px;margin-bottom:10px}
+.era i{border-radius:4px;background:var(--c)}
+.era b{display:block}.era em{font-style:normal;color:var(--gold);font-size:.88rem;font-weight:600}
+.era p{margin:2px 0 0;color:var(--mute);font-size:.92rem}
+.q{font:700 1.25rem/1.3 Georgia,serif;margin:4px 0 14px}
+.choices{display:grid;gap:8px}
+.choices button{min-height:50px;text-align:left;padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:var(--tint);font:inherit;color:var(--ink);cursor:pointer}
+.choices button.ok{background:var(--good);color:#fff;border-color:var(--good)}
+.choices button.no{background:var(--bad);color:#fff;border-color:var(--bad)}
+.bar{display:flex;justify-content:space-between;color:var(--mute);font-size:.9rem;margin-bottom:8px}
+.go{width:100%;min-height:50px;margin-top:14px;border:0;border-radius:12px;background:var(--gold);color:#fff;font:700 1.05rem system-ui,sans-serif;cursor:pointer}
+.why{margin-top:12px;color:var(--mute);font-size:.93rem;min-height:1.4em}
+[hidden]{display:none!important}
+footer{margin-top:28px;text-align:center;font-size:.7rem;color:var(--mute);opacity:.6}
+</style>
+</head>
+<body>
+<main>
+<a class="home" href="/">&larr; Dwayne's Apps</a>
+<h1>Rock Hound</h1>
+<p class="sub">A pocket guide to rocks, minerals, and earth history.</p>
+
+<div class="tabs" role="tablist">
+  <button role="tab" aria-selected="true" data-tab="rocks">Rocks</button>
+  <button role="tab" aria-selected="false" data-tab="minerals">Hardness</button>
+  <button role="tab" aria-selected="false" data-tab="time">Time</button>
+  <button role="tab" aria-selected="false" data-tab="quiz">Quiz</button>
+</div>
+
+<section id="rocks">
+  <div class="card">
+    <h2>The three rock families</h2>
+    <div class="cycle">
+      <div style="--c:var(--ig)"><b>Igneous</b>Cooled from melted rock</div>
+      <div style="--c:var(--sed)"><b>Sedimentary</b>Layers of sand, mud, and shells pressed together</div>
+      <div style="--c:var(--met)"><b>Metamorphic</b>Changed by heat and pressure</div>
+    </div>
+  </div>
+  <input type="search" id="find" placeholder="Search rocks…" aria-label="Search rocks">
+  <div class="filters" id="filters">
+    <button aria-pressed="true" data-f="all">All</button>
+    <button aria-pressed="false" data-f="ig">Igneous</button>
+    <button aria-pressed="false" data-f="sed">Sedimentary</button>
+    <button aria-pressed="false" data-f="met">Metamorphic</button>
+  </div>
+  <div id="rocklist"></div>
+</section>
+
+<section id="minerals" hidden>
+  <div class="card">
+    <h2>Mohs hardness scale</h2>
+    <p class="sub" style="margin-bottom:12px">Each mineral scratches the ones above it.</p>
+    <div class="mohs" id="mohs"></div>
+    <div class="tip"><b>Field test:</b> fingernail &asymp; 2.5 &middot; copper penny &asymp; 3.5 &middot; steel knife or nail &asymp; 5.5 &middot; glass &asymp; 5.5 &middot; steel file &asymp; 6.5. If a knife won't scratch it but it scratches glass, it's harder than 5.5, like quartz.</div>
+  </div>
+</section>
+
+<section id="time" hidden>
+  <div class="card">
+    <h2>Geologic time scale</h2>
+    <p class="sub" style="margin-bottom:12px">As used by geologists today; "mya" = million years ago.</p>
+    <div id="eras"></div>
+  </div>
+</section>
+
+<section id="quiz" hidden>
+  <div class="card">
+    <div class="bar"><span id="qpos"></span><span id="qscore"></span></div>
+    <div class="q" id="qtext"></div>
+    <div class="choices" id="choices"></div>
+    <div class="why" id="why"></div>
+    <button class="go" id="next" hidden>Next</button>
+  </div>
+</section>
+
+<footer>&copy; 2026 Dwayne Harris</footer>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const ROCKS=[
+ ['Granite','ig','Coarse grains of pink or white feldspar, glassy quartz, and black mica you can see by eye.','Slow-cooled magma deep underground','Countertops, monuments, building stone'],
+ ['Basalt','ig','Dark gray to black, fine-grained, often with small gas holes.','Lava that cooled quickly at the surface','Road gravel, ocean floor, Hawaii'],
+ ['Obsidian','ig','Shiny black volcanic glass that breaks with curved, razor-sharp edges.','Lava that cooled too fast to form crystals','Arrowheads, scalpels'],
+ ['Pumice','ig','Very light, full of bubbles; often floats on water.','Frothy, gas-rich lava','Abrasives, foot scrubbers, lightweight concrete'],
+ ['Rhyolite','ig','Light-colored, fine-grained cousin of granite, sometimes banded.','Sticky, silica-rich lava','Yellowstone, decorative stone'],
+ ['Gabbro','ig','Dark and coarse-grained; the slow-cooled cousin of basalt.','Magma cooled deep under ocean crust','Black "granite" countertops'],
+ ['Sandstone','sed','Gritty sand grains glued together; tan, red, or white, often layered.','Old beaches, rivers, and deserts','Building stone, Grand Canyon walls'],
+ ['Limestone','sed','Light gray; fizzes in vinegar or acid; may contain shell fossils.','Shells and coral on old sea floors','Cement, lime for fields, caves'],
+ ['Shale','sed','Fine, smooth layers that split into thin flat pieces.','Mud settled in quiet water','Bricks, source of oil and gas'],
+ ['Conglomerate','sed','Rounded pebbles cemented in finer sand.','Fast rivers and gravel beaches','Decorative stone'],
+ ['Coal','sed','Black, light for its size, smudges your fingers.','Buried swamp plants','Fuel, steelmaking'],
+ ['Chert / Flint','sed','Very hard, waxy look, breaks with curved edges like glass.','Silica from sea sponges and plankton','Tools, fire-starting with steel'],
+ ['Marble','met','Sparkly, sugary crystals; fizzes in acid like limestone.','Limestone baked by heat and pressure','Statues, floors, monuments'],
+ ['Slate','met','Smooth, hard, splits into flat sheets; rings when tapped.','Shale squeezed by pressure','Roofing, chalkboards, flooring'],
+ ['Schist','met','Glittery flakes of mica lined up in wavy layers.','Shale or slate cooked hotter still','Garden stone; often holds garnets'],
+ ['Gneiss','met','Light and dark minerals in bold stripes or bands.','Granite or schist under intense heat','Building stone, very old crust'],
+ ['Quartzite','met','Very hard; grains are fused so it breaks through them, not around.','Sandstone cooked and squeezed','Countertops, railroad ballast'],
+];
+const MOHS=[['Talc','Soft and soapy; baby powder'],['Gypsum','Drywall, plaster; scratched by a fingernail'],['Calcite','Fizzes in acid; limestone and marble'],['Fluorite','Comes in purple, green, blue; glows under UV'],['Apatite','The mineral in your teeth and bones'],['Orthoclase feldspar','Pink crystals in granite'],['Quartz','Scratches glass; the most common sand'],['Topaz','Gemstone; often golden or blue'],['Corundum','Rubies and sapphires'],['Diamond','Hardest natural mineral']];
+const ERAS=[
+ ['Holocene','0.012 mya – now','Since the last ice age; human history.','var(--gold)'],
+ ['Quaternary','2.6 mya – now','Ice ages; woolly mammoths; modern humans.','#c9a24a'],
+ ['Neogene','23 – 2.6 mya','Grasslands spread; horses, whales, and apes diversify.','#d8b25a'],
+ ['Paleogene','66 – 23 mya','Mammals and birds take over after the dinosaurs.','#e0a050'],
+ ['Cretaceous','145 – 66 mya','T. rex, flowering plants, ends with the asteroid impact.','#7aa36a'],
+ ['Jurassic','201 – 145 mya','Giant sauropods; first birds.','#5e9a8a'],
+ ['Triassic','252 – 201 mya','First dinosaurs and mammals; Pangaea supercontinent.','#8a6fa3'],
+ ['Permian','299 – 252 mya','Ends with the largest mass extinction.','#c4553a'],
+ ['Carboniferous','359 – 299 mya','Huge coal swamps; giant insects.','#5e6f8f'],
+ ['Devonian','419 – 359 mya','"Age of Fishes"; first forests and four-legged animals.','#8c6a4a'],
+ ['Silurian – Cambrian','539 – 419 mya','Explosion of sea life; trilobites; first land plants.','#6a8c7a'],
+ ['Precambrian','4,600 – 539 mya','Earth forms; first simple life and oxygen in the air.','#9a7a8a'],
+];
+const FAM={ig:'Igneous',sed:'Sedimentary',met:'Metamorphic'};
+
+// rocks
+let filt='all';
+function drawRocks(){const q=$('find').value.trim().toLowerCase();
+ $('rocklist').innerHTML=ROCKS.filter(r=>(filt==='all'||r[1]===filt)&&(!q||r.join(' ').toLowerCase().includes(q))).map(r=>`<details class="rock ${r[1]}"><summary><b>${r[0]}</b><small>${FAM[r[1]]}</small></summary><div class="body">${r[2]}<dl><dt>Forms from</dt><dd>${r[3]}</dd><dt>Used for</dt><dd>${r[4]}</dd></dl></div></details>`).join('')||'<p class="sub">No rocks match.</p>'}
+$('filters').onclick=e=>{const b=e.target.closest('button');if(!b)return;filt=b.dataset.f;$('filters').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));drawRocks()};
+$('find').oninput=drawRocks;drawRocks();
+$('mohs').innerHTML=MOHS.map((m,i)=>`<div class="m"><div class="n">${i+1}</div><div><b>${m[0]}</b><span>${m[1]}</span></div></div>`).join('');
+$('eras').innerHTML=ERAS.map(e=>`<div class="era" style="--c:${e[3]}"><i></i><div><b>${e[0]}</b><em>${e[1]}</em><p>${e[2]}</p></div></div>`).join('');
+
+// tabs
+document.querySelectorAll('[data-tab]').forEach(t=>t.onclick=()=>{document.querySelectorAll('[data-tab]').forEach(x=>{x.setAttribute('aria-selected',x===t);$(x.dataset.tab).hidden=x!==t});if(t.dataset.tab==='quiz'&&!quiz.length)newQuiz()});
+
+// quiz
+const shuf=a=>a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(v=>v[1]);
+function makeQuestion(){
+ const t=Math.random();
+ if(t<.45){const r=ROCKS[Math.floor(Math.random()*ROCKS.length)];return{q:`${r[0]} is what kind of rock?`,a:FAM[r[1]],c:Object.values(FAM),why:`${r[0]} forms from: ${r[3].toLowerCase()}.`}}
+ if(t<.75){const r=ROCKS[Math.floor(Math.random()*ROCKS.length)];const others=shuf(ROCKS.filter(x=>x!==r)).slice(0,3).map(x=>x[0]);return{q:`Which rock is this? "${r[2]}"`,a:r[0],c:shuf([r[0],...others]),why:`${r[0]}: ${r[3].toLowerCase()}.`}}
+ const i=Math.floor(Math.random()*MOHS.length);let j;do{j=Math.floor(Math.random()*MOHS.length)}while(j===i);
+ return{q:`Which is harder: ${MOHS[i][0]} or ${MOHS[j][0]}?`,a:MOHS[Math.max(i,j)][0],c:[MOHS[i][0],MOHS[j][0]],why:`${MOHS[i][0]} is ${i+1} and ${MOHS[j][0]} is ${j+1} on the Mohs scale.`}
+}
+let quiz=[],qi=0,qs=0;
+function newQuiz(){quiz=Array.from({length:10},makeQuestion);qi=0;qs=0;$('next').textContent='Next';showQ()}
+function showQ(){const Q=quiz[qi];$('qpos').textContent=`Question ${qi+1} of ${quiz.length}`;$('qscore').textContent=`${qs} right`;$('qtext').textContent=Q.q;$('why').textContent='';$('next').hidden=true;
+ $('choices').innerHTML='';Q.c.forEach(c=>{const b=document.createElement('button');b.textContent=c;b.onclick=()=>pick(b,c);$('choices').append(b)})}
+function pick(b,c){const Q=quiz[qi];$('choices').querySelectorAll('button').forEach(x=>{x.disabled=true;if(x.textContent===Q.a)x.className='ok'});
+ if(c===Q.a)qs++;else b.className='no';$('qscore').textContent=`${qs} right`;$('why').textContent=Q.why;$('next').hidden=false;if(qi===quiz.length-1)$('next').textContent='See score'}
+let finished=false;
+$('next').onclick=()=>{
+ if(finished){finished=false;newQuiz();return}
+ if(qi<quiz.length-1){qi++;showQ();return}
+ finished=true;$('qpos').textContent='Done';$('qtext').textContent=`You got ${qs} of ${quiz.length}!`;$('choices').innerHTML='';
+ $('why').textContent=qs>=8?'True rock hound.':'Read up in the Rocks tab and try again.';$('next').textContent='New quiz'};
+</script>
+</body>
+</html>
