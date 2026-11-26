@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>American History in a Nutshell</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: a calm history teacher with an old textbook — plain words, big moments
+   IDEA: the story of the United States in 25 short chapters on a shelf
+   PICTURE: navy header, row of chapter spines in muted red, white and blue
+   COLOUR and TYPE: parchment ground, navy and flag red, brass accent; Libre Caslon heads, Source Sans body */
+:root{color-scheme:light dark;
+--bg:light-dark(#f5f0e4,#0f1420);--ink:light-dark(#1c2233,#ebe6d9);--soft:light-dark(#5d6170,#a8acb8);
+--card:light-dark(#ffffff,#181f30);--line:light-dark(#ddd3bd,#2b3550);
+--navy:#1b2a4a;--red:#a8262f;--brass:#c9a227;--wood:#6b4423;--wood2:#4a2e17}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 "Source Sans 3",system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:"Libre Caslon Text",Georgia,serif;margin:0;text-wrap:balance}
+.top{background:var(--navy);color:#f5f0e4;padding:26px max(5vw,16px) 0;position:relative}
+.top::before{content:"";position:absolute;left:0;right:0;top:0;height:6px;background:repeating-linear-gradient(90deg,var(--red) 0 40px,#f5f0e4 40px 80px)}
+.top h1{font-size:clamp(30px,6.5vw,46px);line-height:1.08}
+.top p{margin:8px 0 18px;color:#cdd3e0;max-width:62ch}
+.prog{display:flex;align-items:center;gap:12px;margin-bottom:18px;font-size:15px;color:#e6e1cf}
+.bar{flex:1;max-width:260px;height:8px;background:#ffffff22;border-radius:9px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--brass);width:0;transition:width .4s}
+.shelf{display:flex;align-items:flex-end;gap:4px;overflow-x:auto;padding:16px 4px 0;height:240px;scroll-snap-type:x proximity;background:linear-gradient(#00000033,transparent 30%)}
+.spine{flex:none;width:44px;border:0;border-radius:3px 3px 0 0;cursor:pointer;color:#fff;padding:10px 0;display:flex;justify-content:center;align-items:center;
+writing-mode:vertical-rl;transform:rotate(180deg);font:600 13px/1.1 "Source Sans 3",sans-serif;letter-spacing:.02em;
+box-shadow:inset -6px 0 0 #00000030,inset 3px 0 0 #ffffff26;transition:transform .2s;scroll-snap-align:start;overflow:hidden;white-space:nowrap}
+.spine.cream{color:#1b2a4a}
+.spine:hover,.spine:focus-visible{transform:rotate(180deg) translateY(8px)}
+.spine .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--brass);margin-block:0 6px}
+.plank{height:18px;background:linear-gradient(var(--wood),var(--wood2));box-shadow:0 6px 10px #0004;margin:0 calc(-1*max(5vw,16px))}
+.band{padding:22px max(5vw,16px) 40px;max-width:1000px;margin:0 auto}
+.tools{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.tab{min-height:44px;padding:0 16px;border-radius:22px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 15px "Source Sans 3",sans-serif;cursor:pointer}
+.tab[aria-pressed=true]{background:var(--navy);color:#fff;border-color:var(--navy)}
+input[type=search]{width:100%;min-height:46px;font-size:16px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);margin-bottom:16px}
+:focus-visible{outline:3px solid var(--brass);outline-offset:2px}
+.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:12px}
+.item{display:flex;gap:14px;align-items:flex-start;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;cursor:pointer;color:var(--ink);font:inherit}
+.num{flex:none;width:42px;height:56px;border-radius:3px;display:grid;place-items:center;color:#fff;font:700 18px "Libre Caslon Text",serif;box-shadow:inset -5px 0 0 #00000030}
+.num.cream{color:#1b2a4a}
+.item h3{font-size:18px;line-height:1.25}
+.meta{font-size:14px;color:var(--soft)}
+.chk{color:var(--brass);font-weight:600;font-size:14px}
+.empty{color:var(--soft);padding:20px 0}
+.sheet{position:fixed;inset:0;background:#000a;display:none;align-items:flex-end;justify-content:center;z-index:9}
+.sheet.on{display:flex}
+.paper{background:var(--card);color:var(--ink);width:min(720px,100%);max-height:92vh;overflow-y:auto;border-radius:18px 18px 0 0;padding:0 0 24px;animation:up .25s ease}
+@keyframes up{from{transform:translateY(30px);opacity:0}}
+@media(prefers-reduced-motion:reduce){.paper{animation:none}.spine{transition:none}}
+.cover{padding:22px 22px 18px;color:#fff;position:relative}
+.cover.cream{color:#1b2a4a}
+.cover .ch{font:700 13px "Source Sans 3",sans-serif;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+.cover h2{font-size:clamp(26px,6vw,36px);line-height:1.1;padding-right:44px;margin-top:4px}
+.cover .meta{color:inherit;opacity:.85;margin-top:6px}
+.x{position:absolute;top:12px;right:12px;width:44px;height:44px;border-radius:50%;border:0;background:#00000040;color:#fff;font-size:24px;cursor:pointer}
+.sec{padding:16px 22px 0}
+.sec h4{margin:0 0 4px;font:700 14px "Source Sans 3",sans-serif;color:var(--red)}
+@media(prefers-color-scheme:dark){.sec h4{color:var(--brass)}}
+.sec p{margin:0;max-width:65ch}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips span{border:1px solid var(--line);border-radius:14px;padding:3px 10px;font-size:14px}
+.take{margin:16px 22px 0;padding:14px 16px;border-left:4px solid var(--red);background:light-dark(#f8f1e2,#202a40);border-radius:0 10px 10px 0;font-family:"Libre Caslon Text",serif;font-size:17px}
+.acts{display:flex;flex-wrap:wrap;gap:8px;padding:18px 22px 0}
+.btn{min-height:44px;padding:0 16px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 15px "Source Sans 3",sans-serif;cursor:pointer}
+.btn.main{background:var(--navy);color:#fff;border-color:var(--navy)}
+.stabs{display:flex;gap:6px;overflow-x:auto;padding:12px 16px 4px;position:sticky;top:0;background:var(--card);z-index:2;border-bottom:1px solid var(--line)}
+.stab{flex:none;min-height:40px;padding:0 14px;border-radius:20px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 14px "Source Sans 3",sans-serif;cursor:pointer}
+.stab[aria-selected=true]{background:var(--red);border-color:var(--red);color:#fff}
+.who{display:grid;gap:10px}
+.who div{border-bottom:1px solid var(--line);padding-bottom:10px}
+.who b{display:block;font-family:"Libre Caslon Text",serif;font-size:17px}
+.tl{position:relative;margin-left:8px;padding-left:22px;border-left:3px solid var(--line)}
+.tl div{position:relative;margin-bottom:14px}
+.tl div::before{content:"";position:absolute;left:-30px;top:5px;width:13px;height:13px;border-radius:50%;background:var(--red);border:3px solid var(--card)}
+.tl b{display:block;font-family:"Libre Caslon Text",serif;font-size:16px}
+.tl b span{color:var(--red);margin-right:6px}
+@media(prefers-color-scheme:dark){.tl b span{color:var(--brass)}}
+.qz{display:grid;gap:8px;margin-top:8px}
+.qq{font-family:"Libre Caslon Text",serif;font-size:18px;margin:4px 0 6px}
+.qn{font-size:14px;color:var(--soft)}
+.opt{min-height:48px;text-align:left;padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;cursor:pointer}
+.opt.ok{background:#2f6b3a;border-color:#2f6b3a;color:#fff}
+.opt.no{background:var(--red);border-color:var(--red);color:#fff}
+.opt:disabled{cursor:default}
+.fb{min-height:24px;font-weight:600;margin-top:4px}
+.score{text-align:center;padding:10px 0}
+.score b{display:block;font:700 44px/1.1 "Libre Caslon Text",serif;color:var(--red)}
+@media(prefers-color-scheme:dark){.score b{color:var(--brass)}}
+footer{text-align:center;font-size:13px;color:var(--soft);padding:10px 16px 30px}
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>American History in a Nutshell</h1>
+  <p>The story of the United States in 25 short chapters, from the first peoples to today. Tap a chapter for its summary, key people, timeline, and why it matters.</p>
+  <div class="prog"><span id="pcount">0 of 25 chapters read</span><div class="bar"><i id="pbar"></i></div></div>
+  <div class="shelf" id="shelf" aria-label="Chapters"></div>
+  <div class="plank"></div>
+</header>
+
+<main class="band">
+  <div class="tools" role="group" aria-label="Filter">
+    <button class="tab" data-f="all" aria-pressed="true">All 25</button>
+    <button class="tab" data-f="founding" aria-pressed="false">Founding era</button>
+    <button class="tab" data-f="1800s" aria-pressed="false">1800s</button>
+    <button class="tab" data-f="1900s" aria-pressed="false">1900s</button>
+    <button class="tab" data-f="2000s" aria-pressed="false">Since 2000</button>
+    <button class="tab" data-f="war" aria-pressed="false">Wars</button>
+    <button class="tab" data-f="faith" aria-pressed="false">Faith in America</button>
+    <button class="tab" data-f="unread" aria-pressed="false">Not read yet</button>
+  </div>
+  <input type="search" id="q" placeholder="Search chapter, person, event or year" aria-label="Search">
+  <div class="list" id="list"></div>
+</main>
+
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="stitle"><div class="paper" id="paper"></div></div>
+
+<footer>© 2026 Dwayne Harris · Created by Dwayne Harris</footer>
+
+<script>
+{
+const C=['#1b2a4a','#a8262f','#e9e0c9','#2f4a73','#7a2a2f','#3d4f63'];
+const CREAM='#e9e0c9';
+// [title, years, era, tags, summary, themes, takeaway, people[[name,desc]], timeline[[year,event,desc]], why]
+const B=[
+["First Peoples and Explorers","Before 1607","founding",[],
+"Long before Europeans arrived, millions of people lived across North America in hundreds of nations, from the mound-building city of Cahokia near the Mississippi to the cliff dwellings of the Southwest. In 1492 Christopher Columbus, sailing for Spain, reached the Caribbean and opened the Americas to Europe. Spain moved first, exploring Florida and the Southwest and founding St. Augustine in 1565, the oldest continuous European city in the U.S. England's first try, Roanoke, vanished. European diseases like smallpox killed a huge share of Native people, often before settlers even met them.",
+"Discovery, contact between worlds, faith and empire","Two worlds met, and neither would ever be the same.",
+[["Christopher Columbus","Italian sailor for Spain whose 1492 voyage began lasting contact between Europe and the Americas."],["Juan Ponce de León","Spanish explorer who reached and named Florida in 1513."],["Francisco Vázquez de Coronado","Led a Spanish expedition across the Southwest and Great Plains (1540–42) searching for cities of gold."],["Sir Walter Raleigh","Sponsored England's Roanoke colony, whose settlers disappeared by 1590."]],
+[["c. 1050","Cahokia rises","A Native city near present-day St. Louis grows to perhaps 10,000–20,000 people."],["1492","Columbus lands","Reaches the Bahamas on October 12."],["1513","Florida named","Ponce de León claims Florida for Spain."],["1565","St. Augustine","Spain founds the oldest continuously settled European city in the U.S."],["1587","Roanoke","The “Lost Colony” is planted in North Carolina; by 1590 it is gone."]],
+"This chapter sets the stage: the land was already home to many peoples, and the rivalry between Spain, France and England would shape where Americans live, what languages they speak, and the borders of the country."],
+
+["Colonial America","1607–1754","founding",["faith"],
+"England's first lasting colony, Jamestown, Virginia, nearly starved before tobacco made it profitable. In 1619 Virginia held the first elected assembly in America, and the first Africans were brought to the colony, the start of slavery in English America. In 1620 the Pilgrims crossed on the Mayflower, signed the Mayflower Compact, and founded Plymouth. Puritans followed to Massachusetts Bay, hoping to be a “city upon a hill.” Thirteen colonies grew up, from Puritan New England to Quaker Pennsylvania to the plantation South. In the 1730s and '40s the Great Awakening revival swept through them all.",
+"Self-government, religious freedom, opportunity, slavery","The habits of self-rule and faith that later built a nation were planted here.",
+[["John Smith","Tough leader who kept Jamestown alive with the rule “he that will not work shall not eat.”"],["Pocahontas","Powhatan chief's daughter who helped keep peace with Jamestown and later married colonist John Rolfe."],["William Bradford","Longtime governor of Plymouth and author of its history, Of Plymouth Plantation."],["William Penn","Quaker founder of Pennsylvania who promised religious freedom and fair dealings with Native people."],["Jonathan Edwards & George Whitefield","Preachers of the Great Awakening; Whitefield drew crowds in the tens of thousands up and down the colonies."]],
+[["1607","Jamestown","First permanent English settlement, in Virginia."],["1619","Assembly and slavery","Virginia's House of Burgesses meets; enslaved Africans arrive."],["1620","Mayflower Compact","Pilgrims agree to govern themselves by just and equal laws."],["1630","Massachusetts Bay","John Winthrop leads Puritans to found Boston."],["1681","Pennsylvania","Charles II grants William Penn his colony."],["1730s–40s","Great Awakening","Revival spreads personal faith and a shared American identity."]],
+"Elected assemblies, town meetings and church covenants taught colonists to govern themselves. The Great Awakening tied the colonies together. And slavery, rooted here, would become the nation's deepest wound."],
+
+["The Road to Revolution","1754–1775","founding",["war"],
+"Britain and France fought the French and Indian War (1754–63) for control of North America. Britain won, but it was deep in debt and decided the colonies should help pay. New taxes like the Stamp Act and the Townshend duties were passed by a Parliament where colonists had no vote, and they protested “no taxation without representation.” Tensions turned deadly in the Boston Massacre (1770). After the Boston Tea Party (1773), Britain cracked down with what colonists called the Intolerable Acts. In April 1775 British troops marched on Lexington and Concord, and the shooting started.",
+"Liberty, rights of Englishmen, representation, resistance","Colonists first fought to keep their rights as Englishmen, then decided to be Americans.",
+[["George Washington","A young Virginia officer whose skirmish in 1754 helped start the French and Indian War."],["Samuel Adams","Boston organizer behind the Sons of Liberty and the Committees of Correspondence."],["Patrick Henry","Virginia speaker who declared in 1775, “Give me liberty, or give me death!”"],["Paul Revere","Silversmith who rode to warn that the British were coming to Lexington and Concord."],["King George III","British king whose government's policies pushed the colonies toward revolt."]],
+[["1754","French and Indian War","Fight for North America begins."],["1765","Stamp Act","Tax on printed paper sparks protests; repealed in 1766."],["1770","Boston Massacre","British soldiers kill five colonists."],["1773","Boston Tea Party","Patriots dump 342 chests of tea into Boston Harbor."],["1774","First Continental Congress","Colonies meet in Philadelphia to coordinate resistance."],["1775","Lexington and Concord","April 19: “the shot heard round the world.”"]],
+"These 20 years turned loyal British subjects into revolutionaries and taught the colonies to act together."],
+
+["The American Revolution","1775–1783","founding",["war"],
+"The Continental Congress named George Washington commander of an untrained army. Thomas Paine's Common Sense convinced many to seek full independence, and on July 4, 1776, Congress adopted Thomas Jefferson's Declaration of Independence. Washington lost New York but surprised the Hessians at Trenton on Christmas night. The victory at Saratoga (1777) brought France into the war as an ally. The army barely survived the winter at Valley Forge. In 1781 Washington and the French trapped General Cornwallis at Yorktown, and the Treaty of Paris (1783) recognized American independence.",
+"Independence, perseverance, unity, Providence","A ragged army and a big idea beat the greatest empire on earth.",
+[["George Washington","Commander who held the army together for eight years, then gave up power and went home."],["Thomas Jefferson","Wrote the Declaration of Independence: “all men are created equal… endowed by their Creator…”"],["Benjamin Franklin","Statesman who won the crucial French alliance."],["Marquis de Lafayette","Young French nobleman who served Washington like a son."],["Thomas Paine","Wrote Common Sense and The American Crisis: “These are the times that try men's souls.”"]],
+[["1775","Bunker Hill","Costly British victory shows Americans can fight."],["1776","Declaration of Independence","Adopted July 4."],["1776","Crossing the Delaware","Christmas-night attack on Trenton revives the cause."],["1777","Saratoga","Turning point; France joins the war in 1778."],["1777–78","Valley Forge","A hard winter; the army is drilled into shape."],["1781","Yorktown","Cornwallis surrenders October 19."],["1783","Treaty of Paris","Britain recognizes the United States."]],
+"The Revolution made the U.S. a nation and put in writing that rights come from God, not from government."],
+
+["The Constitution and a New Nation","1781–1800","founding",[],
+"The first government, under the Articles of Confederation, was too weak to tax or keep order, as Shays' Rebellion showed. In 1787 delegates met in Philadelphia and wrote a new Constitution with three branches and checks and balances. Compromises settled how states would be represented. Supporters wrote the Federalist Papers, and the Constitution was ratified in 1788. Washington became the first president in 1789, and the Bill of Rights was added in 1791. Political parties formed around Alexander Hamilton and Thomas Jefferson. Washington retired after two terms, and John Adams took over in the first peaceful handoff of power.",
+"Limited government, checks and balances, rights, compromise","The Constitution is the oldest written national constitution still in use.",
+[["James Madison","“Father of the Constitution” and main author of the Bill of Rights."],["Alexander Hamilton","First Treasury secretary; built the nation's credit and financial system."],["George Washington","Presided over the Convention and set the two-term tradition as president."],["John Adams","First vice president and second president."],["John Jay","Co-author of the Federalist Papers and first chief justice."]],
+[["1781","Articles of Confederation","First national government takes effect."],["1786–87","Shays' Rebellion","Farmers' uprising shows the government's weakness."],["1787","Constitutional Convention","Constitution signed September 17."],["1788","Ratification","New Hampshire becomes the ninth state to ratify."],["1789","Washington inaugurated","First president takes office in New York."],["1791","Bill of Rights","First ten amendments protect speech, religion, arms and more."],["1796","Farewell Address","Washington warns against parties and foreign entanglements."]],
+"The Constitution still governs the country today. Its system of divided power and protected rights is the framework for every chapter that follows."],
+
+["Jefferson, Louisiana and the War of 1812","1800–1824","1800s",["war"],
+"Thomas Jefferson's election in 1800 moved power peacefully from one party to another. In 1803 he bought the Louisiana Territory from France for $15 million, doubling the size of the nation, and sent Lewis and Clark to explore it. Britain seized American sailors and armed Native resistance, so the U.S. declared war in 1812. The British burned Washington, D.C., in 1814, but Fort McHenry held, inspiring “The Star-Spangled Banner.” Andrew Jackson won a big victory at New Orleans. Afterward came an “Era of Good Feelings,” the Missouri Compromise (1820), and the Monroe Doctrine (1823).",
+"Expansion, national pride, independence from Europe","The War of 1812 has been called the “second war of independence.”",
+[["Thomas Jefferson","Third president; made the Louisiana Purchase."],["Meriwether Lewis & William Clark","Led the Corps of Discovery to the Pacific and back, 1804–06."],["Sacagawea","Shoshone woman who guided and translated for Lewis and Clark."],["Dolley Madison","First lady who saved Washington's portrait before the British burned the White House."],["John Marshall","Chief justice whose Marbury v. Madison (1803) set up judicial review."]],
+[["1803","Louisiana Purchase","About 828,000 square miles for $15 million."],["1804–06","Lewis and Clark","Expedition reaches the Pacific."],["1812","War declared","U.S. goes to war with Britain."],["1814","Fort McHenry","Francis Scott Key writes the poem that became the national anthem."],["1815","Battle of New Orleans","Jackson's decisive win, fought after the peace treaty was signed."],["1820","Missouri Compromise","Balances slave and free states."],["1823","Monroe Doctrine","Europe is warned to stay out of the Americas."]],
+"The young nation doubled in size, proved it could survive, and started looking west, but the Missouri fight showed slavery would keep coming back."],
+
+["The Age of Jackson","1824–1844","1800s",["faith"],
+"Andrew Jackson, a war hero from Tennessee, won the presidency in 1828 as the champion of the common man. More white men could vote than ever before. Jackson fought the national bank and faced down South Carolina's threat to nullify federal law. He also signed the Indian Removal Act (1830), which forced the Cherokee and other Southeastern nations west on the Trail of Tears, where thousands died. The Erie Canal and early railroads opened up trade. The Second Great Awakening filled tents and churches with revival and sparked reform movements against drinking and slavery.",
+"Democracy, the common man, revival and reform, Native removal","More Americans gained a voice, while the Cherokee lost their homeland.",
+[["Andrew Jackson","Seventh president; strong-willed and popular, and deeply controversial over Native removal."],["Henry Clay","Kentucky's “Great Compromiser” who kept the Union together in several crises."],["John C. Calhoun","South Carolina leader who argued states could nullify federal laws."],["Charles Finney","Revival preacher at the heart of the Second Great Awakening."],["John Ross","Cherokee chief who fought removal in the courts and Congress."]],
+[["1825","Erie Canal opens","Connects the Great Lakes to New York City."],["1828","Jackson elected","A new era of mass politics."],["1830","Indian Removal Act","Southeastern nations forced west."],["1832–33","Nullification Crisis","South Carolina backs down from Jackson."],["1837","Panic of 1837","A severe depression begins."],["1838–39","Trail of Tears","Thousands of Cherokee die on the forced march."]],
+"This era shaped American democracy and American faith, and its treatment of Native people remains one of the country's hardest chapters."],
+
+["Texas, Manifest Destiny and the Gold Rush","1836–1850","1800s",["war"],
+"Many Americans came to believe it was the nation's “manifest destiny” to spread to the Pacific. In 1836 Texas won independence from Mexico after the Alamo fell and Sam Houston won at San Jacinto. Texas joined the Union in 1845. Thousands of families took the Oregon Trail west. A border dispute led to the Mexican-American War (1846–48), and the U.S. gained California and most of the Southwest. Days before the treaty was signed, gold was found in California, and the 1849 Gold Rush followed. The new land reopened the question of whether slavery would spread.",
+"Expansion, opportunity, war, the slavery question","The U.S. reached from sea to sea, and the new land forced a showdown over slavery.",
+[["Sam Houston","Led Texas to victory at San Jacinto and served as president of the Republic of Texas."],["Davy Crockett & Jim Bowie","Frontier legends who died defending the Alamo."],["James K. Polk","President who added Texas, Oregon and the Southwest."],["Antonio López de Santa Anna","Mexican general who took the Alamo and was captured at San Jacinto."],["Zachary Taylor","Mexican War general who became president in 1849."]],
+[["1836","The Alamo","Falls March 6; “Remember the Alamo!”"],["1836","San Jacinto","Houston wins Texas independence April 21."],["1843","Oregon Trail","The “Great Migration” of wagon trains heads west."],["1845","Texas statehood","Texas becomes the 28th state."],["1846–48","Mexican-American War","Ends with the Treaty of Guadalupe Hidalgo."],["1848–49","Gold Rush","California grows so fast it becomes a state in 1850."]],
+"This is when Texas, California and the Southwest became American. The fight over slavery in these lands led straight to the Civil War."],
+
+["A House Divided","1850–1861","1800s",["faith"],
+"The Compromise of 1850 admitted California as a free state but added a harsh Fugitive Slave Act. Harriet Beecher Stowe's Uncle Tom's Cabin (1852) turned millions against slavery. The Kansas-Nebraska Act (1854) let settlers vote on slavery, and “Bleeding Kansas” erupted in violence. The new Republican Party formed to stop slavery's spread. In Dred Scott (1857) the Supreme Court ruled that Black Americans could not be citizens. John Brown raided Harpers Ferry in 1859. When Abraham Lincoln was elected in 1860, Southern states began to secede.",
+"Slavery, conscience, law vs. morality, union","Lincoln warned that “a house divided against itself cannot stand.”",
+[["Abraham Lincoln","Illinois lawyer whose debates with Stephen Douglas made him a national figure."],["Frederick Douglass","Escaped slave who became the most powerful abolitionist speaker and writer."],["Harriet Tubman","Led dozens of enslaved people to freedom on the Underground Railroad."],["Harriet Beecher Stowe","Author of Uncle Tom's Cabin, written from deep Christian conviction."],["John Brown","Abolitionist whose raid on Harpers Ferry ended with his hanging."]],
+[["1850","Compromise of 1850","Includes the Fugitive Slave Act."],["1852","Uncle Tom's Cabin","Best-selling novel of the century after the Bible."],["1854","Kansas-Nebraska Act","Republican Party is born in reaction."],["1857","Dred Scott decision","Court denies Black citizenship."],["1858","Lincoln-Douglas debates","Seven debates in Illinois."],["1859","Harpers Ferry","John Brown's raid."],["1860","Lincoln elected","South Carolina secedes in December."]],
+"This decade shows how the nation's founding promise and the fact of slavery could not live side by side. Much of the opposition came from churches and Christian conscience."],
+
+["The Civil War","1861–1865","1800s",["war"],
+"Confederates fired on Fort Sumter in April 1861. The North had more people and factories; the South had gifted generals like Robert E. Lee and fought on home ground. After early Southern wins, the Union stopped Lee at Antietam (1862), and Lincoln issued the Emancipation Proclamation, which took effect January 1, 1863. In July 1863 the Union won at Gettysburg and Ulysses S. Grant took Vicksburg, splitting the Confederacy. Sherman marched through Georgia in 1864. Lee surrendered to Grant at Appomattox on April 9, 1865. Five days later Lincoln was shot. Roughly 620,000 to 750,000 soldiers died.",
+"Union, freedom, sacrifice, a “new birth of freedom”","The war saved the Union and ended slavery at a terrible cost.",
+[["Abraham Lincoln","Held the Union together, freed the slaves, and gave the Gettysburg Address."],["Ulysses S. Grant","Union general who won in the West and then beat Lee."],["Robert E. Lee","Confederate commander of the Army of Northern Virginia."],["Jefferson Davis","President of the Confederacy."],["Thomas “Stonewall” Jackson","Devout Confederate general killed by his own men's fire in 1863."]],
+[["1861","Fort Sumter","War begins April 12."],["1862","Antietam","Bloodiest single day in American history."],["1863","Emancipation Proclamation","Frees enslaved people in rebel states."],["1863","Gettysburg & Vicksburg","Turning points in early July."],["1863","Gettysburg Address","Lincoln's 272 words in November."],["1864","March to the Sea","Sherman cuts through Georgia."],["1865","Appomattox","Lee surrenders April 9; Lincoln shot April 14."]],
+"The war settled that the U.S. is one nation that states cannot leave, and it ended slavery. Americans began saying “the United States is” instead of “the United States are.”"],
+
+["Reconstruction","1865–1877","1800s",[],
+"After the war the country had to rebuild the South and decide what freedom would mean for four million formerly enslaved people. Three amendments abolished slavery (13th), guaranteed citizenship and equal protection (14th), and protected Black men's right to vote (15th). The Freedmen's Bureau set up schools, and Black Americans were elected to Congress. President Andrew Johnson fought Congress and was impeached, missing removal by one vote. Groups like the Ku Klux Klan used terror to resist. In 1877 federal troops left the South, and many of these gains were rolled back under Jim Crow laws.",
+"Freedom, citizenship, equal rights, reunion","Reconstruction wrote equal rights into the Constitution, even though it took another century to fully enforce them.",
+[["Andrew Johnson","Lincoln's successor; impeached in 1868 and acquitted by one vote."],["Thaddeus Stevens","Radical Republican leader in the House who pushed for full Black rights."],["Ulysses S. Grant","President who sent troops against the Klan."],["Hiram Revels","First Black U.S. senator, from Mississippi, in 1870."],["Frederick Douglass","Kept pressing the nation to make freedom real."]],
+[["1865","13th Amendment","Slavery abolished."],["1865","Freedmen's Bureau","Helps formerly enslaved people with schools and work."],["1868","14th Amendment","Citizenship and equal protection."],["1868","Johnson impeached","Acquitted in the Senate."],["1870","15th Amendment","Vote can't be denied by race."],["1877","Reconstruction ends","Federal troops leave the South."]],
+"The 14th Amendment is still one of the most cited parts of the Constitution, and the unfinished work of this era set up the Civil Rights Movement."],
+
+["Winning the West","1862–1890","1800s",["war"],
+"The Homestead Act (1862) offered 160 acres to settlers who would farm it for five years. The first transcontinental railroad was finished in 1869 with a golden spike in Utah. Cowboys drove Texas cattle north on trails like the Chisholm. Miners, ranchers and farmers filled the Plains as the buffalo were nearly wiped out. Plains nations fought to keep their land; Sioux and Cheyenne warriors defeated Custer at Little Bighorn (1876), but the Army forced tribes onto reservations. The tragedy at Wounded Knee (1890) ended the wars, and that year the Census declared the frontier closed.",
+"Opportunity, rugged individualism, Native loss, the railroad","The Old West lasted only about a generation, but it shaped how Americans see themselves.",
+[["Sitting Bull","Lakota leader at Little Bighorn."],["Crazy Horse","Lakota war leader who helped defeat Custer."],["George Armstrong Custer","Cavalry officer killed with his men at Little Bighorn."],["Chief Joseph","Nez Perce leader whose 1877 surrender speech ended, “I will fight no more forever.”"],["Charles Goodnight","Texas rancher who blazed the Goodnight-Loving cattle trail."]],
+[["1862","Homestead Act","Free land for settlers."],["1867","Cattle drives boom","Texas herds head to Kansas railheads."],["1869","Golden Spike","Transcontinental railroad completed May 10."],["1876","Little Bighorn","Custer's defeat."],["1877","Nez Perce War","Chief Joseph surrenders."],["1890","Wounded Knee","Last major clash; frontier declared closed."]],
+"The West gave America its cowboy legends and much of its farmland, but it came at a heavy price for Native nations."],
+
+["The Gilded Age","1870–1900","1800s",[],
+"Mark Twain called it the Gilded Age: shiny on top, troubled underneath. Railroads, steel and oil made the U.S. the world's top industrial power. Andrew Carnegie, John D. Rockefeller and J.P. Morgan built giant fortunes. Inventions like Bell's telephone and Edison's light bulb changed daily life. Millions of immigrants arrived, many through Ellis Island, to work in crowded cities. Workers formed unions and struck for better pay and hours, sometimes violently. Reformers like Jane Addams helped the urban poor, and Congress passed the Sherman Antitrust Act (1890) to rein in monopolies.",
+"Industry, wealth and poverty, immigration, invention","America became an industrial giant, and a nation of immigrants.",
+[["Andrew Carnegie","Scottish immigrant steel king who gave away most of his fortune, building some 2,500 libraries."],["John D. Rockefeller","Founder of Standard Oil and a devout Baptist philanthropist."],["Thomas Edison","Inventor of the practical light bulb and phonograph."],["Alexander Graham Bell","Patented the telephone in 1876."],["Jane Addams","Founded Hull House in Chicago to serve immigrants."]],
+[["1876","Telephone","Bell's patent."],["1879","Light bulb","Edison's practical lamp."],["1886","Statue of Liberty","Dedicated in New York Harbor."],["1890","Sherman Antitrust Act","First federal law against monopolies."],["1892","Ellis Island opens","About 12 million immigrants will pass through it."],["1894","Pullman Strike","National railroad strike ends with federal troops."]],
+"Most of modern American life, including big business, big cities, electricity and the immigrant mix, took shape in these years."],
+
+["Empire and the Progressive Era","1898–1916","1900s",["war"],
+"After the battleship Maine exploded in Havana, the U.S. fought the Spanish-American War (1898) and gained Puerto Rico, Guam and the Philippines. Hawaii was annexed the same year. Theodore Roosevelt, a war hero, became president in 1901 and pushed a “Square Deal”: breaking up trusts, protecting food safety, and setting aside national parks and forests. He also built the Panama Canal. Progressives fought corruption and child labor. The Wright brothers flew in 1903, and Henry Ford's Model T put Americans on the road. In 1913 came the federal income tax and the direct election of senators.",
+"Reform, world power, conservation, progress","America stepped onto the world stage and began reforming itself at home.",
+[["Theodore Roosevelt","Rough Rider, trustbuster and conservationist; protected about 230 million acres."],["Woodrow Wilson","President who created the Federal Reserve."],["Wilbur & Orville Wright","Made the first powered airplane flights at Kitty Hawk."],["Henry Ford","Made cars affordable with the moving assembly line."],["Upton Sinclair","His novel The Jungle exposed the meatpacking industry."]],
+[["1898","Spanish-American War","“Remember the Maine!”"],["1901","TR becomes president","After McKinley is assassinated."],["1903","First flight","Kitty Hawk, December 17."],["1906","Pure Food and Drug Act","Passed after The Jungle."],["1908","Model T","Ford's car for the masses."],["1913","16th & 17th Amendments","Income tax; senators elected by voters."],["1914","Panama Canal opens","Links Atlantic and Pacific."]],
+"National parks, food inspection, the income tax and America's role as a world power all start here."],
+
+["World War I","1914–1918","1900s",["war"],
+"War broke out in Europe in 1914, and President Wilson kept America neutral. German U-boats sank the Lusitania in 1915, killing 128 Americans. In 1917 Germany resumed unrestricted submarine warfare, and the Zimmermann Telegram revealed a German offer to help Mexico win back Texas and the Southwest. Congress declared war in April 1917 so the world might be “made safe for democracy.” About two million “doughboys” under General Pershing reached France and helped win battles like the Meuse-Argonne. The armistice came on November 11, 1918. Afterward the Senate rejected Wilson's League of Nations.",
+"Duty, sacrifice, democracy, isolation","The war turned the U.S. into a world power, and then Americans tried to step back from the world.",
+[["Woodrow Wilson","Wartime president; proposed the Fourteen Points and the League of Nations."],["John J. Pershing","Commander of the American Expeditionary Forces."],["Alvin York","Tennessee sharpshooter and man of faith who captured 132 Germans and won the Medal of Honor."],["Eddie Rickenbacker","America's top flying ace."],["Henry Cabot Lodge","Senator who led opposition to the League of Nations."]],
+[["1914","War in Europe","Begins after an archduke is assassinated."],["1915","Lusitania sunk","128 Americans die."],["1917","U.S. enters","War declared April 6."],["1918","Meuse-Argonne","Largest U.S. battle of the war."],["1918","Armistice","Fighting ends November 11, now Veterans Day."],["1918","Flu pandemic","Kills about 675,000 Americans."]],
+"About 116,000 Americans died. Veterans Day comes from this war, and the peace that followed set the stage for World War II."],
+
+["The Roaring Twenties","1920–1929","1900s",["faith"],
+"After the war, Americans bought cars, radios and appliances on credit, and the economy boomed. Women won the right to vote with the 19th Amendment (1920). Prohibition banned alcohol but gave rise to speakeasies and gangsters like Al Capone. Jazz, movies and sports heroes like Babe Ruth filled the decade. The Harlem Renaissance brought Black art and writing to the national stage. The 1925 Scopes Trial set faith against evolution in a Tennessee courtroom. Charles Lindbergh flew solo across the Atlantic in 1927. Then the stock market crashed in October 1929.",
+"Prosperity, change, modern vs. traditional, excess","A decade of good times built partly on borrowed money.",
+[["Calvin Coolidge","Quiet president of the boom years: “The chief business of the American people is business.”"],["Charles Lindbergh","Flew the Spirit of St. Louis from New York to Paris."],["Babe Ruth","Home-run king who made baseball America's game."],["Louis Armstrong","Trumpeter who helped make jazz America's music."],["William Jennings Bryan","Three-time presidential nominee who argued for the prosecution at the Scopes Trial."]],
+[["1920","19th Amendment","Women's suffrage."],["1920","Prohibition begins","18th Amendment bans alcohol."],["1920","First commercial radio","KDKA Pittsburgh."],["1925","Scopes Trial","“Monkey Trial” in Dayton, Tennessee."],["1927","Lindbergh's flight","33½ hours to Paris."],["1929","Stock market crash","Black Tuesday, October 29."]],
+"Modern consumer culture, including cars, radio, movies and buying on credit, really began in the twenties."],
+
+["The Great Depression and the New Deal","1929–1941","1900s",[],
+"After the crash, banks failed, factories closed, and by 1933 about a quarter of workers were jobless. On the Plains, drought and dust storms created the Dust Bowl, and families fled to California. President Hoover's efforts didn't turn things around, and in 1932 voters elected Franklin D. Roosevelt. FDR told Americans the only thing to fear was “fear itself,” and his New Deal created programs like the CCC, WPA and TVA, insured bank deposits, and started Social Security. Prohibition was repealed. Recovery was slow and uneven until World War II.",
+"Hardship, government's role, resilience, hope","The New Deal changed how Americans think about what government should do.",
+[["Franklin D. Roosevelt","Only president elected four times; spoke to the nation in radio “fireside chats.”"],["Herbert Hoover","President when the Depression began."],["Eleanor Roosevelt","Active first lady who traveled the country as FDR's eyes and ears."],["Frances Perkins","Labor secretary, first woman in a cabinet, architect of Social Security."],["Dorothea Lange","Photographer whose “Migrant Mother” became the face of the Depression."]],
+[["1929","The crash","Start of the Great Depression."],["1932","FDR elected","Promises a “New Deal.”"],["1933","Hundred Days","Flood of new laws; FDIC created."],["1933","Prohibition repealed","21st Amendment."],["1935","Social Security","Old-age pensions and unemployment insurance."],["1930s","Dust Bowl","Drought drives Plains families west."]],
+"Social Security, bank deposit insurance and a bigger federal government all date from this era, and Americans still debate how far that role should go."],
+
+["World War II","1941–1945","1900s",["war"],
+"While Hitler conquered Europe, the U.S. stayed officially neutral but sent aid to Britain. On December 7, 1941, Japan attacked Pearl Harbor, and America went to war. The Navy turned the Pacific war at Midway (1942) and then island-hopped toward Japan. In Europe, Allied forces fought through North Africa and Italy, then landed at Normandy on D-Day, June 6, 1944. Germany surrendered in May 1945. After atomic bombs fell on Hiroshima and Nagasaki, Japan surrendered in August. At home, factories and “Rosie the Riveters” out-produced the enemy, and about 120,000 Japanese Americans were unjustly interned.",
+"Sacrifice, unity, courage, freedom vs. tyranny","The “Greatest Generation” saved the free world.",
+[["Franklin D. Roosevelt","Led the nation until his death in April 1945."],["Harry S. Truman","Finished the war and made the decision to use the atomic bomb."],["Dwight D. Eisenhower","Supreme Allied Commander in Europe; planned D-Day."],["Douglas MacArthur","Commander in the Southwest Pacific who accepted Japan's surrender."],["Chester Nimitz","Pacific Fleet commander who won at Midway."]],
+[["1941","Pearl Harbor","December 7, “a date which will live in infamy.”"],["1942","Midway","Turning point in the Pacific."],["1944","D-Day","Allied landing in Normandy, June 6."],["1944","Battle of the Bulge","Last big German offensive."],["1945","V-E Day","Germany surrenders May 8."],["1945","Atomic bombs","Hiroshima and Nagasaki, August 6 and 9."],["1945","V-J Day","Japan surrenders; formal signing September 2."]],
+"About 16 million Americans served and about 405,000 died. The U.S. came out of the war as the world's leading power."],
+
+["The Cold War Begins","1945–1960","1900s",["war","faith"],
+"The U.S. and the Soviet Union went from allies to rivals. Truman pledged to contain communism, the Marshall Plan rebuilt Western Europe, and the Berlin Airlift beat a Soviet blockade. NATO formed in 1949, the same year the Soviets got the atomic bomb. The Korean War (1950–53) ended in a stalemate. Senator Joseph McCarthy hunted for communists at home, sometimes recklessly. Under Eisenhower the economy boomed, the baby boom filled new suburbs, and the interstate highways were built. “Under God” was added to the Pledge in 1954, and Billy Graham's crusades filled stadiums. The Soviets launched Sputnik in 1957, starting the space race.",
+"Freedom vs. communism, prosperity, fear, faith","Two superpowers faced off with nuclear weapons, and peace held, barely.",
+[["Harry S. Truman","Launched containment, the Marshall Plan and NATO."],["Dwight D. Eisenhower","Two-term president; signed the Interstate Highway Act."],["Joseph McCarthy","Senator whose anti-communist hearings gave us the word “McCarthyism.”"],["Billy Graham","Evangelist whose crusades reached millions."],["Douglas MacArthur","Led the daring Inchon landing in Korea; fired by Truman in 1951."]],
+[["1947","Truman Doctrine","U.S. pledges to help nations resist communism."],["1948–49","Berlin Airlift","Allies fly supplies into West Berlin."],["1949","NATO","Western defense alliance formed."],["1950–53","Korean War","About 36,000 Americans killed."],["1954","“Under God”","Added to the Pledge of Allegiance."],["1956","Interstate Highways","41,000-mile network approved."],["1957","Sputnik","Soviet satellite starts the space race."]],
+"The Cold War shaped American life for 45 years, from schoolroom duck-and-cover drills to the interstates to the moon landing."],
+
+["The Civil Rights Movement","1954–1968","1900s",["faith"],
+"In Brown v. Board of Education (1954), the Supreme Court ruled school segregation unconstitutional. In 1955 Rosa Parks refused to give up her bus seat in Montgomery, and a 26-year-old pastor, Martin Luther King Jr., led a year-long boycott. Using nonviolent protest rooted in the Bible, activists held sit-ins, Freedom Rides and marches, often facing violence. At the 1963 March on Washington, King shared his dream. Congress passed the Civil Rights Act of 1964 and, after the march from Selma, the Voting Rights Act of 1965. King was assassinated in 1968.",
+"Equality, nonviolence, justice, faith in action","The movement called America to live up to “all men are created equal.”",
+[["Martin Luther King Jr.","Baptist minister and leader of the movement; Nobel Peace Prize, 1964."],["Rosa Parks","Her arrest sparked the Montgomery Bus Boycott."],["Thurgood Marshall","Won Brown v. Board; later the first Black Supreme Court justice."],["Lyndon B. Johnson","President who pushed the Civil Rights and Voting Rights Acts through Congress."],["John Lewis","Young leader beaten at Selma's Edmund Pettus Bridge; later a longtime congressman."]],
+[["1954","Brown v. Board","School segregation struck down."],["1955–56","Montgomery Bus Boycott","Ends with integrated buses."],["1957","Little Rock Nine","Troops escort students into Central High."],["1960","Greensboro sit-ins","Students challenge segregated lunch counters."],["1963","March on Washington","“I Have a Dream,” August 28."],["1964","Civil Rights Act","Bans discrimination in public places and jobs."],["1965","Voting Rights Act","After the Selma marches."],["1968","King assassinated","April 4, in Memphis."]],
+"The movement ended legal segregation and showed how faith and peaceful protest could change a nation's laws and conscience."],
+
+["Vietnam, the Space Race and Watergate","1960–1974","1900s",["war"],
+"John F. Kennedy faced the Soviets in the Cuban Missile Crisis (1962), the closest the world came to nuclear war. He was assassinated in Dallas in 1963. Lyndon Johnson expanded the war in Vietnam after the Gulf of Tonkin incident; by 1968 more than 500,000 Americans were there. The Tet Offensive and nightly TV news turned many against the war, and protests split the country. 1968 brought the killings of King and Robert Kennedy. Bright spot: Apollo 11 landed on the moon on July 20, 1969. President Nixon ended U.S. combat in Vietnam in 1973, but the Watergate scandal forced him to resign in 1974.",
+"Conflict, trust in government, achievement, division","Americans reached the moon while losing faith in their leaders at home.",
+[["John F. Kennedy","Youngest elected president; challenged the nation to reach the moon."],["Lyndon B. Johnson","Escalated Vietnam and launched the Great Society programs."],["Richard Nixon","Opened relations with China; the only president to resign."],["Neil Armstrong","First man on the moon: “one small step for man, one giant leap for mankind.”"],["Robert F. Kennedy","Senator and candidate assassinated in June 1968."]],
+[["1962","Cuban Missile Crisis","Thirteen tense days in October."],["1963","JFK assassinated","November 22, in Dallas."],["1964","Gulf of Tonkin","Congress authorizes wider war."],["1968","Tet Offensive","Turns public opinion against the war."],["1969","Moon landing","Apollo 11, July 20."],["1973","Paris Peace Accords","U.S. combat troops come home."],["1974","Nixon resigns","August 9, after Watergate."]],
+"About 58,000 Americans died in Vietnam. This era left deep distrust of government, and America still holds the record for putting people on the moon."],
+
+["From Malaise to the End of the Cold War","1974–1991","1900s",["war"],
+"Gerald Ford pardoned Nixon, and the country celebrated its Bicentennial in 1976. Under Jimmy Carter, gas lines, high inflation and the Iran hostage crisis (444 days) weighed on the nation, though he brokered the Camp David Accords between Egypt and Israel. Ronald Reagan won in 1980 promising lower taxes, a stronger military and renewed optimism. Inflation came down and the economy grew. Reagan called the Soviet Union an “evil empire,” then negotiated arms cuts with Mikhail Gorbachev. In Berlin he said, “Mr. Gorbachev, tear down this wall!” The wall fell in 1989, George H.W. Bush led a coalition to win the Gulf War in 1991, and the Soviet Union collapsed that December.",
+"Renewal, strength, freedom, the end of communism in Europe","The Cold War ended without the two superpowers ever fighting each other directly.",
+[["Jimmy Carter","Brokered the Camp David Accords; faced the hostage crisis."],["Ronald Reagan","Two-term president who helped win the Cold War."],["Mikhail Gorbachev","Soviet leader whose reforms helped end the Cold War."],["George H.W. Bush","Led the nation as the Soviet Union fell and won the Gulf War."],["Sandra Day O'Connor","First woman on the Supreme Court, appointed in 1981."]],
+[["1976","Bicentennial","America turns 200."],["1978","Camp David Accords","Peace between Egypt and Israel."],["1979–81","Iran hostage crisis","52 Americans held 444 days."],["1981","Reagan shot","Survives an assassination attempt."],["1987","“Tear down this wall!”","Reagan's speech in Berlin."],["1989","Berlin Wall falls","November 9."],["1991","Gulf War; USSR ends","Kuwait freed; Soviet Union dissolves in December."]],
+"The U.S. became the world's only superpower, and the threat of nuclear war between superpowers faded."],
+
+["The 1990s","1991–2000","1900s",[],
+"With the Cold War over, the 1990s were mostly peaceful and prosperous. Bill Clinton won the presidency in 1992. The World Wide Web, email and personal computers changed how Americans work and talk. NAFTA opened trade with Canada and Mexico. In 1994 Republicans won the House for the first time in 40 years with their Contract with America, and the two parties passed welfare reform and balanced the budget. The Oklahoma City bombing (1995) killed 168 people. Clinton was impeached in 1998 and acquitted in 1999. The 2000 election was so close it was settled by the Supreme Court in Florida.",
+"Prosperity, technology, partisanship, change","The internet age arrived, and politics grew sharper.",
+[["Bill Clinton","Two-term president during the 1990s boom; impeached and acquitted."],["Newt Gingrich","House Speaker who led the 1994 Republican takeover."],["Bill Gates","Microsoft co-founder who put Windows on most of the world's computers."],["Colin Powell","Chairman of the Joint Chiefs during the Gulf War."],["George W. Bush","Texas governor who won the disputed 2000 election."]],
+[["1991","World Wide Web","Goes public."],["1994","NAFTA; Contract with America","Free-trade deal; Republicans win Congress."],["1995","Oklahoma City bombing","Deadliest homegrown terror attack."],["1996","Welfare reform","Work requirements added."],["1998","Budget surplus","First in nearly 30 years."],["1998–99","Clinton impeachment","Acquitted by the Senate."],["2000","Bush v. Gore","Supreme Court ends the Florida recount."]],
+"The internet economy and today's political divides both took shape in this decade."],
+
+["9/11 and the War on Terror","2001–2008","2000s",["war","faith"],
+"On September 11, 2001, al-Qaeda terrorists hijacked four airliners. Two hit the World Trade Center, one hit the Pentagon, and one crashed in Pennsylvania after passengers fought back. Nearly 3,000 people died. The nation came together; churches filled and flags flew everywhere. The U.S. invaded Afghanistan to topple the Taliban, created the Department of Homeland Security, and in 2003 invaded Iraq and removed Saddam Hussein. The Iraq war became long and costly. Hurricane Katrina devastated New Orleans in 2005. The iPhone came out in 2007, and a financial crisis hit in 2008. That year Barack Obama was elected the first Black president.",
+"Security, unity, sacrifice, faith in crisis","One morning changed how America saw the world.",
+[["George W. Bush","President on 9/11 who led the response and both wars."],["Rudy Giuliani","New York mayor praised for his leadership after the attacks."],["Todd Beamer","Flight 93 passenger who prayed the Lord's Prayer, then said “Let's roll” as passengers charged the hijackers."],["Colin Powell","First Black secretary of state."],["Barack Obama","Elected president in 2008."]],
+[["2001","September 11","Nearly 3,000 killed."],["2001","Afghanistan","U.S. strikes the Taliban and al-Qaeda in October."],["2002","Homeland Security","New cabinet department created."],["2003","Iraq War","Saddam Hussein is overthrown and captured."],["2005","Hurricane Katrina","Floods New Orleans."],["2007","iPhone","Smartphone era begins."],["2008","Financial crisis","Worst downturn since the Depression."]],
+"Airport security, the long wars in Afghanistan and Iraq, and the smartphone age all start here."],
+
+["Modern America and 250 Years","2009–Today","2000s",[],
+"Barack Obama took office during the Great Recession and passed the Affordable Care Act (2010). Navy SEALs killed Osama bin Laden in 2011. In 2015 the Supreme Court legalized same-sex marriage nationwide. Donald Trump, a businessman, won the 2016 election, cut taxes and appointed three Supreme Court justices. The COVID-19 pandemic struck in 2020, and Joe Biden won that year's election. On January 6, 2021, a crowd of Trump supporters broke into the Capitol. The U.S. left Afghanistan in 2021. In 2022 the Court's Dobbs decision returned abortion law to the states. Trump won again in 2024, the second president to serve non-consecutive terms after Grover Cleveland. On July 4, 2026, the nation turned 250.",
+"Division, technology, pandemic, a nation still debating its future","After 250 years, Americans still argue about the country's direction, under the same Constitution.",
+[["Barack Obama","44th president; first Black president."],["Donald Trump","45th and 47th president."],["Joe Biden","46th president, elected in 2020."],["Navy SEAL Team Six","Carried out the raid that killed bin Laden."],["Amy Coney Barrett","Supreme Court justice appointed in 2020."]],
+[["2010","Affordable Care Act","Health-care law passed."],["2011","Bin Laden killed","May 2, in Pakistan."],["2015","Obergefell v. Hodges","Same-sex marriage legal nationwide."],["2016","Trump elected","Upset win over Hillary Clinton."],["2020","COVID-19","Pandemic shuts down much of the country."],["2021","Capitol breach; Afghanistan exit","January 6; U.S. troops leave Kabul in August."],["2022","Dobbs decision","Overturns Roe v. Wade."],["2024","Trump re-elected","Inaugurated January 20, 2025."],["2026","America 250","The semiquincentennial, July 4."]],
+"This is the America we live in now. The same founding documents from chapter 4 and 5 still guide a much bigger, more varied nation."]
+].map((b,i)=>({i,t:b[0],y:b[1],era:b[2],tags:b[3],sum:b[4],th:b[5],take:b[6],ppl:b[7],tl:b[8],why:b[9],c:C[i%C.length]}));
+
+// Quiz: [question, correct answer, wrong, wrong, wrong]
+const QZ=[
+[["Where did Columbus first land in 1492?","The Bahamas","Florida","Virginia","Mexico"],["What is the oldest continuously settled European city in the U.S.?","St. Augustine","Jamestown","Boston","Plymouth"],["Which English colony became known as the “Lost Colony”?","Roanoke","Plymouth","Jamestown","Massachusetts Bay"],["Who reached and named Florida in 1513?","Juan Ponce de León","Coronado","Columbus","Sir Walter Raleigh"]],
+[["What was England's first permanent settlement in America?","Jamestown","Plymouth","Roanoke","Boston"],["What did the Pilgrims sign before landing in 1620?","The Mayflower Compact","The Bill of Rights","The Articles of Confederation","The Magna Carta"],["Who founded Pennsylvania?","William Penn","John Winthrop","William Bradford","John Smith"],["What was the revival of the 1730s and '40s called?","The Great Awakening","The Second Great Awakening","The Reformation","The Enlightenment"]],
+[["What was the colonists' famous protest slogan?","No taxation without representation","Remember the Alamo","Fifty-four forty or fight","Remember the Maine"],["In what year was the Boston Tea Party?","1773","1765","1776","1770"],["Who said, “Give me liberty, or give me death!”?","Patrick Henry","Samuel Adams","Paul Revere","Thomas Paine"],["Where were the first shots of the Revolution fired?","Lexington and Concord","Bunker Hill","Yorktown","Saratoga"]],
+[["When was the Declaration of Independence adopted?","July 4, 1776","July 4, 1775","September 17, 1787","April 19, 1775"],["Which victory brought France into the war?","Saratoga","Trenton","Yorktown","Bunker Hill"],["Who wrote Common Sense?","Thomas Paine","Thomas Jefferson","Benjamin Franklin","John Adams"],["Where did Cornwallis surrender in 1781?","Yorktown","Saratoga","Trenton","Valley Forge"]],
+[["Who is called the “Father of the Constitution”?","James Madison","Alexander Hamilton","George Washington","John Jay"],["What are the first ten amendments called?","The Bill of Rights","The Federalist Papers","The Articles of Confederation","The Great Compromise"],["Which uprising showed the Articles of Confederation were too weak?","Shays' Rebellion","The Whiskey Rebellion","Bacon's Rebellion","The Boston Massacre"],["Who was the first secretary of the Treasury?","Alexander Hamilton","Thomas Jefferson","John Adams","James Madison"]],
+[["From which country did the U.S. buy Louisiana?","France","Spain","Britain","Mexico"],["Where was “The Star-Spangled Banner” inspired?","Fort McHenry","New Orleans","Bunker Hill","Fort Sumter"],["Sacagawea guided which expedition?","Lewis and Clark","Coronado","The Donner Party","Pike's expedition"],["What did the Monroe Doctrine warn?","Europe to stay out of the Americas","States not to secede","Settlers to stay east of the Mississippi","Britain to stop taxing the colonies"]],
+[["Which nation was forced west on the Trail of Tears?","The Cherokee","The Sioux","The Apache","The Nez Perce"],["Which canal opened in 1825?","The Erie Canal","The Panama Canal","The Suez Canal","The Chesapeake Canal"],["Who was called the “Great Compromiser”?","Henry Clay","John C. Calhoun","Andrew Jackson","Daniel Boone"],["Andrew Jackson's home state was:","Tennessee","Virginia","Massachusetts","Kentucky"]],
+[["Where did Sam Houston win Texas independence?","San Jacinto","The Alamo","Goliad","Palo Alto"],["When did Texas become a state?","1845","1836","1848","1861"],["Where was gold discovered in 1848?","California","Colorado","Alaska","Oregon"],["Which president added Texas, Oregon and the Southwest?","James K. Polk","Andrew Jackson","Zachary Taylor","John Tyler"]],
+[["Who wrote Uncle Tom's Cabin?","Harriet Beecher Stowe","Harriet Tubman","Frederick Douglass","Louisa May Alcott"],["What did the Dred Scott decision rule?","Black Americans could not be citizens","Slavery was abolished","Kansas must be a free state","The Fugitive Slave Act was unconstitutional"],["Who led enslaved people to freedom on the Underground Railroad?","Harriet Tubman","Sojourner Truth","Rosa Parks","Clara Barton"],["Who raided Harpers Ferry in 1859?","John Brown","Nat Turner","Stephen Douglas","William Lloyd Garrison"]],
+[["Where did the Civil War begin?","Fort Sumter","Gettysburg","Bull Run","Antietam"],["What is the bloodiest single day in American history?","Antietam","Gettysburg","Shiloh","D-Day"],["Where did Lee surrender to Grant?","Appomattox","Richmond","Vicksburg","Atlanta"],["When did the Emancipation Proclamation take effect?","January 1, 1863","July 4, 1863","April 9, 1865","November 19, 1863"]],
+[["What did the 13th Amendment do?","Abolished slavery","Gave women the vote","Created the income tax","Guaranteed equal protection"],["Who was the first Black U.S. senator?","Hiram Revels","Frederick Douglass","Thaddeus Stevens","Booker T. Washington"],["Which president was impeached in 1868?","Andrew Johnson","Ulysses S. Grant","Abraham Lincoln","Rutherford B. Hayes"],["In what year did Reconstruction end?","1877","1865","1870","1890"]],
+[["How many acres did the Homestead Act offer?","160","40","640","1,000"],["When was the transcontinental railroad completed?","1869","1862","1876","1890"],["Where was Custer defeated?","Little Bighorn","Wounded Knee","Sand Creek","Fort Laramie"],["Who said, “I will fight no more forever”?","Chief Joseph","Sitting Bull","Crazy Horse","Geronimo"]],
+[["Who founded Standard Oil?","John D. Rockefeller","Andrew Carnegie","J.P. Morgan","Cornelius Vanderbilt"],["Who built a steel empire and some 2,500 libraries?","Andrew Carnegie","Henry Ford","Thomas Edison","John D. Rockefeller"],["Who invented the practical light bulb?","Thomas Edison","Alexander Graham Bell","Nikola Tesla","George Westinghouse"],["Who named the “Gilded Age”?","Mark Twain","Jane Addams","Theodore Roosevelt","Upton Sinclair"]],
+[["“Remember the Maine!” was the cry of which war?","The Spanish-American War","World War I","The Mexican-American War","The War of 1812"],["Where did the Wright brothers first fly?","Kitty Hawk","Dayton","Detroit","Cape Canaveral"],["When did the Panama Canal open?","1914","1903","1898","1920"],["The Jungle led to which law?","The Pure Food and Drug Act","The Sherman Antitrust Act","The 16th Amendment","The Homestead Act"]],
+[["When did the U.S. enter World War I?","1917","1914","1915","1918"],["Armistice Day, November 11, is now called:","Veterans Day","Memorial Day","Independence Day","Labor Day"],["Which Tennessee man of faith captured 132 Germans?","Alvin York","Eddie Rickenbacker","John Pershing","Audie Murphy"],["Who commanded the American Expeditionary Forces?","John J. Pershing","Douglas MacArthur","George Patton","Dwight Eisenhower"]],
+[["What did the 19th Amendment do?","Gave women the vote","Banned alcohol","Repealed Prohibition","Created the income tax"],["Where did Lindbergh land after his solo flight?","Paris","London","Rome","Berlin"],["In which state was the Scopes Trial held?","Tennessee","Texas","Georgia","Kentucky"],["When did the stock market crash?","October 1929","October 1919","March 1933","December 1941"]],
+[["Which president launched the New Deal?","Franklin D. Roosevelt","Herbert Hoover","Harry Truman","Calvin Coolidge"],["When was Social Security created?","1935","1929","1941","1945"],["What were the Plains drought and dust storms called?","The Dust Bowl","The Great Drought","The Black Blizzard Act","The Panic"],["Who was the first woman in a president's cabinet?","Frances Perkins","Eleanor Roosevelt","Jane Addams","Sandra Day O'Connor"]],
+[["When was Pearl Harbor attacked?","December 7, 1941","June 6, 1944","September 1, 1939","August 6, 1945"],["Where did D-Day take place?","Normandy","Midway","Italy","North Africa"],["Which battle turned the Pacific war?","Midway","Iwo Jima","Okinawa","Guadalcanal"],["Who was Supreme Allied Commander in Europe?","Dwight D. Eisenhower","George Patton","Douglas MacArthur","Omar Bradley"]],
+[["What program rebuilt Western Europe?","The Marshall Plan","The New Deal","The Truman Doctrine","NATO"],["What Soviet satellite started the space race?","Sputnik","Apollo","Vostok","Mir"],["What was added to the Pledge of Allegiance in 1954?","“Under God”","“With liberty and justice for all”","“Indivisible”","“One nation”"],["When was the Korean War fought?","1950–1953","1945–1948","1941–1945","1964–1973"]],
+[["What did Brown v. Board of Education strike down?","School segregation","Poll taxes","Segregated buses","Literacy tests"],["Whose arrest sparked the Montgomery Bus Boycott?","Rosa Parks","Coretta Scott King","Ruby Bridges","Harriet Tubman"],["Where did King give his “I Have a Dream” speech?","The March on Washington","Selma","Montgomery","Memphis"],["When was the Voting Rights Act passed?","1965","1954","1964","1968"]],
+[["Who was the first man on the moon?","Neil Armstrong","Buzz Aldrin","John Glenn","Alan Shepard"],["What was the closest the world came to nuclear war?","The Cuban Missile Crisis","The Bay of Pigs","The Berlin Airlift","The Tet Offensive"],["What scandal forced Nixon to resign?","Watergate","Teapot Dome","Iran-Contra","The Pentagon Papers"],["Which 1968 attack turned many against the Vietnam War?","The Tet Offensive","Gulf of Tonkin","Dien Bien Phu","The Fall of Saigon"]],
+[["Who said, “Tear down this wall!”?","Ronald Reagan","John F. Kennedy","George H.W. Bush","Jimmy Carter"],["When did the Berlin Wall fall?","1989","1991","1987","1980"],["How long were the Iran hostages held?","444 days","100 days","1,000 days","52 days"],["The Camp David Accords made peace between:","Egypt and Israel","Iran and Iraq","the U.S. and USSR","Israel and Jordan"]],
+[["In 1994 Republicans won the House for the first time in how many years?","40","10","20","100"],["When was the Oklahoma City bombing?","1995","1993","1999","2001"],["Who settled the 2000 election?","The Supreme Court","The House","Florida voters in a revote","The Electoral College alone"],["Which trade deal joined the U.S., Canada and Mexico?","NAFTA","NATO","GATT","the Marshall Plan"]],
+[["Where did Flight 93 crash?","Pennsylvania","Virginia","New York","Maryland"],["About how many people died on 9/11?","3,000","300","30,000","1,000"],["What new cabinet department was created in 2002?","Homeland Security","Veterans Affairs","Energy","Education"],["Which hurricane flooded New Orleans in 2005?","Katrina","Harvey","Andrew","Sandy"]],
+[["When was Osama bin Laden killed?","2011","2001","2008","2015"],["Who was the first president to serve non-consecutive terms?","Grover Cleveland","Theodore Roosevelt","Franklin Roosevelt","Andrew Jackson"],["In what year did America turn 250?","2026","2025","2024","2076"],["When did the Affordable Care Act pass?","2010","2008","2012","2016"]]
+];
+let best={},qs=null;
+try{best=JSON.parse(localStorage.getItem('ushistory-quiz')||'{}')}catch(e){}
+const saveBest=()=>{try{localStorage.setItem('ushistory-quiz',JSON.stringify(best))}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]]}return a};
+function newQuiz(i){qs={i,n:0,right:0,done:false,qs:shuffle(QZ[i]).map(q=>({q:q[0],a:q[1],opts:shuffle(q.slice(1))})),answered:null}}
+function quizBody(){
+  if(!qs||qs.i!==cur)newQuiz(cur);
+  if(qs.done){const t=qs.qs.length;const msg=qs.right===t?'Perfect score!':qs.right>=t-1?'Great job!':'Read the chapter again and try once more.';
+    return `<div class="sec score"><h4>Quiz complete</h4><b>${qs.right} / ${t}</b><p>${msg}</p><div class="acts" style="justify-content:center"><button class="btn main" id="retry">Try again</button></div></div>`}
+  const q=qs.qs[qs.n],a=qs.answered;
+  return `<div class="sec"><h4>Quick quiz</h4><div class="qn">Question ${qs.n+1} of ${qs.qs.length} · ${qs.right} right so far</div><p class="qq">${esc(q.q)}</p>
+  <div class="qz">${q.opts.map((o,k)=>{let c='';if(a!==null){if(o===q.a)c=' ok';else if(k===a)c=' no'}return `<button class="opt${c}" data-k="${k}"${a!==null?' disabled':''}>${esc(o)}</button>`}).join('')}</div>
+  <div class="fb" aria-live="polite">${a===null?'':q.opts[a]===q.a?'✓ Correct!':'✗ The answer is '+esc(q.a)+'.'}</div>
+  ${a!==null?`<div class="acts" style="padding:8px 0 0"><button class="btn main" id="qnext">${qs.n+1<qs.qs.length?'Next question ›':'See my score'}</button></div>`:''}</div>`;
+}
+const N=B.length;
+const esc=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const $=id=>document.getElementById(id);
+const cr=b=>b.c===CREAM?' cream':'';
+let read=new Set(),filter='all',cur=null,tab='sum';
+try{read=new Set(JSON.parse(localStorage.getItem('ushistory-read')||'[]'))}catch(e){}
+try{filter=localStorage.getItem('ushistory-filter')||'all'}catch(e){}
+const save=()=>{try{localStorage.setItem('ushistory-read',JSON.stringify([...read]))}catch(e){}};
+
+function progress(){$('pcount').textContent=`${read.size} of ${N} chapters read`;$('pbar').style.width=(read.size/N*100)+'%'}
+function shelf(){
+  $('shelf').innerHTML=B.map(b=>`<button class="spine${cr(b)}" data-i="${b.i}" style="background:${b.c};height:${160+((b.i*37)%60)}px" aria-label="Chapter ${b.i+1}: ${esc(b.t)}">${read.has(b.i)?'<span class="dot"></span>':''}${b.i+1} · ${esc(b.y)}</button>`).join('');
+}
+function hay(b){return [b.t,b.y,b.th,b.sum,...b.ppl.map(p=>p[0]),...b.tl.map(e=>e.join(' '))].join(' ').toLowerCase()}
+function list(){
+  const q=$('q').value.trim().toLowerCase();
+  const rows=B.filter(b=>{
+    if(['founding','1800s','1900s','2000s'].includes(filter)&&b.era!==filter)return false;
+    if((filter==='war'||filter==='faith')&&!b.tags.includes(filter))return false;
+    if(filter==='unread'&&read.has(b.i))return false;
+    return !q||hay(b).includes(q);
+  });
+  $('list').innerHTML=rows.length?rows.map(b=>`<button class="item" data-i="${b.i}"><span class="num${cr(b)}" style="background:${b.c}">${b.i+1}</span><span><h3>${esc(b.t)}</h3><span class="meta">${esc(b.y)}</span><br><span class="meta">${esc(b.th)}</span>${read.has(b.i)?'<br><span class="chk">✓ Read</span>':''}${best[b.i]!=null?`<br><span class="chk">Quiz best: ${best[b.i]}/${QZ[b.i].length}</span>`:''}</span></button>`).join(''):'<p class="empty">No chapters match. Try another word or filter.</p>';
+  document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-pressed',t.dataset.f===filter));
+}
+const TABS=[['sum','Summary'],['ppl','Key people'],['tl','Timeline'],['why','Why it matters'],['quiz','Quiz']];
+function body(b){
+  if(tab==='quiz')return quizBody();
+  if(tab==='ppl')return `<div class="sec"><h4>Key people</h4><div class="who">${b.ppl.map(([n,x])=>`<div><b>${esc(n)}</b>${esc(x)}</div>`).join('')}</div></div>`;
+  if(tab==='tl')return `<div class="sec"><h4>Timeline</h4><div class="tl">${b.tl.map(([y,n,x])=>`<div><b><span>${esc(y)}</span>${esc(n)}</b>${esc(x)}</div>`).join('')}</div></div>`;
+  if(tab==='why')return `<div class="sec"><h4>Why it matters</h4><p>${esc(b.why)}</p></div><div class="take">${esc(b.take)}</div>`;
+  return `<div class="sec"><h4>What happened</h4><p>${esc(b.sum)}</p></div>
+  <div class="sec"><h4>Big ideas</h4><div class="chips">${b.th.split(', ').map(t=>`<span>${esc(t)}</span>`).join('')}</div></div>
+  <div class="take">${esc(b.take)}</div>`;
+}
+function open(i){
+  const b=B[i];cur=i;
+  $('paper').innerHTML=`<div class="cover${cr(b)}" style="background:${b.c}"><button class="x" id="x" aria-label="Close">×</button><div class="ch">Chapter ${i+1} of ${N}</div><h2 id="stitle">${esc(b.t)}</h2><div class="meta">${esc(b.y)}</div></div>
+  <div class="stabs" role="tablist">${TABS.map(([k,l])=>`<button class="stab" role="tab" data-t="${k}" aria-selected="${k===tab}">${l}</button>`).join('')}</div>
+  <div id="tbody">${body(b)}</div>
+  <div class="acts"><button class="btn main" id="mark">${read.has(i)?'✓ Read · undo':'Mark as read'}</button><button class="btn" id="prev">‹ Previous</button><button class="btn" id="next">Next ›</button></div>`;
+  $('sheet').classList.add('on');
+  $('paper').scrollTop=0;
+  if(location.hash!=='#chapter-'+(i+1))history.replaceState(null,'','#chapter-'+(i+1));
+  $('x').focus();
+}
+function close(){$('sheet').classList.remove('on');cur=null;history.replaceState(null,'',location.pathname+location.search)}
+
+document.addEventListener('click',e=>{
+  const st=e.target.closest('.stab');
+  const op=e.target.closest('.opt');
+  if(op&&qs&&qs.answered===null){qs.answered=+op.dataset.k;const q=qs.qs[qs.n];if(q.opts[qs.answered]===q.a)qs.right++;$('tbody').innerHTML=body(B[cur]);return}
+  if(e.target.id==='qnext'){qs.n++;qs.answered=null;if(qs.n>=qs.qs.length){qs.done=true;if(best[cur]==null||qs.right>best[cur]){best[cur]=qs.right;saveBest();list()}}$('tbody').innerHTML=body(B[cur]);return}
+  if(e.target.id==='retry'){newQuiz(cur);$('tbody').innerHTML=body(B[cur]);return}
+  if(st){tab=st.dataset.t;if(tab==='quiz')qs=null;document.querySelectorAll('.stab').forEach(x=>x.setAttribute('aria-selected',x===st));$('tbody').innerHTML=body(B[cur]);return}
+  const s=e.target.closest('.spine,.item');if(s){tab='sum';open(+s.dataset.i);return}
+  const t=e.target.closest('.tab');
+  if(t){filter=t.dataset.f;try{localStorage.setItem('ushistory-filter',filter)}catch(err){}list();return}
+  if(e.target.id==='x'||e.target.id==='sheet'){close();return}
+  if(e.target.id==='mark'){read.has(cur)?read.delete(cur):read.add(cur);save();progress();shelf();list();open(cur);return}
+  if(e.target.id==='prev'){tab='sum';open((cur+N-1)%N);return}
+  if(e.target.id==='next'){tab='sum';open((cur+1)%N)}
+});
+document.addEventListener('keydown',e=>{
+  if(cur===null)return;
+  if(e.key==='Escape')close();
+  if(e.key==='ArrowRight'){tab='sum';open((cur+1)%N)}
+  if(e.key==='ArrowLeft'){tab='sum';open((cur+N-1)%N)}
+});
+$('q').addEventListener('input',list);
+function fromHash(){const m=location.hash.match(/^#chapter-(\d+)$/);if(m&&+m[1]>=1&&+m[1]<=N)open(+m[1]-1)}
+window.addEventListener('hashchange',fromHash);
+progress();shelf();list();fromHash();
+}
+</script>
+</body>
+</html>
