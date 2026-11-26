@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Spelling Bee</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,800&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: friendly classroom contest, clear and encouraging
+   IDEA: a spelling bee stage card — the judge says the word, you spell it
+   PICTURE: the live quiz card itself, with a honeycomb backdrop
+   COLOUR and TYPE: honey yellow, deep brown-black ink, red accent for misses; Fraunces + Nunito Sans
+   LAYOUT: title, then the quiz card full width; word list editor below; stacks on phones */
+:root{color-scheme:light dark;--bg:light-dark(#fff8e1,#1a1508);--panel:light-dark(#ffffff,#262011);--ink:light-dark(#1f1a10,#fbf3dc);--soft:light-dark(#6b5d3e,#c9b98f);--honey:#f5b300;--honey2:light-dark(#ffe08a,#5a4510);--line:light-dark(#ecd99a,#4a3d1c);--bad:light-dark(#c62828,#ff7a6e);--good:light-dark(#2e7d32,#7fd88a)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Nunito Sans",system-ui,sans-serif;overflow-x:clip}
+.band{padding:clamp(20px,4vw,48px) max(5vw,16px)}
+.wrap{max-width:880px;margin:0 auto}
+header.band{background:var(--honey);color:#1f1a10;padding-bottom:clamp(56px,8vw,90px);position:relative;overflow:hidden}
+header svg.comb{position:absolute;right:-30px;top:-20px;width:340px;height:260px;opacity:.28}
+h1{font:800 clamp(32px,6vw,50px)/1.05 Fraunces,Georgia,serif;margin:0 0 6px;text-wrap:balance;position:relative}
+header p{margin:0;max-width:52ch;position:relative;font-weight:600}
+.stage{margin-top:calc(-1 * clamp(48px,7vw,78px))}
+.card{background:var(--panel);border:2px solid var(--line);border-radius:22px;padding:clamp(18px,3.5vw,32px);box-shadow:0 10px 30px rgba(80,55,0,.12)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.between{justify-content:space-between}
+.stat{font-weight:700;color:var(--soft);font-size:15px}
+.stat b{color:var(--ink);font-size:18px}
+.lang{display:inline-block;background:var(--honey2);color:var(--ink);border-radius:999px;padding:4px 14px;font-weight:700;font-size:15px}
+.prompt{font:700 clamp(22px,4vw,30px)/1.2 Fraunces,Georgia,serif;margin:18px 0 6px}
+.hint{color:var(--soft);min-height:1.5em;margin:0 0 14px}
+button{font:700 16px "Nunito Sans",sans-serif;min-height:44px;padding:0 18px;border-radius:12px;border:2px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--honey)}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--honey);outline-offset:2px}
+button.go{background:var(--honey);border-color:var(--honey);color:#1f1a10}
+button.big{min-height:64px;font-size:18px;padding:0 24px}
+button:disabled{opacity:.45;cursor:default}
+.answer{width:100%;font:700 clamp(22px,5vw,32px) "Nunito Sans",sans-serif;padding:12px 16px;border:3px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink);letter-spacing:.04em;margin:14px 0 10px}
+.answer.ok{border-color:var(--good)}.answer.no{border-color:var(--bad)}
+.acc button{min-width:44px;padding:0 10px;font-size:18px}
+.fb{min-height:1.6em;font-weight:700;font-size:18px;margin:12px 0}
+.fb.ok{color:var(--good)}.fb.no{color:var(--bad)}
+.fb .spell{letter-spacing:.08em}
+.bar{height:10px;background:var(--honey2);border-radius:99px;overflow:hidden;margin:14px 0 4px}
+.bar i{display:block;height:100%;background:var(--honey);width:0;transition:width .3s}
+h2{font:700 24px/1.2 Fraunces,Georgia,serif;margin:0 0 10px}
+label{font-weight:600}
+textarea{width:100%;min-height:200px;font:16px/1.5 "Nunito Sans",sans-serif;padding:12px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink);resize:vertical}
+select{font:16px "Nunito Sans",sans-serif;min-height:44px;padding:0 10px;border-radius:10px;border:2px solid var(--line);background:var(--panel);color:var(--ink)}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:14px;margin:14px 0}
+.opts>div{display:flex;flex-direction:column;gap:6px}
+.vrow{display:flex;gap:8px}.vrow select{flex:1}
+.check{display:flex;gap:8px;align-items:center;min-height:44px}
+.check input{width:22px;height:22px;accent-color:var(--honey)}
+.note{color:var(--soft);font-size:14px;margin:6px 0 0}
+.miss{list-style:none;padding:0;margin:10px 0;display:grid;gap:6px}
+.miss li{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.miss s{color:var(--bad)}
+.hide{display:none!important}
+footer{text-align:center;color:var(--soft);font-size:13px;padding:24px 16px 36px}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.04)}100%{transform:scale(1)}}
+.pop{animation:pop .35s ease}
+@media (prefers-reduced-motion:reduce){.pop{animation:none}.bar i{transition:none}}
+@media(max-width:600px){.row.ctl button{flex:1 1 auto}}
+</style>
+</head>
+<body>
+<header class="band">
+  <svg class="comb" viewBox="0 0 340 260" aria-hidden="true"><defs><path id="hx" d="M30 0l26 15v30L30 60 4 45V15z" fill="none" stroke="#1f1a10" stroke-width="4"/></defs>
+    <use href="#hx" x="60" y="10"/><use href="#hx" x="112" y="10"/><use href="#hx" x="164" y="10"/><use href="#hx" x="216" y="10"/><use href="#hx" x="268" y="10"/>
+    <use href="#hx" x="86" y="55"/><use href="#hx" x="138" y="55"/><use href="#hx" x="190" y="55"/><use href="#hx" x="242" y="55"/>
+    <use href="#hx" x="112" y="100"/><use href="#hx" x="164" y="100"/><use href="#hx" x="216" y="100"/><use href="#hx" x="268" y="100"/>
+    <use href="#hx" x="190" y="145"/><use href="#hx" x="242" y="145"/></svg>
+  <div class="wrap">
+    <h1>Spelling Bee</h1>
+    <p>Add your words, then listen and spell them in English or Spanish.</p>
+  </div>
+</header>
+
+<main class="band" style="padding-top:0">
+<div class="wrap">
+  <section class="stage card" id="quiz" aria-live="polite">
+    <div id="startView">
+      <h2>Ready when you are</h2>
+      <p class="hint" id="startInfo"></p>
+      <button class="go big" id="startBtn">Start the bee</button>
+    </div>
+
+    <div id="playView" class="hide">
+      <div class="row between">
+        <span class="lang" id="langTag">English</span>
+        <span class="stat">Word <b id="num">1</b> of <b id="tot">1</b> · Correct <b id="score">0</b></span>
+      </div>
+      <div class="bar"><i id="prog"></i></div>
+      <p class="prompt" id="prompt">Listen and spell the word.</p>
+      <p class="hint" id="hint"></p>
+      <div class="row ctl">
+        <button class="go" id="sayBtn">🔊 Say it</button>
+        <button id="slowBtn">Say it slowly</button>
+        <button id="peekBtn">Peek</button>
+      </div>
+      <input class="answer" id="ans" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Type your spelling">
+      <div class="row acc" id="acc">
+        <button data-c="á">á</button><button data-c="é">é</button><button data-c="í">í</button><button data-c="ó">ó</button><button data-c="ú">ú</button><button data-c="ñ">ñ</button><button data-c="ü">ü</button>
+      </div>
+      <div class="fb" id="fb"></div>
+      <div class="row ctl">
+        <button class="go" id="checkBtn">Check</button>
+        <button id="nextBtn" class="hide go">Next word →</button>
+        <button id="skipBtn">Skip</button>
+        <button id="quitBtn">End</button>
+      </div>
+    </div>
+
+    <div id="doneView" class="hide">
+      <h2 id="doneTitle">Finished!</h2>
+      <p class="prompt" id="doneScore" style="margin-top:0"></p>
+      <div id="missWrap"><p style="margin:0;font-weight:700">Words to practice:</p><ul class="miss" id="missList"></ul></div>
+      <div class="row ctl">
+        <button class="go" id="retryMiss">Practice missed words</button>
+        <button id="again">Start over</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" style="margin-top:22px" id="setup">
+    <h2>Your words</h2>
+    <label for="words">One word per line. To practice both languages, write a pair: <b>cat = gato</b></label>
+    <textarea id="words" spellcheck="false"></textarea>
+    <div class="row" style="margin-top:10px">
+      <button type="button" class="go" id="upBtn">📄 Upload a text file</button>
+      <select id="upMode" aria-label="What to do with the uploaded words"><option value="replace">Replace my list</option><option value="add">Add to my list</option></select>
+      <button type="button" id="clearBtn">Clear list</button>
+      <button type="button" id="exBtn">⬇️ Export list</button>
+      <button type="button" id="cpBtn">Copy list</button>
+      <button type="button" class="go hide" id="trBtn">🌎 Add Spanish words</button>
+      <input type="file" id="upFile" accept=".txt,.csv,.tsv,text/plain,text/csv" class="hide">
+    </div>
+    <p class="note" id="upNote">Sample list loaded — replace it with your own. A text file works with one word per line, or pairs like <b>cat = gato</b>, <b>cat, gato</b> or a tab between them. Your list is remembered on this device.</p>
+    <div class="opts">
+      <div><label for="voice">Say the word in</label>
+        <select id="voice"><option value="same">Same language I spell in</option><option value="opp">The other language (translate it)</option><option value="en">Always English</option><option value="es">Always Spanish</option></select></div>
+      <div><label for="mode">I spell the answer in</label>
+        <select id="mode"><option value="en">English</option><option value="es">Spanish</option><option value="mix">Mix of both</option></select></div>
+      <div><label for="single">Lines with one word are</label>
+        <select id="single"><option value="en">English words</option><option value="es">Spanish words</option></select></div>
+      <div><label for="enVoice">English voice</label>
+        <div class="vrow"><select id="enVoice"><option value="">Automatic</option></select><button id="testEn" type="button">Test</button></div></div>
+      <div><label for="esVoice">Spanish voice</label>
+        <div class="vrow"><select id="esVoice"><option value="">Automatic</option></select><button id="testEs" type="button">Test</button></div></div>
+    </div>
+    <div class="row">
+      <label class="check"><input type="checkbox" id="strict" checked> Accents must be exact (é, ñ…)</label>
+      <label class="check"><input type="checkbox" id="shuffle" checked> Shuffle words</label>
+      <label class="check"><input type="checkbox" id="showMeaning" checked> Show a hint (meaning or the word you heard)</label>
+    </div>
+  </section>
+</div>
+</main>
+<footer>© 2026 Dwayne Harris · Created by Dwayne Harris</footer>
+
+<script>
+{
+const $=id=>document.getElementById(id);
+const SAMPLE=`house = casa
+friend = amigo
+school = escuela
+beautiful = hermoso
+library = biblioteca
+butterfly = mariposa
+church = iglesia
+year = año
+because = porque
+necessary = necesario`;
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const fields=['mode','voice','single'];const checks=['strict','shuffle','showMeaning'];
+$('words').value=store.get('sb_words')??SAMPLE;
+fields.forEach(f=>{const v=store.get('sb_'+f);if(v)$(f).value=v});
+checks.forEach(f=>{const v=store.get('sb_'+f);if(v!==null)$(f).checked=v==='1'});
+const save=()=>{store.set('sb_words',$('words').value);fields.forEach(f=>store.set('sb_'+f,$(f).value));checks.forEach(f=>store.set('sb_'+f,$(f).checked?'1':'0'));info()};
+['words',...fields,...checks].forEach(f=>$(f).addEventListener('input',save));
+['words',...fields,...checks].forEach(f=>$(f).addEventListener('change',save));
+
+function parse(){
+  const single=$('single').value;
+  return $('words').value.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{
+    const p=l.split(/\s*[=,;\t]\s*/);
+    if(p.length>=2&&p[0]&&p[1])return{en:p[0],es:p[1]};
+    return single==='en'?{en:p[0]}:{es:p[0]};
+  });
+}
+function build(list){
+  const mode=$('mode').value,voice=$('voice').value;const out=[];
+  const vOf=l=>voice==='same'?l:voice==='opp'?(l==='en'?'es':'en'):voice;
+  list.forEach(w=>{
+    const ok=l=>w[l]&&w[vOf(l)];
+    let lang=null;
+    if(mode==='mix'){const c=['en','es'].filter(ok);if(c.length)lang=c[Math.floor(Math.random()*c.length)]}
+    else if(ok(mode))lang=mode;
+    if(lang){const v=vOf(lang);out.push({lang,word:w[lang],voiceLang:v,voiceWord:w[v],other:w[lang==='en'?'es':'en']||''})}
+  });
+  if($('shuffle').checked)for(let i=out.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[out[i],out[j]]=[out[j],out[i]]}
+  return out;
+}
+function info(){
+  const n=build(parse()).length;const m=$('mode').value,v=$('voice').value;
+  const name={en:'English',es:'Spanish',mix:'English and Spanish'}[m];
+  const vName={same:'the same language',opp:'the other language',en:'English',es:'Spanish'}[v];
+  const needPairs=v!=='same'&&!(v===m);
+  $('startInfo').textContent=n?`${n} word${n>1?'s':''} ready · you'll hear ${vName} and spell in ${name}.`:`No words match these settings yet.${needPairs?' To hear one language and spell in the other, write pairs like cat = gato.':' Add words below or switch the language.'}`;
+  $('startBtn').disabled=!n;
+}
+info();
+
+let deck=[],i=0,score=0,missed=[],answered=false,peeked=false;
+const hasTTS='speechSynthesis' in window;
+const voices=()=>{try{return speechSynthesis.getVoices()}catch(e){return[]}};
+const ofLang=code=>voices().filter(v=>(v.lang||'').toLowerCase().replace('_','-').startsWith(code));
+function fillVoices(){
+  ['en','es'].forEach(code=>{
+    const sel=$(code+'Voice');const want=store.get('sb_'+code+'Voice')||sel.value;
+    sel.innerHTML='<option value="">Automatic</option>';
+    ofLang(code).forEach(v=>{const o=document.createElement('option');o.value=v.name;o.textContent=`${v.name} (${v.lang})`;sel.append(o)});
+    if([...sel.options].some(o=>o.value===want))sel.value=want;
+  });
+}
+function pickVoice(code){
+  const list=ofLang(code);const name=$(code+'Voice').value;
+  return list.find(v=>v.name===name)||list.find(v=>/^(en-us|es-mx)/i.test(v.lang.replace('_','-')))||list[0]||null;
+}
+function speak(text,code,rate){
+  if(!hasTTS){$('fb').className='fb';$('fb').textContent='This device can\'t speak — use Peek or the hint.';return}
+  try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);
+  const v=pickVoice(code);u.lang=v?v.lang:(code==='en'?'en-US':'es-MX');if(v)u.voice=v;u.rate=rate;
+  speechSynthesis.speak(u)}catch(e){}
+}
+function say(rate){const c=deck[i];speak(c.voiceWord,c.voiceLang,rate)}
+['en','es'].forEach(code=>$(code+'Voice').addEventListener('change',e=>store.set('sb_'+code+'Voice',e.target.value)));
+$('testEn').onclick=()=>speak('Please spell the word: house.','en',.9);
+$('testEs').onclick=()=>speak('Por favor, deletrea la palabra: casa.','es',.9);
+function show(v){['startView','playView','doneView'].forEach(x=>$(x).classList.toggle('hide',x!==v));$('setup').classList.toggle('hide',v==='playView');if(v==='playView')window.scrollTo(0,0)}
+function start(list){
+  deck=list||build(parse());if(!deck.length)return;
+  i=0;score=0;missed=[];show('playView');load();
+}
+function load(){
+  const c=deck[i];answered=false;peeked=false;
+  const L={en:'English',es:'Spanish'};const tr=c.voiceLang!==c.lang;
+  $('langTag').textContent=`🔊 ${L[c.voiceLang]} → ✏️ ${L[c.lang]}`;
+  $('num').textContent=i+1;$('tot').textContent=deck.length;$('score').textContent=score;
+  $('prog').style.width=(i/deck.length*100)+'%';
+  $('prompt').textContent=tr?`Listen to the ${L[c.voiceLang]} word, then spell it in ${L[c.lang]}.`:(c.lang==='en'?'Listen, then spell the word.':'Escucha y escribe la palabra.');
+  $('hint').textContent=$('showMeaning').checked?(tr?`You heard: “${c.voiceWord}”`:(c.other?`In ${L[c.lang==='en'?'es':'en']}: “${c.other}”`:'')):'';
+  $('acc').classList.toggle('hide',c.lang!=='es');
+  const a=$('ans');a.value='';a.className='answer';a.disabled=false;
+  a.lang=c.lang;
+  $('fb').textContent='';$('fb').className='fb';
+  $('checkBtn').classList.remove('hide');$('skipBtn').classList.remove('hide');$('nextBtn').classList.add('hide');
+  a.focus();say(.9);
+}
+const norm=s=>s.trim().toLowerCase().replace(/\s+/g,' ');
+const strip=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'');
+function check(skip){
+  if(answered)return;const c=deck[i];const g=norm($('ans').value);
+  if(!g&&!skip){$('fb').className='fb no';$('fb').textContent='Type your spelling first.';return}
+  const t=norm(c.word);let ok=!skip&&g===t;let close=false;
+  if(!ok&&!skip&&!$('strict').checked&&strip(g)===strip(t))ok=true;
+  else if(!ok&&!skip&&strip(g)===strip(t))close=true;
+  if(peeked&&ok){ok=false;}
+  answered=true;$('ans').disabled=true;
+  const fb=$('fb');fb.innerHTML='';
+  const spelled=document.createElement('span');spelled.className='spell';spelled.textContent=c.word.toUpperCase().split('').join('-');
+  if(ok){score++;fb.className='fb ok';fb.append(c.lang==='en'?'Correct! ':'¡Correcto! ',spelled);$('ans').className='answer ok'}
+  else{missed.push(deck[i]);fb.className='fb no';
+    fb.append(peeked&&g===t?'Right, but you peeked — it goes on the practice list: ':close?'So close — watch the accents: ':skip?'Skipped. It\'s spelled ':'Not quite. It\'s spelled ',spelled);$('ans').className='answer no'}
+  fb.classList.add('pop');setTimeout(()=>fb.classList.remove('pop'),400);
+  $('score').textContent=score;
+  $('checkBtn').classList.add('hide');$('skipBtn').classList.add('hide');$('nextBtn').classList.remove('hide');$('nextBtn').focus();
+}
+function next(){i++;if(i>=deck.length)finish();else load()}
+function finish(){
+  show('doneView');const n=i>0?Math.min(i,deck.length):0;
+  $('prog').style.width='100%';
+  $('doneTitle').textContent=score===n&&n?'Perfect round! 🐝':'Round finished';
+  $('doneScore').textContent=`${score} of ${n} correct`;
+  $('missWrap').classList.toggle('hide',!missed.length);$('retryMiss').classList.toggle('hide',!missed.length);
+  $('missList').innerHTML='';
+  missed.forEach(m=>{const li=document.createElement('li');const b=document.createElement('b');b.textContent=m.word;li.append(b,` — ${m.lang==='en'?'English':'Spanish'}${m.voiceLang!==m.lang?' (heard “'+m.voiceWord+'”)':(m.other?' · '+m.other:'')}`);$('missList').append(li)});
+}
+$('upBtn').onclick=()=>$('upFile').click();
+$('clearBtn').onclick=()=>{$('words').value='';save();$('words').focus()};
+$('upFile').addEventListener('change',e=>{
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    const lines=String(r.result).replace(/^﻿/,'').split(/\r?\n/).map(l=>l.trim()).filter(Boolean)
+      .map(l=>{const p=l.split(/\s*[=,;\t]\s*/).filter(Boolean);return p.length>=2?`${p[0]} = ${p[1]}`:p[0]});
+    if(!lines.length){$('upNote').textContent=`No words found in “${f.name}”.`;return}
+    const cur=$('words').value.trim();
+    $('words').value=($('upMode').value==='add'&&cur?cur+'\n':'')+lines.join('\n');
+    save();
+    $('upNote').textContent=`${$('upMode').value==='add'?'Added':'Loaded'} ${lines.length} word${lines.length>1?'s':''} from “${f.name}”. Your list is remembered on this device.`;
+    e.target.value='';
+  };
+  r.onerror=()=>{$('upNote').textContent='Sorry, that file could not be read. Try a plain .txt file.'};
+  r.readAsText(f);
+});
+let dl=null;
+if(window.claude&&claude.use)claude.use('downloads').then(d=>{dl=d}).catch(()=>{});
+const listText=()=>$('words').value.split('\n').map(l=>l.trim()).filter(Boolean).join('\n');
+$('exBtn').onclick=async()=>{
+  const t=listText();if(!t){$('upNote').textContent='Your list is empty — nothing to export.';return}
+  const d=new Date();const name=`spelling-words-${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}.txt`;
+  if(dl){
+    try{await dl.save({filename:name,data:t+'\n'});$('upNote').textContent=`Saved “${name}”. You can upload it again any time.`}
+    catch(e){const c=e&&e.code;
+      $('upNote').textContent=c==='declined'?'Export canceled.':c==='rate_limited'?'One moment — try Export again.':c==='host_unavailable'?'This app can\'t save files here. Use Copy list, or open it in a browser.':'Export isn\'t available here — use Copy list instead.'}
+    return;
+  }
+  try{const u=URL.createObjectURL(new Blob([t+'\n'],{type:'text/plain'}));const a=document.createElement('a');a.href=u;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);$('upNote').textContent=`Exported “${name}”.`}
+  catch(e){$('upNote').textContent='Export isn\'t available here — use Copy list instead.'}
+};
+$('cpBtn').onclick=async()=>{
+  const t=listText();if(!t){$('upNote').textContent='Your list is empty — nothing to copy.';return}
+  try{await navigator.clipboard.writeText(t);$('upNote').textContent='List copied — paste it into Notes, an email or a text.'}
+  catch(e){$('words').focus();$('words').select();$('upNote').textContent='Your list is selected — press copy to copy it.'}
+};
+let sample=null,busy=false;
+const trLabel=()=>{const s=$('single').value;$('trBtn').textContent=s==='en'?'🌎 Add Spanish words':'🌎 Add English words'};
+trLabel();$('single').addEventListener('change',trLabel);
+if(window.claude&&claude.use)claude.use('sample').then(s=>{sample=s;if(s)$('trBtn').classList.remove('hide')}).catch(()=>{});
+$('trBtn').onclick=async()=>{
+  if(!sample||busy)return;
+  const from=$('single').value,to=from==='en'?'es':'en';const N={en:'English',es:'Spanish'};
+  const lines=$('words').value.split('\n');
+  const idx=[];const todo=[];
+  lines.forEach((l,k)=>{const t=l.trim();if(t&&t.split(/\s*[=,;\t]\s*/).filter(Boolean).length<2){idx.push(k);todo.push(t)}});
+  if(!todo.length){$('upNote').textContent='Every word already has a pair — nothing to add.';return}
+  busy=true;const b=$('trBtn');b.disabled=true;b.textContent='Translating…';
+  $('upNote').textContent=`Finding the ${N[to]} word for ${todo.length} word${todo.length>1?'s':''}…`;
+  try{
+    const prompt=`Translate each ${N[from]} word or short phrase below into ${N[to]} for a spelling practice list. Use the most common everyday translation, spelled correctly with all accents (á é í ó ú ñ ü). For nouns use the singular form without an article. Reply with ONLY a JSON array of strings, the same length and order as the input.\n\nInput JSON: ${JSON.stringify(todo)}`;
+    let out;
+    try{out=await sample.json(prompt,{modelTier:'quick'})}
+    catch(e){if(e&&e.code)throw e;const r=await sample(prompt,{modelTier:'quick'});out=JSON.parse(r.text.slice(r.text.indexOf('['),r.text.lastIndexOf(']')+1))}
+    if(!Array.isArray(out))throw new Error('bad');
+    let n=0;
+    idx.forEach((k,j)=>{const t=String(out[j]??'').replace(/[=\n\r\t]/g,' ').trim();if(!t)return;n++;
+      lines[k]=from==='en'?`${todo[j]} = ${t}`:`${t} = ${todo[j]}`});
+    $('words').value=lines.join('\n');save();
+    $('upNote').textContent=`Added ${N[to]} for ${n} word${n!==1?'s':''}. Check them over — you can fix any word right in the list.`;
+  }catch(e){
+    $('upNote').textContent=e&&e.code==='not_granted'?'Translation wasn\'t allowed, so nothing changed.':e&&e.code==='rate_limited'?'Too many requests right now — try again in a minute.':'Sorry, the translation didn\'t work. Please try again.';
+    if(e&&e.code==='not_granted')b.classList.add('hide');
+  }finally{busy=false;b.disabled=false;trLabel()}
+};
+$('startBtn').onclick=()=>start();
+$('sayBtn').onclick=()=>say(.9);
+$('slowBtn').onclick=()=>say(.5);
+$('peekBtn').onclick=()=>{if(answered)return;peeked=true;const fb=$('fb');fb.className='fb';fb.textContent=deck[i].word;setTimeout(()=>{if(!answered)fb.textContent='(peeked — this word will go on your practice list)'},1500);$('ans').focus()};
+$('checkBtn').onclick=()=>check(false);
+$('skipBtn').onclick=()=>check(true);
+$('nextBtn').onclick=next;
+$('quitBtn').onclick=()=>{if(hasTTS)try{speechSynthesis.cancel()}catch(e){};finish()};
+$('again').onclick=()=>{show('startView');info()};
+$('retryMiss').onclick=()=>{const m=missed.slice();start(m)};
+$('ans').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();answered?next():check(false)}});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&answered&&document.activeElement!==$('nextBtn')&&!$('playView').classList.contains('hide')&&e.target.tagName!=='TEXTAREA'){e.preventDefault();next()}});
+$('acc').addEventListener('click',e=>{const c=e.target.dataset.c;if(!c||answered)return;const a=$('ans');const s=a.selectionStart??a.value.length,en=a.selectionEnd??s;a.value=a.value.slice(0,s)+c+a.value.slice(en);a.focus();a.setSelectionRange(s+1,s+1)});
+if(hasTTS)try{fillVoices();speechSynthesis.onvoiceschanged=fillVoices;setTimeout(fillVoices,800)}catch(e){}
+}
+</script>
+</body>
+</html>
