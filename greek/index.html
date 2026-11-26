@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Greek Alphabet Flashcards</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;600;700&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/*
+VOICE: warm, encouraging tutor; few words, big letters.
+IDEA: a deck of study cards laid on an Aegean-blue desk, the way a seminary student drills letters.
+PICTURE: one large flip card holding the Greek letter, filling the first screen.
+COLOUR and TYPE: lapis blue ground, white card, coral accent; Noto Serif for Greek, Manrope for UI.
+LAYOUT: modest title, card, controls under it, progress row; stacks naturally on a phone.
+*/
+:root{color-scheme:light dark;
+--bg:light-dark(#1f4fa8,#0c1d3f);--bg2:light-dark(#173f8a,#081530);
+--card:light-dark(#ffffff,#16284f);--cardInk:light-dark(#10224a,#eef2fb);
+--ink:#f4f7ff;--soft:light-dark(#cfdcf5,#9fb2d8);
+--accent:#ff6b4a;--good:#3ecf8e;--line:light-dark(#e3e9f6,#24386a)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:linear-gradient(180deg,var(--bg),var(--bg2));color:var(--ink);font:16px/1.55 Manrope,system-ui,sans-serif;overflow-x:clip;min-height:100vh}
+.wrap{max-width:620px;margin:0 auto;padding:clamp(20px,4vw,40px) 16px 28px}
+h1{font:700 clamp(26px,5vw,36px)/1.05 Manrope,sans-serif;margin:0 0 4px;text-wrap:balance}
+.sub{color:var(--soft);margin:0 0 18px;font-size:15px}
+.modes{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.chip{appearance:none;border:1.5px solid rgba(255,255,255,.35);background:transparent;color:var(--ink);font:600 14px Manrope,sans-serif;padding:0 14px;min-height:40px;border-radius:999px;cursor:pointer}
+.chip[aria-pressed=true]{background:#fff;color:#173f8a;border-color:#fff}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.stage{perspective:1400px}
+.card{position:relative;width:100%;aspect-ratio:4/3.2;max-height:62vh;border:0;padding:0;background:none;cursor:pointer;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.3,.7,.3,1)}
+.card.flipped{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;border-radius:22px;background:var(--card);color:var(--cardInk);backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;box-shadow:0 18px 40px rgba(0,0,20,.35),inset 0 0 0 1px var(--line)}
+.back{transform:rotateY(180deg)}
+.big{font:400 clamp(84px,24vw,150px)/1 'Noto Serif',serif;letter-spacing:.04em}
+.nameBig{font:700 clamp(38px,10vw,58px)/1.05 Manrope,sans-serif}
+.hint{position:absolute;bottom:14px;font-size:13px;color:#7d8bb0}
+.num{position:absolute;top:14px;left:18px;font-size:13px;color:#7d8bb0}
+.tag{position:absolute;top:12px;right:14px;font-size:13px;font-weight:700;padding:3px 10px;border-radius:999px}
+.tag.k{background:rgba(62,207,142,.16);color:#169a5f}
+.tag.l{background:rgba(255,107,74,.16);color:#d6492a}
+.pair{font:400 clamp(30px,8vw,44px)/1 'Noto Serif',serif;margin-bottom:8px;color:var(--accent)}
+.sound{font-size:18px;margin:8px 0 14px;text-align:center}
+.ex{border-top:1px solid var(--line);padding-top:12px;text-align:center;width:min(100%,360px)}
+.ex .gk{font:600 26px/1.2 'Noto Serif',serif}
+.ex .tr{font-size:15px;color:#6b7aa3}
+.row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:16px}
+.btn{appearance:none;border:0;border-radius:14px;min-height:52px;font:700 16px Manrope,sans-serif;cursor:pointer;color:#fff}
+.sayb{background:#fff;color:#173f8a;display:flex;align-items:center;justify-content:center;gap:8px}
+.sayb svg{width:22px;height:22px;flex:none}
+.btn:disabled{opacity:.45;cursor:default}
+.sayNote{margin:6px 0 0;font-size:14px;color:var(--soft);min-height:0}
+.sayNote:empty{display:none}
+.ex .ph{font-size:16px;font-weight:700;color:var(--accent);margin:2px 0}
+.row:not(.say){margin-top:12px}
+.learn{background:var(--accent)}.know{background:var(--good);color:#06331f}
+.nav{display:flex;gap:10px;margin-top:10px}
+.nav .btn{flex:1;background:rgba(255,255,255,.14);min-height:46px;font-weight:600}
+.prog{margin-top:20px}
+.bar{height:10px;border-radius:99px;background:rgba(255,255,255,.18);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--good);transition:width .4s}
+.stats{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;font-size:14px;color:var(--soft);margin-top:8px}
+.reset{background:none;border:0;color:var(--soft);text-decoration:underline;font:inherit;cursor:pointer;min-height:44px;padding:0}
+.done{text-align:center}
+.done .big{font-size:clamp(60px,18vw,96px)}
+footer{text-align:center;font-size:13px;color:var(--soft);padding:26px 16px 30px}
+@media(prefers-reduced-motion:reduce){.card{transition:none}.bar i{transition:none}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Greek Alphabet Flashcards</h1>
+  <p class="sub">Tap the card to flip it. Mark each letter as known or still learning.</p>
+
+  <div class="modes" role="group" aria-label="Card options">
+    <button class="chip" id="mGk" aria-pressed="true">Greek → English</button>
+    <button class="chip" id="mEn" aria-pressed="false">English → Greek</button>
+    <button class="chip" id="mLearn" aria-pressed="false">Still learning only</button>
+    <button class="chip" id="mShuf" aria-pressed="false">Shuffle</button>
+  </div>
+
+  <div class="stage">
+    <button class="card" id="card" aria-label="Flip card">
+      <div class="face front" id="front"></div>
+      <div class="face back" id="back"></div>
+    </button>
+  </div>
+
+  <div class="row say">
+    <button class="btn sayb" id="bSayL"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Say letter</button>
+    <button class="btn sayb" id="bSayW"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Sound out word</button>
+  </div>
+  <p class="sayNote" id="sayNote" aria-live="polite"></p>
+  <div class="row">
+    <button class="btn learn" id="bLearn">Still learning</button>
+    <button class="btn know" id="bKnow">I know it ✓</button>
+  </div>
+  <div class="nav">
+    <button class="btn" id="bPrev">← Back</button>
+    <button class="btn" id="bNext">Next →</button>
+  </div>
+
+  <div class="prog">
+    <div class="bar"><i id="barFill"></i></div>
+    <div class="stats"><span id="statTxt"></span><button class="reset" id="bReset">Start over</button></div>
+  </div>
+</main>
+<footer>© 2026 Dwayne Harris · Created by Dwayne Harris</footer>
+
+<script>
+{
+// [upper, lower, name, sound, word, meaning, name said, sound said, word sounded out (CAPS = stressed)]
+const L=[
+["Α","α","Alpha","a as in “father”","ἀγάπη","agapē — love","alfa","ah, as in father","ah-GAH-pay"],
+["Β","β","Beta","b as in “boy”","βίβλος","biblos — book","bayta","b, as in boy","BIB-loss"],
+["Γ","γ","Gamma","g as in “go”","γραφή","graphē — scripture","gamma","g, as in go","grah-FAY"],
+["Δ","δ","Delta","d as in “dog”","δόξα","doxa — glory","delta","d, as in dog","DOK-sah"],
+["Ε","ε","Epsilon","short e as in “get”","ἐκκλησία","ekklēsia — church","epsilon","eh, as in get","ek-klay-SEE-ah"],
+["Ζ","ζ","Zeta","dz as in “adze”","ζωή","zōē — life","zayta","dz, as in adze","dzoh-AY"],
+["Η","η","Eta","long a as in “obey”","ἡμέρα","hēmera — day","ayta","ay, as in obey","hay-MEH-rah"],
+["Θ","θ","Theta","th as in “think”","θεός","theos — God","thayta","th, as in think","theh-OSS"],
+["Ι","ι","Iota","i as in “machine” or “it”","Ἰησοῦς","Iēsous — Jesus","ee oh ta","ee, as in machine","yay-SOOS"],
+["Κ","κ","Kappa","k as in “kite”","καρδία","kardia — heart","kappa","k, as in kite","kar-DEE-ah"],
+["Λ","λ","Lambda","l as in “lamp”","λόγος","logos — word","lambda","l, as in lamp","LOG-oss"],
+["Μ","μ","Mu","m as in “man”","μαθητής","mathētēs — disciple","moo","m, as in man","mah-thay-TAYS"],
+["Ν","ν","Nu","n as in “net”","νόμος","nomos — law","noo","n, as in net","NOM-oss"],
+["Ξ","ξ","Xi","x as in “box”","ξένος","xenos — stranger","ksee","ks, as in box","KSEN-oss"],
+["Ο","ο","Omicron","short o as in “obey”","οἶκος","oikos — house","omicron","oh, as in obey","OY-koss"],
+["Π","π","Pi","p as in “pray”","πίστις","pistis — faith","pee","p, as in pray","PISS-tiss"],
+["Ρ","ρ","Rho","r as in “run” (rolled)","ῥῆμα","rhēma — saying","roe","r, as in run","HRAY-mah"],
+["Σ","σ ς","Sigma","s as in “sing” (ς only ends a word)","σωτηρία","sōtēria — salvation","sigma","s, as in sing","soh-tay-REE-ah"],
+["Τ","τ","Tau","t as in “top”","τέκνον","teknon — child","tow","t, as in top","TEK-non"],
+["Υ","υ","Upsilon","u as in French “tu”","υἱός","huios — son","oopsilon","oo, like the French tu","hwee-OSS"],
+["Φ","φ","Phi","f as in “faith”","φῶς","phōs — light","fee","f, as in faith","FOHS"],
+["Χ","χ","Chi","ch as in German “Bach”","χάρις","charis — grace","kee","k h, as in the German Bach","KHAR-iss"],
+["Ψ","ψ","Psi","ps as in “lips”","ψυχή","psychē — soul","psee","ps, as in lips","psoo-KHAY"],
+["Ω","ω","Omega","long o as in “tone”","ὥρα","hōra — hour","oh may ga","oh, as in tone","HOH-rah"]
+];
+const canSpeak="speechSynthesis" in window;
+function say(text){
+  if(!canSpeak){$("sayNote").textContent="Sorry, this browser can't speak. Try Safari or Chrome.";return}
+  try{
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang="en-US";u.rate=0.8;
+    const v=speechSynthesis.getVoices().find(v=>/^en(-|_)US/i.test(v.lang));
+    if(v)u.voice=v;
+    speechSynthesis.speak(u);
+  }catch(e){$("sayNote").textContent="Sorry, speech didn't work here."}
+}
+const spoken=w=>w.toLowerCase().replace(/-/g," . ");
+function sayLetter(){if(!order.length)return;const l=L[order[pos]];say(`${l[6]}. ${l[7]}.`)}
+function sayWord(){if(!order.length)return;const l=L[order[pos]];say(`${spoken(l[8])}. . ${l[5].split("— ")[1]}.`)}
+const KEY="greekFlash.v1";
+let st={known:{},mode:"gk",learnOnly:false,shuffle:false};
+try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(s)st=Object.assign(st,s)}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}};
+let order=[],pos=0;
+const $=id=>document.getElementById(id);
+const card=$("card"),front=$("front"),back=$("back");
+
+function build(){
+  let idx=L.map((_,i)=>i);
+  if(st.learnOnly)idx=idx.filter(i=>!st.known[i]);
+  if(st.shuffle){for(let i=idx.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]]}}
+  order=idx;pos=0;render();
+}
+function tag(i){return st.known[i]?'<span class="tag k">Known</span>':''}
+function greekFace(i,n){const l=L[i];return `<span class="num">${n}</span>${tag(i)}<div class="big">${l[0]} ${l[1].split(" ")[0]}</div><span class="hint">Tap to flip</span>`}
+function engFace(i,n){const l=L[i];return `<span class="num">${n}</span>${tag(i)}<div class="nameBig">${l[2]}</div><span class="hint">Tap to see the letter</span>`}
+function answer(i){const l=L[i];return `<div class="pair">${l[0]} ${l[1]}</div><div class="nameBig">${l[2]}</div><div class="sound">Sounds like: ${l[3]}</div><div class="ex"><div class="gk">${l[4]}</div><div class="ph">Say it: ${l[8]}</div><div class="tr">${l[5]}</div></div>`}
+function render(){
+  card.classList.remove("flipped");
+  $("mGk").setAttribute("aria-pressed",st.mode==="gk");
+  $("mEn").setAttribute("aria-pressed",st.mode==="en");
+  $("mLearn").setAttribute("aria-pressed",st.learnOnly);
+  $("mShuf").setAttribute("aria-pressed",st.shuffle);
+  const k=Object.keys(st.known).filter(x=>st.known[x]).length;
+  $("barFill").style.width=(k/L.length*100)+"%";
+  $("statTxt").textContent=`${k} of 24 letters known`;
+  const off=!order.length;
+  ["bLearn","bKnow","bPrev","bNext","bSayL","bSayW"].forEach(b=>$(b).disabled=off);
+  if(off){
+    front.innerHTML=`<div class="done"><div class="big">Ω</div><div class="nameBig">All known!</div><p class="sound">Every letter is marked known. Turn off “Still learning only” to review them all.</p></div>`;
+    back.innerHTML="";return;
+  }
+  const i=order[pos],n=`${pos+1} / ${order.length}`;
+  setTimeout(()=>{ // swap faces after flip-back so the answer isn't glimpsed
+    front.innerHTML=st.mode==="gk"?greekFace(i,n):engFace(i,n);
+    back.innerHTML=answer(i);
+  },card.dataset.wasFlipped==="1"?250:0);
+  card.dataset.wasFlipped="0";
+}
+function flip(){if(!order.length)return;card.classList.toggle("flipped");card.dataset.wasFlipped=card.classList.contains("flipped")?"1":"0"}
+function go(d){if(!order.length)return;pos=(pos+d+order.length)%order.length;render()}
+function mark(known){
+  if(!order.length)return;const i=order[pos];
+  if(known)st.known[i]=true;else delete st.known[i];save();
+  if(st.learnOnly&&known){order.splice(pos,1);if(pos>=order.length)pos=0;render()}else go(1);
+}
+card.addEventListener("click",flip);
+$("bSayL").addEventListener("click",sayLetter);
+$("bSayW").addEventListener("click",sayWord);
+if(canSpeak){try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices()}catch(e){}}
+$("bNext").addEventListener("click",()=>go(1));
+$("bPrev").addEventListener("click",()=>go(-1));
+$("bKnow").addEventListener("click",()=>mark(true));
+$("bLearn").addEventListener("click",()=>mark(false));
+$("mGk").addEventListener("click",()=>{st.mode="gk";save();render()});
+$("mEn").addEventListener("click",()=>{st.mode="en";save();render()});
+$("mLearn").addEventListener("click",()=>{st.learnOnly=!st.learnOnly;save();build()});
+$("mShuf").addEventListener("click",()=>{st.shuffle=!st.shuffle;save();build()});
+$("bReset").addEventListener("click",()=>{st.known={};save();build()});
+document.addEventListener("keydown",e=>{
+  if(e.key==="ArrowRight")go(1);else if(e.key==="ArrowLeft")go(-1);
+  else if(e.key===" "&&e.target===document.body){e.preventDefault();flip()}
+});
+let sx=null;
+card.addEventListener("touchstart",e=>{sx=e.touches[0].clientX},{passive:true});
+card.addEventListener("touchend",e=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>60){e.preventDefault();go(dx<0?1:-1)}sx=null});
+build();
+}
+</script>
+</body>
+</html>
